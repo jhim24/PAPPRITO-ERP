@@ -1,0 +1,307 @@
+/* ==========================================
+   PAPPRITO ERP
+   NAVBAR
+========================================== */
+
+.top-navbar{
+
+    height:75px;
+
+    background:rgba(255,255,255,.90);
+
+    backdrop-filter:blur(12px);
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    padding:0 25px;
+
+    border-bottom:1px solid #E5E7EB;
+
+    position:sticky;
+
+    top:0;
+
+    z-index:998;
+
+}
+
+/* ==========================================
+   LEFT
+========================================== */
+
+.nav-left{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:18px;
+
+}
+
+.menu-toggle{
+
+    width:45px;
+
+    height:45px;
+
+    border:none;
+
+    border-radius:12px;
+
+    background:#C8102E;
+
+    color:#fff;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+}
+
+.menu-toggle:hover{
+
+    background:#A40D25;
+
+}
+
+.page-title h3{
+
+    margin:0;
+
+    font-size:22px;
+
+    font-weight:700;
+
+    color:#1E293B;
+
+}
+
+.page-title small{
+
+    color:#64748B;
+
+}
+
+/* ==========================================
+   SEARCH
+========================================== */
+
+.nav-search{
+
+    width:420px;
+
+    position:relative;
+
+}
+
+.nav-search i{
+
+    position:absolute;
+
+    left:15px;
+
+    top:14px;
+
+    color:#94A3B8;
+
+}
+
+.nav-search input{
+
+    width:100%;
+
+    height:48px;
+
+    border:none;
+
+    outline:none;
+
+    border-radius:25px;
+
+    background:#F1F5F9;
+
+    padding-left:45px;
+
+    padding-right:20px;
+
+}
+
+/* ==========================================
+   RIGHT
+========================================== */
+
+.nav-right{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+}
+
+.nav-date,
+.nav-time{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    color:#475569;
+
+    font-size:14px;
+
+}
+
+/* ==========================================
+   ICON BUTTONS
+========================================== */
+
+.nav-icon{
+
+    width:45px;
+
+    height:45px;
+
+    border:none;
+
+    border-radius:50%;
+
+    background:#F8FAFC;
+
+    position:relative;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+}
+
+.nav-icon:hover{
+
+    background:#FFE8EC;
+
+    color:#C8102E;
+
+}
+
+.badge-dot{
+
+    width:10px;
+
+    height:10px;
+
+    background:red;
+
+    border-radius:50%;
+
+    position:absolute;
+
+    right:12px;
+
+    top:10px;
+
+}
+
+/* ==========================================
+   USER
+========================================== */
+
+.nav-user{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    padding-left:10px;
+
+}
+
+.nav-user img{
+
+    width:48px;
+
+    height:48px;
+
+    border-radius:50%;
+
+    object-fit:cover;
+
+    border:3px solid #FFC72C;
+
+}
+
+.nav-user strong{
+
+    display:block;
+
+    font-size:15px;
+
+}
+
+.nav-user small{
+
+    color:#64748B;
+
+}
+
+/* ==========================================
+   TABLET
+========================================== */
+
+@media(max-width:992px){
+
+.nav-search{
+
+    display:none;
+
+}
+
+.nav-date{
+
+    display:none;
+
+}
+
+.nav-time{
+
+    display:none;
+
+}
+
+}
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media(max-width:768px){
+
+.top-navbar{
+
+    padding:0 15px;
+
+}
+
+.page-title small{
+
+    display:none;
+
+}
+
+.nav-user div{
+
+    display:none;
+
+}
+
+}
