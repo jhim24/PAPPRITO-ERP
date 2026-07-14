@@ -1,0 +1,302 @@
+/* ==========================================
+   PAPPRITO ERP
+   SIDEBAR
+========================================== */
+
+.sidebar{
+
+    position:fixed;
+
+    left:0;
+    top:0;
+
+    width:270px;
+    height:100vh;
+
+    background:linear-gradient(180deg,#C8102E,#9E0B24);
+
+    color:#fff;
+
+    display:flex;
+    flex-direction:column;
+
+    box-shadow:8px 0 25px rgba(0,0,0,.18);
+
+    z-index:999;
+
+}
+
+/* ==========================================
+   LOGO
+========================================== */
+
+.sidebar-logo{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+    padding:25px;
+
+    border-bottom:1px solid rgba(255,255,255,.15);
+
+}
+
+.sidebar-logo img{
+
+    width:55px;
+    height:55px;
+
+    border-radius:50%;
+
+    background:#fff;
+
+    padding:5px;
+
+}
+
+.sidebar-logo h2{
+
+    margin:0;
+
+    font-size:22px;
+
+    font-weight:700;
+
+    color:#FFC72C;
+
+}
+
+.sidebar-logo span{
+
+    font-size:12px;
+
+    color:#ffffffcc;
+
+}
+
+/* ==========================================
+   MENU
+========================================== */
+
+.sidebar-menu{
+
+    flex:1;
+
+    list-style:none;
+
+    padding:15px;
+
+    overflow-y:auto;
+
+}
+
+.sidebar-menu li{
+
+    margin-bottom:8px;
+
+}
+
+.sidebar-menu a{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+    padding:14px 18px;
+
+    color:white;
+
+    border-radius:14px;
+
+    transition:.30s;
+
+    font-size:15px;
+
+    font-weight:500;
+
+}
+
+.sidebar-menu a i{
+
+    width:24px;
+
+    text-align:center;
+
+    font-size:18px;
+
+}
+
+/* ==========================================
+   ACTIVE
+========================================== */
+
+.sidebar-menu a.active{
+
+    background:#FFC72C;
+
+    color:#222;
+
+    font-weight:700;
+
+}
+
+/* ==========================================
+   HOVER
+========================================== */
+
+.sidebar-menu a:hover{
+
+    background:rgba(255,255,255,.15);
+
+    transform:translateX(8px);
+
+}
+
+/* ==========================================
+   USER
+========================================== */
+
+.sidebar-user{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+    padding:20px;
+
+    border-top:1px solid rgba(255,255,255,.15);
+
+}
+
+.sidebar-user img{
+
+    width:48px;
+
+    height:48px;
+
+    border-radius:50%;
+
+    background:#fff;
+
+}
+
+.sidebar-user strong{
+
+    display:block;
+
+    font-size:15px;
+
+}
+
+.sidebar-user small{
+
+    color:#ffffffbb;
+
+}
+
+/* ==========================================
+   SCROLLBAR
+========================================== */
+
+.sidebar-menu::-webkit-scrollbar{
+
+    width:6px;
+
+}
+
+.sidebar-menu::-webkit-scrollbar-thumb{
+
+    background:#FFC72C;
+
+    border-radius:20px;
+
+}
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media(max-width:992px){
+
+.sidebar{
+
+    width:80px;
+
+}
+
+.sidebar-logo div{
+
+    display:none;
+
+}
+
+.sidebar-user{
+
+    justify-content:center;
+
+}
+
+.sidebar-user div{
+
+    display:none;
+
+}
+
+.sidebar-menu a span{
+
+    display:none;
+
+}
+
+.sidebar-menu a{
+
+    justify-content:center;
+
+    padding:16px;
+
+}
+
+.sidebar-menu a i{
+
+    font-size:22px;
+
+}
+
+.main-wrapper{
+
+    margin-left:80px;
+
+}
+
+}
+
+@media(max-width:768px){
+
+.sidebar{
+
+    left:-270px;
+
+    transition:.30s;
+
+}
+
+.sidebar.show{
+
+    left:0;
+
+}
+
+.main-wrapper{
+
+    margin-left:0;
+
+}
+
+}
