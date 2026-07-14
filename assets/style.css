@@ -1,0 +1,210 @@
+/* ==========================================
+   PAPPRITO ERP
+   GLOBAL STYLE
+========================================== */
+
+:root{
+
+    --primary:#C8102E;
+    --secondary:#FFC72C;
+    --success:#22C55E;
+    --danger:#EF4444;
+    --info:#0EA5E9;
+
+    --background:#EEF2F7;
+    --card:#FFFFFF;
+
+    --text:#1E293B;
+    --muted:#64748B;
+
+    --border:#E2E8F0;
+
+    --sidebar-width:270px;
+
+}
+
+/* ==========================================
+   RESET
+========================================== */
+
+*{
+
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+
+}
+
+html{
+
+    scroll-behavior:smooth;
+
+}
+
+body{
+
+    font-family:'Segoe UI',sans-serif;
+
+    background:var(--background);
+
+    color:var(--text);
+
+    overflow-x:hidden;
+
+}
+
+/* ==========================================
+   MAIN LAYOUT
+========================================== */
+
+#app{
+
+    display:flex;
+
+    width:100%;
+
+    min-height:100vh;
+
+}
+
+.main-wrapper{
+
+    flex:1;
+
+    margin-left:var(--sidebar-width);
+
+    display:flex;
+
+    flex-direction:column;
+
+}
+
+/* ==========================================
+   PAGE CONTENT
+========================================== */
+
+main{
+
+    padding:25px;
+
+    min-height:100vh;
+
+}
+
+/* ==========================================
+   CARD
+========================================== */
+
+.card{
+
+    background:var(--card);
+
+    border:none;
+
+    border-radius:18px;
+
+    box-shadow:0 8px 25px rgba(0,0,0,.08);
+
+}
+
+/* ==========================================
+   BUTTON
+========================================== */
+
+.btn-primary{
+
+    background:var(--primary);
+
+    border:none;
+
+}
+
+.btn-primary:hover{
+
+    background:#A10D24;
+
+}
+
+.btn-warning{
+
+    background:var(--secondary);
+
+    border:none;
+
+    color:#000;
+
+}
+
+.btn-warning:hover{
+
+    background:#F4B400;
+
+}
+
+/* ==========================================
+   SCROLLBAR
+========================================== */
+
+::-webkit-scrollbar{
+
+    width:10px;
+
+}
+
+::-webkit-scrollbar-thumb{
+
+    background:var(--primary);
+
+    border-radius:20px;
+
+}
+
+::-webkit-scrollbar-track{
+
+    background:#E5E7EB;
+
+}
+
+/* ==========================================
+   LINK
+========================================== */
+
+a{
+
+    text-decoration:none;
+
+    color:inherit;
+
+}
+
+/* ==========================================
+   IMAGE
+========================================== */
+
+img{
+
+    max-width:100%;
+
+    display:block;
+
+}
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media(max-width:992px){
+
+.main-wrapper{
+
+    margin-left:0;
+
+}
+
+main{
+
+    padding:15px;
+
+}
+
+}
