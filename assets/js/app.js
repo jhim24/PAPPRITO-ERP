@@ -272,15 +272,41 @@ function logoutERP(){
 // RESTORE LAST PAGE
 // ==========================================
 
-document.addEventListener("DOMContentLoaded",()=>{
+document.addEventListener("DOMContentLoaded", async()=>{
 
-    const page = localStorage.getItem("currentPage");
+    // Load Sidebar
+
+    await loadComponent(
+
+        "sidebar",
+
+        "components/sidebar.html"
+
+    );
+
+    // Load Navbar
+
+    await loadComponent(
+
+        "navbar",
+
+        "components/navbar.html"
+
+    );
+
+    // Restore last page
+
+    const page =
+
+        localStorage.getItem("currentPage");
 
     if(page){
 
         loadPage(page);
 
-    }else{
+    }
+
+    else{
 
         loadPage("pages/dashboard.html");
 
