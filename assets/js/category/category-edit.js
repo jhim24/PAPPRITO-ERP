@@ -69,3 +69,88 @@ async function editCategory(categoryId) {
     }
 
 }
+// ==========================================
+// UPDATE CATEGORY
+// ==========================================
+
+async function updateCategory() {
+
+    try {
+
+        if (!editingCategoryId) {
+
+            alert("No category selected.");
+
+            return;
+
+        }
+
+        const name = document.getElementById("categoryName").value.trim();
+
+        const description = document.getElementById("categoryDescription").value.trim();
+
+        const icon = document.getElementById("categoryIcon").value.trim() || "fa-utensils";
+
+        const color = document.getElementById("categoryColor").value;
+
+        const displayOrder = Number(document.getElementById("displayOrder").value);
+
+        const status = document.getElementById("categoryStatus").value;
+
+        if (name === "") {
+
+            alert("Category Name is required.");
+
+            return;
+
+        }
+
+        await db.ref("categories/" + editingCategoryId).update({
+
+            name,
+
+            description,
+
+            icon,
+
+            color,
+
+            displayOrder,
+
+            status,
+
+            updatedDate: new Date().toISOString()
+
+        });
+
+        const modalElement = document.getElementById("categoryModal");
+
+        const modal = bootstrap.Modal.getInstance(modalElement);
+
+        if (modal) {
+
+            modal.hide();
+
+        }
+
+        editingCategoryId = null;
+
+        document.getElementById("categoryModalTitle").innerHTML =
+            '<i class="fa-solid fa-tags"></i> Add Category';
+
+        document.getElementById("btnSaveText").textContent =
+            "Save Category";
+
+        clearCategoryForm();
+
+        alert("Category updated successfully.");
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert("Unable to update category.");
+
+    }
+
+}
