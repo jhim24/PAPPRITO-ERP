@@ -1,38 +1,130 @@
 /* ==========================================
    PAPPRITO ERP
+   GLOBAL STYLE
 ========================================== */
 
 :root{
 
-    --sidebar-width:270px;
+    /* Brand */
 
     --primary:#C8102E;
-    --yellow:#FFC72C;
+    --primary-dark:#9E0B23;
+
+    --warning:#FFC72C;
+
+    --success:#198754;
+
+    --danger:#DC3545;
+
+    --info:#0DCAF0;
+
+    --secondary:#6C757D;
+
+    /* Layout */
+
+    --sidebar-width:270px;
+
+    --navbar-height:70px;
+
+    /* Background */
+
     --bg:#EEF2F7;
 
+    --card:#FFFFFF;
+
+    --border:#E5E7EB;
+
+    /* Text */
+
+    --text:#212529;
+
+    --text-light:#6C757D;
+
+    /* Radius */
+
+    --radius:12px;
+
+    /* Shadow */
+
+    --shadow-sm:0 2px 6px rgba(0,0,0,.08);
+
+    --shadow-md:0 8px 20px rgba(0,0,0,.10);
+
+    --shadow-lg:0 15px 35px rgba(0,0,0,.15);
+
+    /* Animation */
+
+    --transition:.25s ease;
+
 }
+
+/* ==========================================
+   RESET
+========================================== */
 
 *{
 
     margin:0;
+
     padding:0;
+
     box-sizing:border-box;
 
 }
 
-html,
+html{
+
+    scroll-behavior:smooth;
+
+}
+
 body{
 
-    width:100%;
-    height:100%;
-
-    font-family:"Segoe UI",sans-serif;
+    font-family:"Segoe UI",Tahoma,sans-serif;
 
     background:var(--bg);
+
+    color:var(--text);
 
     overflow-x:hidden;
 
 }
+
+/* ==========================================
+   SCROLLBAR
+========================================== */
+
+::-webkit-scrollbar{
+
+    width:10px;
+
+    height:10px;
+
+}
+
+::-webkit-scrollbar-track{
+
+    background:#ECECEC;
+
+}
+
+::-webkit-scrollbar-thumb{
+
+    background:var(--primary);
+
+    border-radius:20px;
+
+}
+
+::-webkit-scrollbar-thumb:hover{
+
+    background:var(--primary-dark);
+
+}
+
+/* ==========================================
+   APP
+========================================== */
 
 #app{
 
@@ -44,9 +136,9 @@ body{
 
 }
 
-/* ==========================
-   SIDEBAR
-========================== */
+/* ==========================================
+   SIDEBAR SPACE
+========================================== */
 
 #sidebar{
 
@@ -56,9 +148,9 @@ body{
 
 }
 
-/* ==========================
+/* ==========================================
    MAIN
-========================== */
+========================================== */
 
 .main-wrapper{
 
@@ -70,13 +162,15 @@ body{
 
     flex-direction:column;
 
-    background:#EEF2F7;
+    background:var(--bg);
+
+    transition:var(--transition);
 
 }
 
-/* ==========================
+/* ==========================================
    CONTENT
-========================== */
+========================================== */
 
 #content{
 
@@ -84,38 +178,252 @@ body{
 
     padding:25px;
 
+    animation:fadeIn .25s ease;
+
 }
 
-/* ==========================
+/* ==========================================
+   CARD
+========================================== */
+
+.card{
+
+    border:none;
+
+    border-radius:var(--radius);
+
+    box-shadow:var(--shadow-sm);
+
+    transition:var(--transition);
+
+}
+
+.card:hover{
+
+    box-shadow:var(--shadow-md);
+
+}
+
+/* ==========================================
+   BUTTON
+========================================== */
+
+.btn{
+
+    border-radius:10px;
+
+    font-weight:600;
+
+    transition:var(--transition);
+
+}
+
+.btn:hover{
+
+    transform:translateY(-2px);
+
+}
+
+/* ==========================================
+   TABLE
+========================================== */
+
+.table{
+
+    margin-bottom:0;
+
+    vertical-align:middle;
+
+}
+
+.table thead{
+
+    background:#F8F9FA;
+
+}
+
+.table thead th{
+
+    font-weight:700;
+
+    border-bottom:2px solid var(--border);
+
+}
+
+.table tbody tr{
+
+    transition:var(--transition);
+
+}
+
+.table tbody tr:hover{
+
+    background:#FFF7F8;
+
+}
+
+/* ==========================================
+   FORM
+========================================== */
+
+.form-control,
+
+.form-select{
+
+    border-radius:10px;
+
+    border:1px solid var(--border);
+
+    transition:var(--transition);
+
+}
+
+.form-control:focus,
+
+.form-select:focus{
+
+    border-color:var(--primary);
+
+    box-shadow:0 0 0 .15rem rgba(200,16,46,.15);
+
+}
+
+/* ==========================================
+   MODAL
+========================================== */
+
+.modal-content{
+
+    border:none;
+
+    border-radius:15px;
+
+    box-shadow:var(--shadow-lg);
+
+}
+
+/* ==========================================
+   BADGE
+========================================== */
+
+.badge{
+
+    font-size:.82rem;
+
+    padding:.55em .8em;
+
+    border-radius:8px;
+
+}
+
+/* ==========================================
+   LOADING
+========================================== */
+
+.loading-screen{
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+    align-items:center;
+
+    min-height:70vh;
+
+}
+
+/* ==========================================
+   ANIMATION
+========================================== */
+
+@keyframes fadeIn{
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(10px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:translateY(0);
+
+    }
+
+}
+
+/* ==========================================
    RESPONSIVE
-========================== */
+========================================== */
 
-@media(max-width:992px){
+@media (max-width:992px){
 
-#sidebar{
+    #sidebar{
 
-    position:fixed;
+        position:fixed;
 
-    left:-270px;
+        left:-270px;
 
-    top:0;
+        top:0;
 
-    z-index:999;
+        height:100%;
 
-    transition:.30s;
+        z-index:1050;
+
+        transition:var(--transition);
+
+    }
+
+    #sidebar.show{
+
+        left:0;
+
+    }
+
+    .main-wrapper{
+
+        width:100%;
+
+    }
 
 }
 
-#sidebar.show{
+@media (max-width:768px){
 
-    left:0;
+    #content{
+
+        padding:15px;
+
+    }
+
+    .table-responsive{
+
+        overflow-x:auto;
+
+    }
+
+    .btn{
+
+        width:100%;
+
+        margin-bottom:8px;
+
+    }
 
 }
 
-.main-wrapper{
+@media (max-width:576px){
 
-    width:100%;
+    h1,h2,h3{
 
-}
+        font-size:1.35rem;
+
+    }
 
 }
