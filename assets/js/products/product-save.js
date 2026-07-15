@@ -128,6 +128,12 @@ function initializeProductPage() {
 
     loadProductCategories();
 
+    if (typeof loadProducts === "function") {
+
+        loadProducts();
+
+    }
+
 }
 // ==========================================
 // SAVE PRODUCT
