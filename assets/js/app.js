@@ -39,55 +39,90 @@ async function loadComponent(id, file){
 // NAVIGATION
 // ==========================================
 
-function loadPage(page){
+function loadPage(page) {
 
     fetch(page)
 
-    .then(response=>{
+        .then(response => {
 
-        if(!response.ok){
+            if (!response.ok) {
 
-            throw new Error(page);
+                throw new Error(page);
 
-        }
+            }
 
-        return response.text();
+            return response.text();
 
-    })
+        })
 
-    .then(html=>{
+        .then(html => {
 
-        document.getElementById("content").innerHTML = html;
+            const content = document.getElementById("content");
 
-        // Save current page
-        localStorage.setItem("currentPage", page);
+            content.innerHTML = html;
 
-    })
+            // Save Current Page
+            localStorage.setItem("currentPage", page);
 
-    .catch(error=>{
+            // ==========================================
+            // INITIALIZE PAGE MODULES
+            // ==========================================
 
-        console.error(error);
+            switch (page) {
 
-        document.getElementById("content").innerHTML = `
+                case "pages/categories.html":
 
-        <div class="container-fluid p-5">
+                    if (typeof loadCategories === "function") {
 
-            <div class="alert alert-danger">
+                        loadCategories();
 
-                <h4>Page Not Found</h4>
+                    }
 
-                <p>${page}</p>
+                    if (typeof generateCategoryCode === "function") {
 
-            </div>
+                        generateCategoryCode();
 
-        </div>
+                    }
 
-        `;
+                    break;
 
-    });
+                case "pages/dashboard.html":
+
+                    if (typeof loadDashboard === "function") {
+
+                        loadDashboard();
+
+                    }
+
+                    break;
+
+            }
+
+        })
+
+        .catch(error => {
+
+            console.error("Load Page Error:", error);
+
+            document.getElementById("content").innerHTML = `
+
+                <div class="container-fluid p-5">
+
+                    <div class="alert alert-danger">
+
+                        <h4>Page Not Found</h4>
+
+                        <p>${page}</p>
+
+                    </div>
+
+                </div>
+
+            `;
+
+        });
 
 }
-
 // ==========================================
 // DASHBOARD
 // ==========================================
