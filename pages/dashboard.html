@@ -1,0 +1,323 @@
+<!-- ==========================================
+     PAPPRITO ERP
+     DASHBOARD
+========================================== -->
+
+<div class="dashboard">
+
+    <!-- HEADER -->
+
+    <div class="dashboard-header">
+
+        <div>
+
+            <h2>
+                Welcome Back 👋
+            </h2>
+
+            <p>
+                PAPPRITO Restaurant ERP Dashboard
+            </p>
+
+        </div>
+
+        <button class="btn btn-warning">
+
+            <i class="fa-solid fa-plus"></i>
+
+            New Order
+
+        </button>
+
+    </div>
+
+    <!-- SUMMARY CARDS -->
+
+    <div class="row g-4 mt-2">
+
+        <div class="col-lg-3 col-md-6">
+
+            <div class="card dashboard-card">
+
+                <div class="card-body">
+
+                    <div class="card-icon bg-danger">
+
+                        <i class="fa-solid fa-peso-sign"></i>
+
+                    </div>
+
+                    <h6>Today's Sales</h6>
+
+                    <h2 id="todaySales">
+
+                        ₱0.00
+
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+
+            <div class="card dashboard-card">
+
+                <div class="card-body">
+
+                    <div class="card-icon bg-warning">
+
+                        <i class="fa-solid fa-cart-shopping"></i>
+
+                    </div>
+
+                    <h6>Orders Today</h6>
+
+                    <h2 id="todayOrders">
+
+                        0
+
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+
+            <div class="card dashboard-card">
+
+                <div class="card-body">
+
+                    <div class="card-icon bg-success">
+
+                        <i class="fa-solid fa-utensils"></i>
+
+                    </div>
+
+                    <h6>Occupied Tables</h6>
+
+                    <h2 id="occupiedTables">
+
+                        0
+
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+
+            <div class="card dashboard-card">
+
+                <div class="card-body">
+
+                    <div class="card-icon bg-primary">
+
+                        <i class="fa-solid fa-box-open"></i>
+
+                    </div>
+
+                    <h6>Total Products</h6>
+
+                    <h2 id="totalProducts">
+
+                        0
+
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- CHARTS -->
+
+    <div class="row mt-4">
+
+        <div class="col-lg-8">
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    <strong>
+
+                        Sales Overview
+
+                    </strong>
+
+                </div>
+
+                <div class="card-body">
+
+                    <canvas id="salesChart"
+                            height="120">
+
+                    </canvas>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-4">
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    <strong>
+
+                        Sales by Category
+
+                    </strong>
+
+                </div>
+
+                <div class="card-body">
+
+                    <canvas id="categoryChart">
+
+                    </canvas>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- LOWER SECTION -->
+
+    <div class="row mt-4">
+
+        <!-- TOP SELLING -->
+
+        <div class="col-lg-6">
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    <strong>
+
+                        Top Selling Products
+
+                    </strong>
+
+                </div>
+
+                <div class="card-body">
+
+                    <table class="table">
+
+                        <thead>
+
+                        <tr>
+
+                            <th>Product</th>
+
+                            <th>Sold</th>
+
+                            <th>Sales</th>
+
+                        </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                        <tr>
+
+                            <td colspan="3"
+                                class="text-center">
+
+                                No Data
+
+                            </td>
+
+                        </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- RECENT ORDERS -->
+
+        <div class="col-lg-6">
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    <strong>
+
+                        Recent Orders
+
+                    </strong>
+
+                </div>
+
+                <div class="card-body">
+
+                    <table class="table">
+
+                        <thead>
+
+                        <tr>
+
+                            <th>Order #</th>
+
+                            <th>Customer</th>
+
+                            <th>Total</th>
+
+                        </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                        <tr>
+
+                            <td colspan="3"
+                                class="text-center">
+
+                                No Data
+
+                            </td>
+
+                        </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
