@@ -1,31 +1,16 @@
 /* ==========================================
    PAPPRITO ERP
-   GLOBAL STYLE
 ========================================== */
 
 :root{
 
-    --primary:#C8102E;
-    --secondary:#FFC72C;
-    --success:#22C55E;
-    --danger:#EF4444;
-    --info:#0EA5E9;
-
-    --background:#EEF2F7;
-    --card:#FFFFFF;
-
-    --text:#1E293B;
-    --muted:#64748B;
-
-    --border:#E2E8F0;
-
     --sidebar-width:270px;
 
-}
+    --primary:#C8102E;
+    --yellow:#FFC72C;
+    --bg:#EEF2F7;
 
-/* ==========================================
-   RESET
-========================================== */
+}
 
 *{
 
@@ -35,27 +20,19 @@
 
 }
 
-html{
-
-    scroll-behavior:smooth;
-
-}
-
+html,
 body{
 
-    font-family:'Segoe UI',sans-serif;
+    width:100%;
+    height:100%;
 
-    background:var(--background);
+    font-family:"Segoe UI",sans-serif;
 
-    color:var(--text);
+    background:var(--bg);
 
     overflow-x:hidden;
 
 }
-
-/* ==========================================
-   MAIN LAYOUT
-========================================== */
 
 #app{
 
@@ -67,143 +44,77 @@ body{
 
 }
 
+/* ==========================
+   SIDEBAR
+========================== */
+
+#sidebar{
+
+    width:var(--sidebar-width);
+
+    flex-shrink:0;
+
+}
+
+/* ==========================
+   MAIN
+========================== */
+
 .main-wrapper{
 
-    flex:1;
+    width:calc(100% - var(--sidebar-width));
 
-    margin-left:var(--sidebar-width);
+    min-height:100vh;
 
     display:flex;
 
     flex-direction:column;
 
+    background:#EEF2F7;
+
 }
 
-/* ==========================================
-   PAGE CONTENT
-========================================== */
+/* ==========================
+   CONTENT
+========================== */
 
-main{
+#content{
+
+    flex:1;
 
     padding:25px;
 
-    min-height:100vh;
-
 }
 
-/* ==========================================
-   CARD
-========================================== */
-
-.card{
-
-    background:var(--card);
-
-    border:none;
-
-    border-radius:18px;
-
-    box-shadow:0 8px 25px rgba(0,0,0,.08);
-
-}
-
-/* ==========================================
-   BUTTON
-========================================== */
-
-.btn-primary{
-
-    background:var(--primary);
-
-    border:none;
-
-}
-
-.btn-primary:hover{
-
-    background:#A10D24;
-
-}
-
-.btn-warning{
-
-    background:var(--secondary);
-
-    border:none;
-
-    color:#000;
-
-}
-
-.btn-warning:hover{
-
-    background:#F4B400;
-
-}
-
-/* ==========================================
-   SCROLLBAR
-========================================== */
-
-::-webkit-scrollbar{
-
-    width:10px;
-
-}
-
-::-webkit-scrollbar-thumb{
-
-    background:var(--primary);
-
-    border-radius:20px;
-
-}
-
-::-webkit-scrollbar-track{
-
-    background:#E5E7EB;
-
-}
-
-/* ==========================================
-   LINK
-========================================== */
-
-a{
-
-    text-decoration:none;
-
-    color:inherit;
-
-}
-
-/* ==========================================
-   IMAGE
-========================================== */
-
-img{
-
-    max-width:100%;
-
-    display:block;
-
-}
-
-/* ==========================================
-   MOBILE
-========================================== */
+/* ==========================
+   RESPONSIVE
+========================== */
 
 @media(max-width:992px){
 
-.main-wrapper{
+#sidebar{
 
-    margin-left:0;
+    position:fixed;
+
+    left:-270px;
+
+    top:0;
+
+    z-index:999;
+
+    transition:.30s;
 
 }
 
-main{
+#sidebar.show{
 
-    padding:15px;
+    left:0;
+
+}
+
+.main-wrapper{
+
+    width:100%;
 
 }
 
