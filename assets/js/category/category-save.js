@@ -171,31 +171,24 @@ function clearCategoryForm() {
 
 }
 
-// Register Events
-document.addEventListener("DOMContentLoaded", () => {
+// ==========================================
+// INITIALIZE CATEGORY PAGE
+// ==========================================
+
+function initializeCategoryPage() {
 
     generateCategoryCode();
 
     const btn = document.getElementById("btnSaveCategory");
 
-    if (btn) {
+    if (!btn) return;
 
-        btn.addEventListener("click", saveCategory);
+    // Remove old event
+    btn.replaceWith(btn.cloneNode(true));
 
-    }
+    // Get new button
+    const newBtn = document.getElementById("btnSaveCategory");
 
-});
-// ==========================================
-// SAVE BUTTON EVENT
-// ==========================================
+    newBtn.addEventListener("click", saveCategory);
 
-document.addEventListener("click", function (e) {
-
-    if (e.target.id === "btnSaveCategory" ||
-        e.target.closest("#btnSaveCategory")) {
-
-        saveCategory();
-
-    }
-
-});
+}
