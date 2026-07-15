@@ -110,12 +110,3 @@ function loadCategories() {
 
 }
 
-// ==========================================
-// INITIALIZE
-// ==========================================
-
-document.addEventListener("DOMContentLoaded", () => {
-
-    loadCategories();
-
-});
