@@ -185,3 +185,17 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 });
+// ==========================================
+// SAVE BUTTON EVENT
+// ==========================================
+
+document.addEventListener("click", function (e) {
+
+    if (e.target.id === "btnSaveCategory" ||
+        e.target.closest("#btnSaveCategory")) {
+
+        saveCategory();
+
+    }
+
+});
