@@ -162,7 +162,7 @@ async function saveProduct() {
             parseInt(document.getElementById("reorderLevel").value) || 0;
 
         const unit =
-            document.getElementById("unit").value;
+    document.getElementById("productUnit").value;
 
         const imageUrl =
             document.getElementById("productImageURL").value.trim();
