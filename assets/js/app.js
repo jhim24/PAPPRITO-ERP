@@ -68,48 +68,57 @@ function loadPage(page) {
             // INITIALIZE PAGE MODULES
             // ==========================================
 
-            switch (page) {
+           switch (page) {
 
-                case "pages/categories.html":
-case "pages/products.html":
+    case "pages/categories.html":
 
-    if (typeof initializeProductPage === "function") {
+        if (typeof loadCategories === "function") {
 
-        initializeProductPage();
+            loadCategories();
 
-    }
+        }
 
-    if (typeof initializeProductImage === "function") {
+        if (typeof initializeCategoryPage === "function") {
 
-        initializeProductImage();
+            initializeCategoryPage();
 
-    }
+        }
 
-    break;
-                    if (typeof loadCategories === "function") {
+        break;
 
-                        loadCategories();
+    case "pages/products.html":
 
-                    }
+        if (typeof initializeProductPage === "function") {
 
-                   if (typeof initializeCategoryPage === "function") {
+            initializeProductPage();
 
-    initializeCategoryPage();
+        }
+
+        if (typeof initializeProductImage === "function") {
+
+            initializeProductImage();
+
+        }
+
+        if (typeof loadProducts === "function") {
+
+            loadProducts();
+
+        }
+
+        break;
+
+    case "pages/dashboard.html":
+
+        if (typeof loadDashboard === "function") {
+
+            loadDashboard();
+
+        }
+
+        break;
 
 }
-                    break;
-
-                case "pages/dashboard.html":
-
-                    if (typeof loadDashboard === "function") {
-
-                        loadDashboard();
-
-                    }
-
-                    break;
-
-            }
 
         })
 
