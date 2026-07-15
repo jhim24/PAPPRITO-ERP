@@ -72,3 +72,84 @@ document.addEventListener("DOMContentLoaded", () => {
     initializeProductImage();
 
 });
+// ==========================================
+// IMAGE UPLOAD PREVIEW
+// ==========================================
+
+function previewUploadedImage(event) {
+
+    const file = event.target.files[0];
+
+    if (!file) {
+
+        resetProductImage();
+
+        return;
+
+    }
+
+    // Allow only image files
+
+    const allowedTypes = [
+
+        "image/jpeg",
+
+        "image/png",
+
+        "image/webp"
+
+    ];
+
+    if (!allowedTypes.includes(file.type)) {
+
+        alert("Only JPG, PNG and WEBP images are allowed.");
+
+        resetProductImage();
+
+        return;
+
+    }
+
+    // Maximum file size (2MB)
+
+    const maxSize = 2 * 1024 * 1024;
+
+    if (file.size > maxSize) {
+
+        alert("Image size must not exceed 2MB.");
+
+        resetProductImage();
+
+        return;
+
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = function (e) {
+
+        document.getElementById("productImagePreview").src = e.target.result;
+
+        // Clear URL input if upload is used
+
+        document.getElementById("productImageURL").value = "";
+
+    };
+
+    reader.readAsDataURL(file);
+
+}
+
+// ==========================================
+// REGISTER FILE EVENT
+// ==========================================
+
+document.addEventListener("change", function (e) {
+
+    if (e.target.id === "productImageFile") {
+
+        previewUploadedImage(e);
+
+    }
+
+});
