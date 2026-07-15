@@ -129,3 +129,184 @@ function initializeProductPage() {
     loadProductCategories();
 
 }
+// ==========================================
+// SAVE PRODUCT
+// ==========================================
+
+async function saveProduct() {
+
+    try {
+
+        const code = document.getElementById("productCode").value.trim();
+        const name = document.getElementById("productName").value.trim();
+
+        const categoryId =
+            document.getElementById("productCategory").value;
+
+        const description =
+            document.getElementById("productDescription").value.trim();
+
+        const costPrice =
+            parseFloat(document.getElementById("costPrice").value) || 0;
+
+        const sellingPrice =
+            parseFloat(document.getElementById("sellingPrice").value) || 0;
+
+        const openingStock =
+            parseInt(document.getElementById("openingStock").value) || 0;
+
+        const currentStock =
+            parseInt(document.getElementById("currentStock").value) || openingStock;
+
+        const reorderLevel =
+            parseInt(document.getElementById("reorderLevel").value) || 0;
+
+        const unit =
+            document.getElementById("unit").value;
+
+        const imageUrl =
+            document.getElementById("productImageURL").value.trim();
+
+        const status =
+            document.getElementById("productStatus").value;
+
+        const showPOS =
+            document.getElementById("showPOS").checked;
+
+        const showKitchen =
+            document.getElementById("showKitchen").checked;
+
+        const showMenu =
+            document.getElementById("showMenu").checked;
+
+        const inventoryTracking =
+            document.getElementById("inventoryTracking").checked;
+
+        const featuredProduct =
+            document.getElementById("featuredProduct").checked;
+
+        const bestSeller =
+            document.getElementById("bestSeller").checked;
+
+        // ==========================
+        // VALIDATION
+        // ==========================
+
+        if (name === "") {
+
+            alert("Product Name is required.");
+
+            return;
+
+        }
+
+        if (categoryId === "") {
+
+            alert("Please select a Category.");
+
+            return;
+
+        }
+
+        // ==========================
+        // GET CATEGORY NAME
+        // ==========================
+
+        const categorySnapshot =
+            await db.ref("categories/" + categoryId).once("value");
+
+        const categoryName =
+            categorySnapshot.exists()
+                ? categorySnapshot.val().name
+                : "";
+
+        // ==========================
+        // DUPLICATE CHECK
+        // ==========================
+
+        const duplicate =
+            await db.ref("products")
+            .orderByChild("name")
+            .equalTo(name)
+            .once("value");
+
+        if (duplicate.exists()) {
+
+            alert("Product already exists.");
+
+            return;
+
+        }
+
+        // ==========================
+        // SAVE
+        // ==========================
+
+        const productRef =
+            db.ref("products").push();
+
+        await productRef.set({
+
+            productId: productRef.key,
+
+            code: code,
+
+            name: name,
+
+            categoryId: categoryId,
+
+            categoryName: categoryName,
+
+            description: description,
+
+            costPrice: costPrice,
+
+            sellingPrice: sellingPrice,
+
+            openingStock: openingStock,
+
+            currentStock: currentStock,
+
+            reorderLevel: reorderLevel,
+
+            unit: unit,
+
+            image: imageUrl,
+
+            imageType: imageUrl === "" ? "" : "URL",
+
+            status: status,
+
+            showPOS: showPOS,
+
+            showKitchen: showKitchen,
+
+            showMenu: showMenu,
+
+            inventoryTracking: inventoryTracking,
+
+            featuredProduct: featuredProduct,
+
+            bestSeller: bestSeller,
+
+            createdDate: new Date().toISOString(),
+
+            updatedDate: ""
+
+        });
+
+        alert("Product saved successfully.");
+
+        generateProductCode();
+
+    }
+
+    catch(error){
+
+        console.error(error);
+
+        alert("Unable to save product.");
+
+    }
+
+}
