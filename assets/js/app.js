@@ -79,6 +79,12 @@ case "pages/products.html":
 
     }
 
+    if (typeof initializeProductImage === "function") {
+
+        initializeProductImage();
+
+    }
+
     break;
                     if (typeof loadCategories === "function") {
 
