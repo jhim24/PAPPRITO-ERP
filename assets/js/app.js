@@ -78,12 +78,11 @@ function loadPage(page) {
 
                     }
 
-                    if (typeof generateCategoryCode === "function") {
+                   if (typeof initializeCategoryPage === "function") {
 
-                        generateCategoryCode();
+    initializeCategoryPage();
 
-                    }
-
+}
                     break;
 
                 case "pages/dashboard.html":
