@@ -6,9 +6,7 @@
 function loadCategories() {
 
     const table = document.getElementById("categoryTable");
-
     const total = document.getElementById("totalCategories");
-
     const footerTotal = document.getElementById("footerTotal");
 
     if (!table) return;
@@ -24,123 +22,89 @@ function loadCategories() {
             if (!snapshot.exists()) {
 
                 table.innerHTML = `
-
                     <tr>
-
                         <td colspan="7" class="text-center py-5">
-
                             <i class="fa-solid fa-folder-open fa-3x text-secondary mb-3"></i>
-
                             <br>
-
                             No Categories Found
-
                         </td>
-
                     </tr>
-
                 `;
 
-                total.textContent = "0";
-
-                footerTotal.textContent = "0";
+                if (total) total.textContent = "0";
+                if (footerTotal) footerTotal.textContent = "0";
 
                 return;
-
             }
 
             snapshot.forEach((child) => {
 
-               const category = child.val();
+                const category = child.val();
 
-const icon = category.icon || "fa-utensils";
+                const icon = category.icon || "fa-utensils";
+                const color = category.color || "#C8102E";
+                const productCount = category.productCount || 0;
+                const code = category.code || "N/A";
 
-const color = category.color || "#C8102E";
+                const badge = category.status === "Active"
+                    ? `<span class="badge bg-success">Active</span>`
+                    : `<span class="badge bg-danger">Inactive</span>`;
 
-const productCount = category.productCount || 0;
-
-count++;
-
-const badge = category.status === "Active"
-
-    ? `<span class="badge bg-success">Active</span>`
-
-    : `<span class="badge bg-danger">Inactive</span>`;
+                count++;
 
                 table.innerHTML += `
-
                     <tr>
 
-                        <td>${category.code}</td>
-
-                       <td>
-
-    <i class="fa-solid ${icon}"
-
-       style="color:${color};font-size:20px;"></i>
-
-</td>
+                        <td>${code}</td>
 
                         <td>
+                            <i class="fa-solid ${icon}"
+                               style="color:${color};font-size:20px;"></i>
+                        </td>
 
+                        <td>
                             <strong>${category.name}</strong>
-
                         </td>
 
                         <td>
-
                             ${category.description || ""}
-
                         </td>
 
                         <td>
-<td>
-
-    ${productCount}
-
-</td>
-                          const productCount = category.productCount || 0;
-
+                            ${productCount}
                         </td>
 
                         <td>
-
                             ${badge}
+                        </td>
+
+                        <td>
+
+                            <button
+                                class="btn btn-warning btn-sm me-1"
+                                onclick="editCategory('${child.key}')">
+
+                                <i class="fa-solid fa-pen"></i>
+
+                            </button>
+
+                            <button
+                                class="btn btn-danger btn-sm"
+                                onclick="deleteCategory('${child.key}')">
+
+                                <i class="fa-solid fa-trash"></i>
+
+                            </button>
 
                         </td>
 
-<td>
-
-<button
-
-class="btn btn-warning btn-sm me-1"
-
-onclick="editCategory('${child.key}')">
-
-<i class="fa-solid fa-pen"></i>
-
-</button>
-
-<button
-
-class="btn btn-danger btn-sm"
-
-onclick="deleteCategory('${child.key}')">
-
-<i class="fa-solid fa-trash"></i>
-
-</button>
-
-</td>
                     </tr>
-
                 `;
 
             });
 
-            total.textContent = count;
-
-            footerTotal.textContent = count;
+            if (total) total.textContent = count;
+            if (footerTotal) footerTotal.textContent = count;
 
         });
 
