@@ -73,13 +73,13 @@ const badge = category.status === "Active"
 
                         <td>${category.code}</td>
 
-                        <td>
+                       <td>
 
-                           const icon = category.icon || "fa-utensils";
+    <i class="fa-solid ${icon}"
 
-                               const color = category.color || "#C8102E";
+       style="color:${color};font-size:20px;"></i>
 
-                        </td>
+</td>
 
                         <td>
 
@@ -94,7 +94,11 @@ const badge = category.status === "Active"
                         </td>
 
                         <td>
+<td>
 
+    ${productCount}
+
+</td>
                           const productCount = category.productCount || 0;
 
                         </td>
