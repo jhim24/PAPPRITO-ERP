@@ -310,3 +310,19 @@ async function saveProduct() {
     }
 
 }
+// ==========================================
+// REGISTER EVENTS
+// ==========================================
+
+document.addEventListener("click", function (e) {
+
+    if (
+        e.target.id === "btnSaveProduct" ||
+        e.target.closest("#btnSaveProduct")
+    ) {
+
+        saveProduct();
+
+    }
+
+});
