@@ -51,15 +51,21 @@ function loadCategories() {
 
             snapshot.forEach((child) => {
 
-                const category = child.val();
+               const category = child.val();
 
-                count++;
+const icon = category.icon || "fa-utensils";
 
-                const badge = category.status === "Active"
+const color = category.color || "#C8102E";
 
-                    ? `<span class="badge bg-success">Active</span>`
+const productCount = category.productCount || 0;
 
-                    : `<span class="badge bg-secondary">Inactive</span>`;
+count++;
+
+const badge = category.status === "Active"
+
+    ? `<span class="badge bg-success">Active</span>`
+
+    : `<span class="badge bg-danger">Inactive</span>`;
 
                 table.innerHTML += `
 
@@ -69,9 +75,9 @@ function loadCategories() {
 
                         <td>
 
-                            <i class="fa-solid ${category.icon}"
+                           const icon = category.icon || "fa-utensils";
 
-                               style="color:${category.color};font-size:20px;"></i>
+                               const color = category.color || "#C8102E";
 
                         </td>
 
@@ -89,7 +95,7 @@ function loadCategories() {
 
                         <td>
 
-                            ${category.productCount || 0}
+                          const productCount = category.productCount || 0;
 
                         </td>
 
