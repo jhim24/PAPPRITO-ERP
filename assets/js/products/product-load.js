@@ -25,10 +25,10 @@ function loadProducts() {
 
     if (!table) return;
 
-    db.ref("products")
-        .orderByChild("name")
-        .on("value", (snapshot) => {
+   db.ref("products").once("value").then((snapshot) => {
 
+    console.log("Snapshot Exists:", snapshot.exists());
+    console.log("Children:", snapshot.numChildren());
             table.innerHTML = "";
 
             let count = 0;
@@ -124,6 +124,8 @@ console.log("After append:", table.innerHTML.length);
 
     }
 
+}).catch((err) => {
+    console.error("Firebase Error:", err);
 });
             total.textContent = count;
 
