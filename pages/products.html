@@ -217,8 +217,8 @@
                         Category
                     </th>
 
-                    <th width="120">
-                        Selling Price
+                   <th width="130">
+                    Price
                     </th>
 
                     <th width="100">
@@ -350,8 +350,136 @@
 </div>
 
 <!-- ==========================================
-     NEXT STEP
      PRODUCT MODAL
 ========================================== -->
 
+<div
+    class="modal fade"
+    id="productModal"
+    tabindex="-1"
+    aria-hidden="true">
+
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+
+        <div class="modal-content">
+
+            <!-- MODAL HEADER -->
+
+            <div class="modal-header bg-danger text-white">
+
+                <h5
+                    class="modal-title"
+                    id="productModalTitle">
+
+                    <i class="fa-solid fa-box-open"></i>
+
+                    Add Product
+
+                </h5>
+
+                <button
+                    type="button"
+                    class="btn-close btn-close-white"
+                    data-bs-dismiss="modal">
+                </button>
+
+            </div>
+
+            <!-- MODAL BODY -->
+
+            <div class="modal-body">
+
+                <div class="row g-3">
+
+                    <!-- PRODUCT CODE -->
+
+                    <div class="col-md-3">
+
+                        <label class="form-label">
+
+                            Product Code
+
+                        </label>
+
+                        <input
+                            type="text"
+                            id="productCode"
+                            class="form-control"
+                            readonly>
+
+                    </div>
+
+                    <!-- PRODUCT NAME -->
+
+                    <div class="col-md-5">
+
+                        <label class="form-label">
+
+                            Product Name
+
+                        </label>
+
+                        <input
+                            type="text"
+                            id="productName"
+                            class="form-control"
+                            placeholder="Enter Product Name">
+
+                    </div>
+
+                    <!-- CATEGORY -->
+
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+
+                            Category
+
+                        </label>
+
+                        <select
+                            id="productCategory"
+                            class="form-select">
+
+                            <option value="">
+
+                                Loading Categories...
+
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <!-- DESCRIPTION -->
+
+                    <div class="col-12">
+
+                        <label class="form-label">
+
+                            Description
+
+                        </label>
+
+                        <textarea
+                            id="productDescription"
+                            class="form-control"
+                            rows="4"
+                            placeholder="Enter Product Description"></textarea>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- NEXT STEP:
+                 PRICING & INVENTORY
+            -->
+
+        </div>
+
+    </div>
+
+</div>
 </div>
