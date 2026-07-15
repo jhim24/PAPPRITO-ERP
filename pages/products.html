@@ -769,9 +769,232 @@
 </div>
 
 <!-- ==========================================
-     NEXT STEP
      PRODUCT SETTINGS
 ========================================== -->
+
+<hr class="my-4">
+
+<h5 class="fw-bold text-danger">
+
+    <i class="fa-solid fa-sliders"></i>
+
+    Product Settings
+
+</h5>
+
+<div class="row g-3 mt-1">
+
+    <!-- SHOW IN POS -->
+
+    <div class="col-lg-4">
+
+        <div class="form-check form-switch">
+
+            <input
+                class="form-check-input"
+                type="checkbox"
+                id="showPOS"
+                checked>
+
+            <label
+                class="form-check-label"
+                for="showPOS">
+
+                Show in POS
+
+            </label>
+
+        </div>
+
+    </div>
+
+    <!-- SHOW IN KITCHEN -->
+
+    <div class="col-lg-4">
+
+        <div class="form-check form-switch">
+
+            <input
+                class="form-check-input"
+                type="checkbox"
+                id="showKitchen"
+                checked>
+
+            <label
+                class="form-check-label"
+                for="showKitchen">
+
+                Show in Kitchen Display
+
+            </label>
+
+        </div>
+
+    </div>
+
+    <!-- SHOW IN QR MENU -->
+
+    <div class="col-lg-4">
+
+        <div class="form-check form-switch">
+
+            <input
+                class="form-check-input"
+                type="checkbox"
+                id="showMenu"
+                checked>
+
+            <label
+                class="form-check-label"
+                for="showMenu">
+
+                Show in QR Menu
+
+            </label>
+
+        </div>
+
+    </div>
+
+    <!-- INVENTORY TRACKING -->
+
+    <div class="col-lg-4">
+
+        <div class="form-check form-switch">
+
+            <input
+                class="form-check-input"
+                type="checkbox"
+                id="inventoryTracking"
+                checked>
+
+            <label
+                class="form-check-label"
+                for="inventoryTracking">
+
+                Inventory Tracking
+
+            </label>
+
+        </div>
+
+    </div>
+
+    <!-- FEATURED PRODUCT -->
+
+    <div class="col-lg-4">
+
+        <div class="form-check form-switch">
+
+            <input
+                class="form-check-input"
+                type="checkbox"
+                id="featuredProduct">
+
+            <label
+                class="form-check-label"
+                for="featuredProduct">
+
+                Featured Product
+
+            </label>
+
+        </div>
+
+    </div>
+
+    <!-- BEST SELLER -->
+
+    <div class="col-lg-4">
+
+        <div class="form-check form-switch">
+
+            <input
+                class="form-check-input"
+                type="checkbox"
+                id="bestSeller">
+
+            <label
+                class="form-check-label"
+                for="bestSeller">
+
+                Best Seller
+
+            </label>
+
+        </div>
+
+    </div>
+
+</div>
+
+<hr class="my-4">
+
+<div class="row g-3">
+
+    <!-- STATUS -->
+
+    <div class="col-md-4">
+
+        <label class="form-label">
+
+            Product Status
+
+        </label>
+
+        <select
+            id="productStatus"
+            class="form-select">
+
+            <option value="Active">
+
+                Active
+
+            </option>
+
+            <option value="Inactive">
+
+                Inactive
+
+            </option>
+
+        </select>
+
+    </div>
+
+</div>
+
+<!-- ==========================================
+     MODAL FOOTER
+========================================== -->
+
+<div class="modal-footer">
+
+    <button
+        type="button"
+        class="btn btn-secondary"
+        data-bs-dismiss="modal">
+
+        Cancel
+
+    </button>
+
+    <button
+        type="button"
+        class="btn btn-danger"
+        id="btnSaveProduct">
+
+        <i class="fa-solid fa-floppy-disk"></i>
+
+        <span id="btnSaveProductText">
+
+            Save Product
+
+        </span>
+
+    </button>
+
+</div>
         </div>
 
     </div>
