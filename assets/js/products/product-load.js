@@ -59,103 +59,68 @@ function loadProducts() {
 
             }
 
-            snapshot.forEach((child) => {
+           snapshot.forEach((child) => {
 
-                const product = child.val();
+    try {
 
-                count++;
+        const product = child.val();
 
-                const image =
-                    product.image && product.image !== ""
-                        ? product.image
-                        : "assets/img/no-product.png";
+        console.log("Loading:", product);
+console.log("Before append:", table.innerHTML.length);
+        count++;
 
-                const badge =
-                    product.status === "Active"
+        const image =
+            product.image && product.image !== ""
+                ? product.image
+                : "assets/img/no-product.png";
 
-                        ? `<span class="badge bg-success">Active</span>`
+        const badge =
+            product.status === "Active"
+                ? `<span class="badge bg-success">Active</span>`
+                : `<span class="badge bg-secondary">Inactive</span>`;
 
-                        : `<span class="badge bg-secondary">Inactive</span>`;
+        table.innerHTML += `
+            <tr>
+                <td>${product.code || ""}</td>
 
-                table.innerHTML += `
+                <td>
+                    <img src="${image}"
+                         style="width:60px;height:60px;object-fit:cover;border-radius:10px;">
+                </td>
 
-                    <tr>
+                <td>
+                    <strong>${product.name || product.productName || "(No Name)"}</strong>
+                </td>
 
-                        <td>${product.code}</td>
+                <td>
+                    ${product.categoryName || product.category || ""}
+                </td>
 
-                        <td>
+                <td>
+                    ₱${Number(product.sellingPrice || product.price || 0).toFixed(2)}
+                </td>
 
-                            <img
+                <td>
+                    ${product.currentStock || product.stock || 0}
+                </td>
 
-                                src="${image}"
+                <td>
+                    ${badge}
+                </td>
 
-                                style="width:60px;
-                                       height:60px;
-                                       object-fit:cover;
-                                       border-radius:10px;">
+                <td>
+                    Edit
+                </td>
+            </tr>
+        `;
+console.log("After append:", table.innerHTML.length);
+    } catch (err) {
 
-                        </td>
+        console.error("Error on record:", child.key, err);
 
-                        <td>
+    }
 
-                            <strong>${product.name}</strong>
-
-                        </td>
-
-                        <td>
-
-                            ${product.categoryName || ""}
-
-                        </td>
-
-                        <td>
-
-                            ₱${Number(product.sellingPrice || 0).toFixed(2)}
-
-                        </td>
-
-                        <td>
-
-                            ${product.currentStock || 0}
-
-                        </td>
-
-                        <td>
-
-                            ${badge}
-
-                        </td>
-
-                        <td>
-
-                            <button
-
-                                class="btn btn-warning btn-sm me-1"
-
-                                onclick="editProduct('${child.key}')">
-
-                                <i class="fa-solid fa-pen"></i>
-
-                            </button>
-
-                            <button
-
-                                class="btn btn-danger btn-sm"
-
-                                onclick="deleteProduct('${child.key}')">
-
-                                <i class="fa-solid fa-trash"></i>
-
-                            </button>
-
-                        </td>
-
-                    </tr>
-
-                `;
-
-            });
-
+});
             total.textContent = count;
 
             footerTotal.textContent = count;
