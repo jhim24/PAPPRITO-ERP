@@ -71,7 +71,15 @@ function loadPage(page) {
             switch (page) {
 
                 case "pages/categories.html":
+case "pages/products.html":
 
+    if (typeof initializeProductPage === "function") {
+
+        initializeProductPage();
+
+    }
+
+    break;
                     if (typeof loadCategories === "function") {
 
                         loadCategories();
