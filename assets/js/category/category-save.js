@@ -52,6 +52,7 @@ codeInput.value = nextCode;
 async function saveCategory() {
 
     try {
+        
 if (editingCategoryId) {
 
     return updateCategory();
