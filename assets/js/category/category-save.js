@@ -44,7 +44,11 @@ async function generateCategoryCode() {
 async function saveCategory() {
 
     try {
+if (editingCategoryId) {
 
+    return updateCategory();
+
+}
         const code = document.getElementById("categoryCode").value.trim();
 
         const name = document.getElementById("categoryName").value.trim();
