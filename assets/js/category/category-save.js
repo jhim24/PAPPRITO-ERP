@@ -30,7 +30,15 @@ async function generateCategoryCode() {
 
         const nextCode = "CAT" + String(highest + 1).padStart(4, "0");
 
-        document.getElementById("categoryCode").value = nextCode;
+       const codeInput = document.getElementById("categoryCode");
+
+if (!codeInput) {
+
+    return;
+
+}
+
+codeInput.value = nextCode;
 
     } catch (error) {
 
