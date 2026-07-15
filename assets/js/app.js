@@ -1,4 +1,40 @@
 // ==========================================
+// LOAD HTML COMPONENT
+// ==========================================
+
+async function loadComponent(id, file){
+
+    try{
+
+        const response = await fetch(file);
+
+        if(!response.ok){
+
+            throw new Error("Unable to load: " + file);
+
+        }
+
+        const html = await response.text();
+
+        const element = document.getElementById(id);
+
+        if(element){
+
+            element.innerHTML = html;
+
+        }
+
+    }
+
+    catch(error){
+
+        console.error("Component Error:", error);
+
+    }
+
+}
+
+// ==========================================
 // PAPPRITO ERP
 // NAVIGATION
 // ==========================================
