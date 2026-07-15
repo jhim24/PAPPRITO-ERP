@@ -99,29 +99,29 @@ function loadCategories() {
 
                         </td>
 
-                        <td>
-    <button
+<td>
 
-    class="btn btn-warning btn-sm"
+<button
 
-    onclick="editCategory('${child.key}')">
+class="btn btn-warning btn-sm me-1"
 
-    <i class="fa-solid fa-pen"></i>
+onclick="editCategory('${child.key}')">
+
+<i class="fa-solid fa-pen"></i>
 
 </button>
 
 <button
 
-    class="btn btn-danger btn-sm"
+class="btn btn-danger btn-sm"
 
-    onclick="deleteCategory('${child.key}')">
+onclick="deleteCategory('${child.key}')">
 
-    <i class="fa-solid fa-trash"></i>
+<i class="fa-solid fa-trash"></i>
 
 </button>
 
-                        </td>
-
+</td>
                     </tr>
 
                 `;
