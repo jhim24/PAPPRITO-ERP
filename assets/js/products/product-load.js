@@ -12,7 +12,17 @@ function loadProducts() {
 
     const table =
         document.getElementById("productTable");
+console.log("TABLE =", table);
 
+const total =
+    document.getElementById("totalProducts");
+
+console.log("TOTAL =", total);
+
+const footerTotal =
+    document.getElementById("footerTotalProducts");
+
+console.log("FOOTER =", footerTotal);
     const total =
         document.getElementById("totalProducts");
 
