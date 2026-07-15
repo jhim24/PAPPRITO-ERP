@@ -1,44 +1,13 @@
 // ==========================================
 // PAPPRITO ERP
-// APP.JS
+// NAVIGATION
 // ==========================================
 
-// ==========================================
-// LOAD COMPONENT
-// ==========================================
+function loadPage(page){
 
-async function loadComponent(id, file){
+    fetch(page)
 
-    try{
-
-        const response = await fetch(file);
-
-        if(!response.ok){
-
-            throw new Error("Unable to load " + file);
-
-        }
-
-        document.getElementById(id).innerHTML =
-            await response.text();
-
-    }catch(error){
-
-        console.error(error);
-
-    }
-
-}
-
-// ==========================================
-// LOAD PAGE
-// ==========================================
-
-async function loadPage(page){
-
-    try{
-
-        const response = await fetch(page);
+    .then(response=>{
 
         if(!response.ok){
 
@@ -46,144 +15,45 @@ async function loadPage(page){
 
         }
 
-        document.getElementById("content").innerHTML =
-            await response.text();
+        return response.text();
 
-    }catch(error){
+    })
+
+    .then(html=>{
+
+        document.getElementById("content").innerHTML = html;
+
+        // Save current page
+        localStorage.setItem("currentPage", page);
+
+    })
+
+    .catch(error=>{
 
         console.error(error);
 
-    }
+        document.getElementById("content").innerHTML = `
 
-}
+        <div class="container-fluid p-5">
 
-// ==========================================
-// LIVE CLOCK
-// ==========================================
+            <div class="alert alert-danger">
 
-function updateClock(){
+                <h4>Page Not Found</h4>
 
-    const now = new Date();
+                <p>${page}</p>
 
-    const date = document.getElementById("currentDate");
+            </div>
 
-    const time = document.getElementById("currentTime");
+        </div>
 
-    if(date){
-
-        date.innerHTML =
-            now.toLocaleDateString();
-
-    }
-
-    if(time){
-
-        time.innerHTML =
-            now.toLocaleTimeString();
-
-    }
-
-}
-
-// ==========================================
-// MOBILE SIDEBAR
-// ==========================================
-
-function initializeSidebar(){
-
-    const toggle =
-        document.getElementById("menuToggle");
-
-    const sidebar =
-        document.querySelector(".sidebar");
-
-    if(!toggle || !sidebar) return;
-
-    toggle.onclick = function(){
-
-        sidebar.classList.toggle("show");
-
-    };
-
-}
-
-// ==========================================
-// MENU ACTIVE
-// ==========================================
-
-function initializeMenu(){
-
-    document.querySelectorAll(".sidebar-menu a")
-    .forEach(menu=>{
-
-        menu.onclick = function(e){
-
-            e.preventDefault();
-
-            document
-            .querySelectorAll(".sidebar-menu a")
-            .forEach(item=>{
-
-                item.classList.remove("active");
-
-            });
-
-            this.classList.add("active");
-
-        };
+        `;
 
     });
 
 }
 
 // ==========================================
-// INITIALIZE
-// ==========================================
-
-document.addEventListener("DOMContentLoaded", async()=>{
-
-    // Sidebar
-
-    await loadComponent(
-
-        "sidebar",
-
-        "components/sidebar.html"
-
-    );
-
-    // Navbar
-
-    await loadComponent(
-
-        "navbar",
-
-        "components/navbar.html"
-
-    );
-
-    // Dashboard
-
-    await loadPage(
-
-        "pages/dashboard.html"
-
-    );
-
-    // Initialize
-
-    initializeSidebar();
-
-    initializeMenu();
-
-    updateClock();
-
-    setInterval(updateClock,1000);
-
-});
-
-// ==========================================
-// LOAD DASHBOARD
+// DASHBOARD
 // ==========================================
 
 function openDashboard(){
@@ -193,37 +63,7 @@ function openDashboard(){
 }
 
 // ==========================================
-// LOAD CATEGORY
-// ==========================================
-
-function openCategory(){
-
-    loadPage("pages/category.html");
-
-}
-
-// ==========================================
-// LOAD PRODUCTS
-// ==========================================
-
-function openProducts(){
-
-    loadPage("pages/products.html");
-
-}
-
-// ==========================================
-// LOAD TABLES
-// ==========================================
-
-function openTables(){
-
-    loadPage("pages/tables.html");
-
-}
-
-// ==========================================
-// LOAD POS
+// POS
 // ==========================================
 
 function openPOS(){
@@ -233,7 +73,17 @@ function openPOS(){
 }
 
 // ==========================================
-// LOAD KITCHEN
+// RECEIVING ORDERS
+// ==========================================
+
+function openReceivingOrders(){
+
+    loadPage("pages/receiving-orders.html");
+
+}
+
+// ==========================================
+// KITCHEN
 // ==========================================
 
 function openKitchen(){
@@ -243,7 +93,37 @@ function openKitchen(){
 }
 
 // ==========================================
-// LOAD INVENTORY
+// TABLES
+// ==========================================
+
+function openTables(){
+
+    loadPage("pages/tables.html");
+
+}
+
+// ==========================================
+// PRODUCTS
+// ==========================================
+
+function openProducts(){
+
+    loadPage("pages/products.html");
+
+}
+
+// ==========================================
+// CATEGORIES
+// ==========================================
+
+function openCategory(){
+
+    loadPage("pages/categories.html");
+
+}
+
+// ==========================================
+// INVENTORY
 // ==========================================
 
 function openInventory(){
@@ -253,37 +133,37 @@ function openInventory(){
 }
 
 // ==========================================
-// LOAD SALES
+// STOCK IN
 // ==========================================
 
-function openSales(){
+function openStockIn(){
 
-    loadPage("pages/sales.html");
+    loadPage("pages/stock-in.html");
 
 }
 
 // ==========================================
-// LOAD REPORTS
+// STOCK OUT
 // ==========================================
 
-function openReports(){
+function openStockOut(){
 
-    loadPage("pages/reports.html");
+    loadPage("pages/stock-out.html");
 
 }
 
 // ==========================================
-// LOAD CUSTOMERS
+// PURCHASE ORDER
 // ==========================================
 
-function openCustomers(){
+function openPurchaseOrders(){
 
-    loadPage("pages/customers.html");
+    loadPage("pages/purchase-orders.html");
 
 }
 
 // ==========================================
-// LOAD SUPPLIERS
+// SUPPLIERS
 // ==========================================
 
 function openSuppliers(){
@@ -293,7 +173,37 @@ function openSuppliers(){
 }
 
 // ==========================================
-// LOAD EMPLOYEES
+// CUSTOMERS
+// ==========================================
+
+function openCustomers(){
+
+    loadPage("pages/customers.html");
+
+}
+
+// ==========================================
+// SALES
+// ==========================================
+
+function openSales(){
+
+    loadPage("pages/sales.html");
+
+}
+
+// ==========================================
+// REPORTS
+// ==========================================
+
+function openReports(){
+
+    loadPage("pages/reports.html");
+
+}
+
+// ==========================================
+// EMPLOYEES
 // ==========================================
 
 function openEmployees(){
@@ -303,7 +213,27 @@ function openEmployees(){
 }
 
 // ==========================================
-// LOAD SETTINGS
+// ATTENDANCE
+// ==========================================
+
+function openAttendance(){
+
+    loadPage("pages/attendance.html");
+
+}
+
+// ==========================================
+// PAYROLL
+// ==========================================
+
+function openPayroll(){
+
+    loadPage("pages/payroll.html");
+
+}
+
+// ==========================================
+// SETTINGS
 // ==========================================
 
 function openSettings(){
@@ -311,3 +241,49 @@ function openSettings(){
     loadPage("pages/settings.html");
 
 }
+
+// ==========================================
+// COMPANY PROFILE
+// ==========================================
+
+function openCompanyProfile(){
+
+    loadPage("pages/company-profile.html");
+
+}
+
+// ==========================================
+// LOGOUT
+// ==========================================
+
+function logoutERP(){
+
+    if(confirm("Are you sure you want to logout?")){
+
+        localStorage.clear();
+
+        location.reload();
+
+    }
+
+}
+
+// ==========================================
+// RESTORE LAST PAGE
+// ==========================================
+
+document.addEventListener("DOMContentLoaded",()=>{
+
+    const page = localStorage.getItem("currentPage");
+
+    if(page){
+
+        loadPage(page);
+
+    }else{
+
+        loadPage("pages/dashboard.html");
+
+    }
+
+});
