@@ -232,3 +232,41 @@ function updateProductCounter(){
     }
 
 }
+// ==========================================
+// LOAD PRODUCT CATEGORY DROPDOWN
+// ==========================================
+
+function loadProductCategories(){
+
+    const dropdown =
+        document.getElementById("productCategory");
+
+    if(!dropdown) return;
+
+    db.ref("categories")
+        .orderByChild("name")
+        .once("value")
+        .then((snapshot)=>{
+
+            dropdown.innerHTML =
+                `<option value="">Select Category</option>`;
+
+            snapshot.forEach((child)=>{
+
+                const category = child.val();
+
+                dropdown.innerHTML += `
+
+                    <option value="${child.key}">
+
+                        ${category.name}
+
+                    </option>
+
+                `;
+
+            });
+
+        });
+
+}
