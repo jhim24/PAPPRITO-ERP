@@ -188,3 +188,37 @@ function renderFilteredProducts(products){
     });
 
 }
+// ==========================================
+// INITIALIZE SEARCH EVENTS
+// ==========================================
+
+function initializeProductSearch(){
+
+    const search =
+        document.getElementById("searchProduct");
+
+    const category =
+        document.getElementById("filterCategory");
+
+    const status =
+        document.getElementById("filterStatus");
+
+    if(search){
+
+        search.addEventListener("input", searchProducts);
+
+    }
+
+    if(category){
+
+        category.addEventListener("change", searchProducts);
+
+    }
+
+    if(status){
+
+        status.addEventListener("change", searchProducts);
+
+    }
+
+}
