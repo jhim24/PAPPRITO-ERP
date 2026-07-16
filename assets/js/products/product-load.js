@@ -24,6 +24,8 @@ function initializeProductPage(){
 
     initializeProductSearch();
 
+    initializeProductSave();
+
     startProductListener();
 
 }
