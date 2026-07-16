@@ -24,7 +24,11 @@ function loadProducts() {
 
     }
 
-    db.ref("products").on("value", (snapshot) => {
+    db.ref("products").once("value").then((snapshot) => {
+
+    console.log("Firebase callback started");
+    console.log("Exists:", snapshot.exists());
+    console.log("Children:", snapshot.numChildren());
 
         table.innerHTML = "";
 
@@ -178,7 +182,11 @@ function loadProducts() {
 
             `;
 
-        });
+      }).catch((error) => {
+
+    console.error("Firebase Load Error:", error);
+
+});
 
         total.textContent = count;
 
