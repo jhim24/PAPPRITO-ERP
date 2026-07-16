@@ -6,7 +6,7 @@
 // ==========================================
 
 function loadProducts() {
-
+alert("loadProducts started");
     const table =
         document.getElementById("productTable");
 
