@@ -113,21 +113,53 @@ function saveProduct(){
 
         db.ref("products/" + editingProductId)
             .update(product)
+            
             .then(()=>{
 
-                alert("Product Updated.");
+    alert("Product Updated.");
 
-            });
+    resetProductForm();
+
+    startProductListener();
+
+    const modal =
+        bootstrap.Modal.getInstance(
+            document.getElementById("productModal")
+        );
+
+    if(modal){
+
+        modal.hide();
+
+    }
+
+});
 
     }else{
 
         db.ref("products")
             .push(product)
-            .then(()=>{
+            
+           .then(()=>{
 
-                alert("Product Saved.");
+    alert("Product Saved.");
 
-            });
+    resetProductForm();
+
+    startProductListener();
+
+    const modal =
+        bootstrap.Modal.getInstance(
+            document.getElementById("productModal")
+        );
+
+    if(modal){
+
+        modal.hide();
+
+    }
+
+});
 
     }
 
