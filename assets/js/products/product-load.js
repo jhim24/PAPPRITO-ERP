@@ -203,3 +203,28 @@ function renderProductTable(){
     });
 
 }
+// ==========================================
+// UPDATE PRODUCT COUNTERS
+// ==========================================
+
+function updateProductCounter(){
+
+    const total =
+        document.getElementById("totalProducts");
+
+    const footer =
+        document.getElementById("footerTotalProducts");
+
+    if(total){
+
+        total.textContent = productList.length;
+
+    }
+
+    if(footer){
+
+        footer.textContent = productList.length;
+
+    }
+
+}
