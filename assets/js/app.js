@@ -88,26 +88,39 @@ function loadPage(page) {
 
     case "pages/products.html":
 
-        if (typeof initializeProductPage === "function") {
+    console.log("=== PRODUCTS PAGE ===");
 
-            initializeProductPage();
+    console.log("initializeProductPage =", typeof initializeProductPage);
+    console.log("initializeProductImage =", typeof initializeProductImage);
+    console.log("loadProducts =", typeof loadProducts);
 
-        }
+    if (typeof initializeProductPage === "function") {
 
-        if (typeof initializeProductImage === "function") {
+        console.log("Running initializeProductPage()");
+        initializeProductPage();
 
-            initializeProductImage();
+    }
 
-        }
+    if (typeof initializeProductImage === "function") {
 
-        if (typeof loadProducts === "function") {
+        console.log("Running initializeProductImage()");
+        initializeProductImage();
 
-            loadProducts();
+    }
 
-        }
+    if (typeof loadProducts === "function") {
 
-        break;
+        console.log("Running loadProducts()");
+        loadProducts();
 
+    } else {
+
+        console.log("loadProducts NOT FOUND");
+
+    }
+
+    break;
+                   
     case "pages/dashboard.html":
 
         if (typeof loadDashboard === "function") {
