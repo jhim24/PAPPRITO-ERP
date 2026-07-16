@@ -22,6 +22,8 @@ function initializeProductPage(){
 
     loadProductCategories();
 
+    initializeProductSearch();
+
     startProductListener();
 
 }
