@@ -200,3 +200,29 @@ function resetProductForm(){
     generateProductCode();
 
 }
+// ==========================================
+// GENERATE PRODUCT CODE
+// ==========================================
+
+function generateProductCode(){
+
+    db.ref("products").once("value").then((snapshot)=>{
+
+        const total = snapshot.numChildren() + 1;
+
+        const code =
+            "PRD-" +
+            String(total).padStart(5,"0");
+
+        const txt =
+            document.getElementById("productCode");
+
+        if(txt){
+
+            txt.value = code;
+
+        }
+
+    });
+
+}
