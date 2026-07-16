@@ -105,92 +105,53 @@ function loadProducts() {
 
                 : `<span class="badge bg-secondary">Inactive</span>`;
 
-            table.innerHTML += `
+                     table.innerHTML += `
 
                 <tr>
 
                     <td>${product.code || ""}</td>
 
                     <td>
-
                         <img
-
                             src="${image}"
-
-                            style="width:60px;
-                                   height:60px;
-                                   object-fit:cover;
-                                   border-radius:10px;">
-
+                            style="width:60px;height:60px;object-fit:cover;border-radius:10px;">
                     </td>
 
-                    <td>
+                    <td><strong>${name}</strong></td>
 
-                        <strong>${name}</strong>
+                    <td>${category}</td>
 
-                    </td>
+                    <td>₱${price}</td>
 
-                    <td>
+                    <td>${stock}</td>
 
-                        ${category}
-
-                    </td>
+                    <td>${badge}</td>
 
                     <td>
-
-                        ₱${price}
-
-                    </td>
-
-                    <td>
-
-                        ${stock}
-
-                    </td>
-
-                    <td>
-
-                        ${badge}
-
-                    </td>
-
-                    <td>
-
                         <button
-
                             class="btn btn-warning btn-sm me-1"
-
                             onclick="editProduct('${child.key}')">
-
                             <i class="fa-solid fa-pen"></i>
-
                         </button>
 
                         <button
-
                             class="btn btn-danger btn-sm"
-
                             onclick="deleteProduct('${child.key}')">
-
                             <i class="fa-solid fa-trash"></i>
-
                         </button>
-
                     </td>
 
                 </tr>
-
             `;
 
-      }).catch((error) => {
-
-    console.error("Firebase Load Error:", error);
-
-});
+        });   // <-- Ito lang ang pang-close ng snapshot.forEach()
 
         total.textContent = count;
-
         footer.textContent = count;
+
+    }).catch((error) => {
+
+        console.error("Firebase Load Error:", error);
 
     });
 
