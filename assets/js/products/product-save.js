@@ -132,3 +132,39 @@ function saveProduct(){
     }
 
 }
+// ==========================================
+// RESET PRODUCT FORM
+// ==========================================
+
+function resetProductForm(){
+
+    editingProductId = null;
+
+    selectedProductImage = "";
+
+    document.getElementById("productName").value = "";
+
+    document.getElementById("productDescription").value = "";
+
+    document.getElementById("costPrice").value = 0;
+
+    document.getElementById("sellingPrice").value = 0;
+
+    document.getElementById("openingStock").value = 0;
+
+    document.getElementById("currentStock").value = 0;
+
+    document.getElementById("reorderLevel").value = 10;
+
+    document.getElementById("productStatus").value = "Active";
+
+    document.getElementById("productCategory").selectedIndex = 0;
+
+    document.getElementById("productImageURL").value = "";
+
+    document.getElementById("productImagePreview").src =
+        "assets/img/no-product.png";
+
+    generateProductCode();
+
+}
