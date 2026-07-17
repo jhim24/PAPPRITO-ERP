@@ -3,7 +3,7 @@
 PAPPRITO ERP
 Module : Point of Sale (POS)
 File   : assets/js/pos/pos-product.js
-Description : Load Products from Firebase
+Description : Load & Render Products
 ==========================================================
 */
 
@@ -29,7 +29,62 @@ function loadPOSProducts() {
 
             productGrid.innerHTML = "";
 
-            // Products will be rendered in STEP 15
+            snapshot.forEach(function(child){
+
+                const product = child.val();
+
+                // ==========================================================
+                // SHOW ONLY PRODUCTS ENABLED FOR POS
+                // ==========================================================
+
+                if(product.showPOS === false){
+                    return;
+                }
+
+                // ==========================================================
+                // PRODUCT IMAGE
+                // ==========================================================
+
+                const image = product.image && product.image !== ""
+                    ? product.image
+                    : "../assets/images/no-image.png";
+
+                // ==========================================================
+                // PRODUCT CARD
+                // ==========================================================
+
+                productGrid.innerHTML += `
+
+                    <div class="product-card">
+
+                        <img
+                            src="${image}"
+                            class="product-image"
+                            alt="${product.productName}">
+
+                        <div class="product-info">
+
+                            <h3>${product.productName}</h3>
+
+                            <small>${product.categoryName}</small>
+
+                            <h2>₱${Number(product.sellingPrice || 0).toFixed(2)}</h2>
+
+                            <button
+                                class="add-cart-btn"
+                                data-id="${child.key}">
+
+                                Add to Cart
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                `;
+
+            });
 
         });
 
