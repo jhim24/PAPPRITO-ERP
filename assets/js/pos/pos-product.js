@@ -121,15 +121,17 @@ if (stock <= 0) {
 
         grid.innerHTML += `
 
-<div class="product-card"
-     onclick="addToCart(allProducts.find(x=>x.id=='${product.id}'))">
+<div class="product-card">
 
     <div class="product-stock ${stockClass}">
         ${stockText}
     </div>
 
-    <img src="${image}" alt="${product.name}">
-
+    <img
+    src="${image}"
+    alt="${product.name}"
+    loading="lazy">
+    
     <div class="product-info">
 
         <div class="product-name">
@@ -141,12 +143,13 @@ if (stock <= 0) {
         </div>
 
         <div class="product-price">
-            ₱${Number(product.sellingPrice || 0).toFixed(2)}
+           ₱${price}
         </div>
 
         <button
-            class="btn-add"
-            ${stock <= 0 ? "disabled" : ""}>
+    class="btn-add"
+    ${stock <= 0 ? "disabled" : ""}
+    onclick="addToCart(allProducts.find(x=>x.id=='${product.id}'))">
 
             <i class="fa-solid fa-cart-plus"></i>
             ${stock <= 0 ? "OUT OF STOCK" : "ADD TO CART"}
