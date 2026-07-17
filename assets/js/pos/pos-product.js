@@ -103,7 +103,7 @@ function renderProducts(products) {
         : "../assets/img/no-image.png";
 
 const stock = Number(product.stock || 0);
-
+const price = Number(product.sellingPrice || 0).toFixed(2);
 let stockClass = "stock-available";
 let stockText = "Available";
 
