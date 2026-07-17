@@ -3,142 +3,148 @@
 
 <head>
 
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
 
-    <title>PAPPRITO POS</title>
+<title>PAPPRITO POS</title>
 
-    <!-- ==========================================================
-         POS STYLES
-    ========================================================== -->
+<link rel="stylesheet"
+      href="../assets/css/pos.css">
 
-    <link rel="stylesheet" href="../assets/css/pos.css">
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 
 </head>
 
 <body>
 
-<!--
-==========================================================
-PAPPRITO ERP
-Module : Point of Sale (POS)
-File   : pages/pos.html
-Description : Full Screen POS
-==========================================================
--->
-
-<!-- ==========================================================
+<!-- ==========================================
      POS HEADER
-========================================================== -->
+========================================== -->
 
 <header class="pos-header">
 
-    <button id="btnBack" class="back-btn">
-        ← Back
-    </button>
+    <div class="logo">
 
-    <div class="pos-title">
-
-        <img src="../assets/images/logo/logo.png"
-             alt="PAPPRITO Logo">
+        <img src="../assets/img/logo.png"
+             alt="Logo">
 
         <div>
 
             <h2>PAPPRITO POS</h2>
 
-            <small>Restaurant Point of Sale</small>
+            <small>Restaurant Management</small>
 
         </div>
 
     </div>
 
-    <div class="header-right">
+    <div class="header-search">
 
         <input
+
             type="text"
+
             id="searchProduct"
+
             placeholder="Search Product...">
 
-        <span id="cashierName">
-            Administrator
-        </span>
+    </div>
 
-        <span id="currentDateTime">
-            --/--/---- --:--
-        </span>
+    <div class="header-user">
+
+        <button id="btnBack">
+
+            <i class="fa fa-arrow-left"></i>
+
+            Dashboard
+
+        </button>
 
     </div>
 
 </header>
 
-<!-- ==========================================================
-     POS MAIN CONTENT
-========================================================== -->
+<!-- ==========================================
+     MAIN
+========================================== -->
 
-<main class="pos-container">
+<div class="pos-main">
 
-    <!-- ==========================================================
-         CATEGORY PANEL
-    ========================================================== -->
+    <!-- CATEGORY -->
 
     <aside class="category-panel">
 
-        <div id="categoryList">
+        <h3>Categories</h3>
 
-            <!-- Categories loaded from Firebase -->
-
-        </div>
+        <div id="categoryList"></div>
 
     </aside>
 
-    <!-- ==========================================================
-         PRODUCT PANEL
-    ========================================================== -->
+    <!-- PRODUCTS -->
 
     <section class="product-panel">
 
-        <div id="productGrid">
-
-            <!-- Products loaded from Firebase -->
+        <div id="productGrid"
+             class="product-grid">
 
         </div>
 
     </section>
 
-    <!-- ==========================================================
-         SHOPPING CART
-    ========================================================== -->
+    <!-- CART -->
 
     <aside class="cart-panel">
 
+        <h3>Current Order</h3>
+
         <div id="cartItems">
 
-            <!-- Cart Items -->
+            No Item
+
+        </div>
+
+        <div class="cart-footer">
+
+            <div class="total-row">
+
+                <span>Total</span>
+
+                <strong id="cartTotal">
+
+                    ₱0.00
+
+                </strong>
+
+            </div>
+
+            <button id="checkoutBtn">
+
+                Checkout
+
+            </button>
 
         </div>
 
     </aside>
 
-</main>
+</div>
 
-<!-- ==========================================================
-     PAYMENT PANEL
-========================================================== -->
+<!-- ==========================================
+     FIREBASE
+========================================== -->
 
-<footer class="payment-panel">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 
-    <!-- Payment Buttons -->
-    <!-- Total Amount -->
-    <!-- Checkout -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
-</footer>
+<script src="../firebase/firebase-config.js"></script>
 
-<!-- ==========================================================
-     POS JAVASCRIPT
-========================================================== -->
+<!-- POS -->
 
-<script src="../assets/js/firebase/firebase-config.js"></script>
+<script src="../assets/js/pos/pos-init.js"></script>
 
 <script src="../assets/js/pos/pos-category.js"></script>
 
@@ -147,10 +153,6 @@ Description : Full Screen POS
 <script src="../assets/js/pos/pos-cart.js"></script>
 
 <script src="../assets/js/pos/pos-payment.js"></script>
-
-<script src="../assets/js/pos/pos-search.js"></script>
-
-<script src="../assets/js/pos/pos-init.js"></script>
 
 </body>
 
