@@ -153,3 +153,21 @@ document.addEventListener("change", function (e) {
     }
 
 });
+// ==========================================
+// IMAGE URL PREVIEW
+// ==========================================
+
+document.addEventListener("input", function (e) {
+
+    if (e.target.id === "productImageURL") {
+
+        const url = e.target.value.trim();
+
+        selectedProductImage = url;
+
+        document.getElementById("productImagePreview").src =
+            url || DEFAULT_PRODUCT_IMAGE;
+
+    }
+
+});
