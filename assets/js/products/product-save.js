@@ -62,6 +62,9 @@ function saveProduct(){
     const status =
         document.getElementById("productStatus").value;
 
+    const showMenu =
+    document.getElementById("showMenu").checked;
+    
     if(name === ""){
 
         alert("Please enter Product Name.");
@@ -106,6 +109,8 @@ selectedProductImage = imageURL;
         reorderLevel: reorderLevel,
 
         image: selectedProductImage,
+
+        showMenu: showMenu,
 
         status: status,
 
