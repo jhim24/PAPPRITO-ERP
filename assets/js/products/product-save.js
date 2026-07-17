@@ -77,7 +77,11 @@ function saveProduct(){
         return;
 
     }
+    
+    const imageURL =
+    document.getElementById("productImageURL").value.trim();
 
+selectedProductImage = imageURL;
     const product = {
 
         code: code,
