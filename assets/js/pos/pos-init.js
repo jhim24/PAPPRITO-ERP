@@ -1,83 +1,36 @@
 /* ==========================================================
    PAPPRITO ERP
-   Enterprise POS v2
+   POS v2
    File : assets/js/pos/pos-init.js
+   Description : POS Initialization
 ========================================================== */
 
-let allProducts = [];
-let allCategories = [];
-let cart = [];
-let selectedCategory = "ALL";
-
 /* ==========================================================
-   INITIALIZE POS
+   INITIALIZE
 ========================================================== */
 
 document.addEventListener("DOMContentLoaded", () => {
 
-    // Load Data
     loadCategories();
+
     loadProducts();
 
     // Search
-    const search = document.getElementById("searchProduct");
+    document
+        .getElementById("searchProduct")
+        .addEventListener("input", () => {
 
-    if (search) {
+            filterProducts();
 
-        search.addEventListener("input", filterProducts);
-
-    }
+        });
 
     // Back Button
-    const backBtn = document.getElementById("btnBack");
-
-    if (backBtn) {
-
-        backBtn.addEventListener("click", () => {
+    document
+        .getElementById("btnBack")
+        .addEventListener("click", () => {
 
             window.location.href = "../index.html";
 
         });
 
-    }
-
 });
-
-/* ==========================================================
-   FILTER PRODUCTS
-========================================================== */
-
-function filterProducts() {
-
-    const keyword = document
-        .getElementById("searchProduct")
-        .value
-        .toLowerCase();
-
-    let filtered = allProducts;
-
-    // Category Filter
-    if (selectedCategory !== "ALL") {
-
-        filtered = filtered.filter(product =>
-            product.categoryName === selectedCategory
-        );
-
-    }
-
-    // Search Filter
-    if (keyword !== "") {
-
-        filtered = filtered.filter(product =>
-            (product.productName || "")
-                .toLowerCase()
-               (product.name || "")
-    .toLowerCase()
-    .includes(keyword)
-        );
-
-    }
-
-    renderProducts(filtered);
-
-}
