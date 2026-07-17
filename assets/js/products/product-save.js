@@ -65,6 +65,13 @@ function saveProduct(){
     const showMenu =
     document.getElementById("showMenu").checked;
     
+    // ==========================================================
+// POS DISPLAY
+// ==========================================================
+
+const showPOS =
+    document.getElementById("showPOS").checked;
+    
     if(name === ""){
 
         alert("Please enter Product Name.");
@@ -110,9 +117,15 @@ selectedProductImage = imageURL;
 
         image: selectedProductImage,
 
-        showMenu: showMenu,
+// ==========================================================
+// DISPLAY SETTINGS
+// ==========================================================
 
-        status: status,
+showPOS: showPOS,
+
+showMenu: showMenu,
+
+status: status,
 
         createdAt: Date.now()
 
