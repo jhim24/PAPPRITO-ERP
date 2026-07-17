@@ -13,6 +13,22 @@ Description : Load Categories from Firebase
 
 function loadPOSCategories() {
 
-    // Firebase loading code will be added in the next step.
+    const categoryList = document.getElementById("categoryList");
 
-}
+    categoryList.innerHTML = "";
+
+   // ==========================================================
+// GET ACTIVE CATEGORIES FROM FIREBASE
+// ==========================================================
+
+firebase.database()
+    .ref("categories")
+    .orderByChild("status")
+    .equalTo("Active")
+    .on("value", function (snapshot) {
+
+        categoryList.innerHTML = "";
+
+        // Category buttons will be rendered in the next step.
+
+    });
