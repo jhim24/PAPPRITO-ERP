@@ -71,7 +71,9 @@ function filterProducts() {
         filtered = filtered.filter(product =>
             (product.productName || "")
                 .toLowerCase()
-                .includes(keyword)
+               (product.name || "")
+    .toLowerCase()
+    .includes(keyword)
         );
 
     }
