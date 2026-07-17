@@ -61,43 +61,53 @@ function renderCart() {
 
         subtotal += total;
 
-        tbody.innerHTML += `
+       tbody.innerHTML += `
 
-        <tr>
+<tr>
 
-            <td align="center">${item.sr}</td>
+    <td>${item.name}</td>
 
-            <td>${item.name}</td>
+    <td align="center">
 
-            <td align="center">
+        <button onclick="decreaseQty('${item.id}')">−</button>
 
-                <button onclick="decreaseQty('${item.id}')">−</button>
+        <strong style="margin:0 8px">
 
-                <strong style="margin:0 8px">
+            ${item.qty}
 
-                    ${item.qty}
+        </strong>
 
-                </strong>
+        <button onclick="increaseQty('${item.id}')">+</button>
 
-                <button onclick="increaseQty('${item.id}')">+</button>
+    </td>
 
-            </td>
+    <td align="right">
 
-            <td align="right">
+        ₱${item.price.toFixed(2)}
 
-                ₱${item.price.toFixed(2)}
+    </td>
 
-            </td>
+    <td align="right">
 
-            <td align="right">
+        ₱${total.toFixed(2)}
 
-                ₱${total.toFixed(2)}
+    </td>
 
-            </td>
+    <td align="center">
 
-        </tr>
+        <button
+            class="btn-remove"
+            onclick="removeItem('${item.id}')">
 
-        `;
+            <i class="fa-solid fa-trash"></i>
+
+        </button>
+
+    </td>
+
+</tr>
+
+`;
 
     });
 
@@ -164,21 +174,47 @@ function computeGrandTotal() {
         Number(document.getElementById("discount").value || 0);
 
     const discountType =
-        document.querySelector(
-            "input[name='discountType']:checked"
-        ).value;
+    document.getElementById("discountType").value;
 
     let discount = 0;
 
-    if (discountType === "peso") {
+switch (discountType) {
 
-        discount = discountValue;
+    case "none":
 
-    } else {
+        discount = 0;
+        break;
+
+    case "pwd":
+
+        discount = subtotal * 0.20;
+        break;
+
+    case "senior":
+
+        discount = subtotal * 0.20;
+        break;
+
+    case "employee":
 
         discount = subtotal * (discountValue / 100);
+        break;
 
-    }
+    case "promo":
+
+        discount = subtotal * (discountValue / 100);
+        break;
+
+    case "custom":
+
+        discount = discountValue;
+        break;
+
+    default:
+
+        discount = 0;
+
+}
 
     if (discount > subtotal) {
 
@@ -190,5 +226,18 @@ function computeGrandTotal() {
 
     document.getElementById("grandTotal").innerHTML =
         "₱" + grandTotal.toFixed(2);
+
+}
+/* ==========================================================
+   REMOVE ITEM
+========================================================== */
+
+function removeItem(id) {
+
+    if (!confirm("Remove this item from the cart?")) return;
+
+    cart = cart.filter(item => item.id !== id);
+
+    renderCart();
 
 }
