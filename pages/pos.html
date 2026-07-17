@@ -176,109 +176,118 @@
 
         </div>
 
-        <!-- ==========================================
-             SUMMARY
-        ========================================== -->
+<!-- ==========================================
+     SUMMARY
+========================================== -->
 
-        <div class="cart-summary">
+<div class="cart-summary">
 
-            <div class="summary-row">
+    <!-- Subtotal -->
 
-                <span>Subtotal</span>
+    <div class="summary-row">
 
-                <strong id="subTotal">
+        <span>Subtotal</span>
 
-                    ₱0.00
+        <strong id="subTotal">₱0.00</strong>
 
-                </strong>
+    </div>
 
-            </div>
+    <!-- Discount Type -->
 
-            <div class="summary-row">
+    <div class="summary-row">
 
-                <span>Discount</span>
+        <label for="discountType">Discount</label>
 
-                <input
+        <select id="discountType">
 
-                    type="number"
+            <option value="none">No Discount</option>
 
-                    id="discount"
+            <option value="pwd">PWD (20%)</option>
 
-                    value="0">
+            <option value="senior">Senior Citizen (20%)</option>
 
-            </div>
+            <option value="employee">Employee</option>
 
-            <div class="summary-row">
+            <option value="promo">Promo</option>
 
-                <label>
+            <option value="custom">Custom</option>
 
-                    <input
+        </select>
 
-                        type="radio"
+    </div>
 
-                        name="discountType"
+    <!-- Discount Value -->
 
-                        value="peso"
+    <div class="summary-row">
 
-                        checked>
+        <label for="discount">Value</label>
 
-                    Peso
+        <input
+            type="number"
+            id="discount"
+            value="0"
+            min="0">
 
-                </label>
+    </div>
 
-                <label>
+    <!-- Payment Method -->
 
-                    <input
+    <div class="summary-row">
 
-                        type="radio"
+        <label for="paymentMethod">Payment</label>
 
-                        name="discountType"
+        <select id="paymentMethod">
 
-                        value="percent">
+            <option value="cash">Cash</option>
 
-                    %
+            <option value="gcash">GCash</option>
 
-                </label>
+            <option value="maya">Maya</option>
 
-            </div>
+            <option value="card">Credit / Debit Card</option>
 
-            <div class="summary-row grand-total">
+            <option value="bank">Bank Transfer</option>
 
-                <span>Grand Total</span>
+            <option value="split">Split Payment</option>
 
-                <strong id="grandTotal">
+        </select>
 
-                    ₱0.00
+    </div>
 
-                </strong>
+    <!-- Amount Tendered -->
 
-            </div>
+    <div class="summary-row">
 
-            <div class="summary-row">
+        <label for="cashTendered">Amount</label>
 
-                <span>Cash</span>
+        <input
+            type="number"
+            id="cashTendered"
+            placeholder="0.00">
 
-                <input
+    </div>
 
-                    type="number"
+    <!-- Change -->
 
-                    id="cashTendered">
+    <div class="summary-row">
 
-            </div>
+        <span>Change</span>
 
-            <div class="summary-row">
+        <strong id="change">₱0.00</strong>
 
-                <span>Change</span>
+    </div>
 
-                <strong id="change">
+    <!-- Grand Total -->
 
-                    ₱0.00
+    <div class="grand-total">
 
-                </strong>
+        <span>Grand Total</span>
 
-            </div>
+        <strong id="grandTotal">₱0.00</strong>
 
-        </div>
+    </div>
+
+</div>
 
         <!-- ==========================================
              BUTTONS
