@@ -37,23 +37,21 @@ function initializePayment() {
 
     }
 
-    // Discount Type
+   // Discount Type
 
-    document
+const discountType = document.getElementById("discountType");
 
-        .querySelectorAll("input[name='discountType']")
+if (discountType) {
 
-        .forEach(radio => {
+    discountType.addEventListener("change", () => {
 
-            radio.addEventListener("change", () => {
+        computeGrandTotal();
 
-                computeGrandTotal();
+        computeChange();
 
-                computeChange();
+    });
 
-            });
-
-        });
+}
 
     // Cash
 
