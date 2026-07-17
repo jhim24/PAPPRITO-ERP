@@ -1,9 +1,11 @@
 /* ==========================================================
    PAPPRITO ERP
-   Enterprise POS v2
+   POS v2
    File : assets/js/pos/pos-cart.js
-   Description : Shopping Cart
+   Description : Shopping Cart Module
 ========================================================== */
+
+let cart = [];
 
 /* ==========================================================
    ADD TO CART
@@ -21,11 +23,15 @@ function addToCart(product) {
 
         cart.push({
 
+            sr: cart.length + 1,
+
             id: product.id,
+
             name: product.name,
-            price: Number(product.sellingPrice || 0),
-            image: product.image || "",
-            qty: 1
+
+            qty: 1,
+
+            price: Number(product.sellingPrice || 0)
 
         });
 
@@ -41,69 +47,64 @@ function addToCart(product) {
 
 function renderCart() {
 
-    const container = document.getElementById("cartItems");
+    const tbody = document.getElementById("cartItems");
 
-    const totalElement = document.getElementById("cartTotal");
+    tbody.innerHTML = "";
 
-    container.innerHTML = "";
+    let subtotal = 0;
 
-    let grandTotal = 0;
+    cart.forEach((item, index) => {
 
-    if (cart.length === 0) {
+        item.sr = index + 1;
 
-        container.innerHTML = "No Item";
+        const total = item.qty * item.price;
 
-        totalElement.innerHTML = "₱0.00";
+        subtotal += total;
 
-        return;
+        tbody.innerHTML += `
 
-    }
+        <tr>
 
-    cart.forEach(item => {
+            <td align="center">${item.sr}</td>
 
-        const subtotal = item.price * item.qty;
+            <td>${item.name}</td>
 
-        grandTotal += subtotal;
+            <td align="center">
 
-        const row = document.createElement("div");
+                <button onclick="decreaseQty('${item.id}')">−</button>
 
-        row.style.borderBottom = "1px solid #eee";
-        row.style.padding = "10px 0";
+                <strong style="margin:0 8px">
 
-        row.innerHTML = `
+                    ${item.qty}
 
-            <strong>${item.name}</strong>
+                </strong>
 
-            <br>
+                <button onclick="increaseQty('${item.id}')">+</button>
 
-            ₱${item.price.toFixed(2)}
+            </td>
 
-            <br><br>
+            <td align="right">
 
-            <button onclick="decreaseQty('${item.id}')">−</button>
+                ₱${item.price.toFixed(2)}
 
-            <strong style="padding:0 10px">${item.qty}</strong>
+            </td>
 
-            <button onclick="increaseQty('${item.id}')">+</button>
+            <td align="right">
 
-            <button
-                onclick="removeItem('${item.id}')"
-                style="float:right;color:red">
-                Remove
-            </button>
+                ₱${total.toFixed(2)}
+
+            </td>
+
+        </tr>
 
         `;
 
-        container.appendChild(row);
-
     });
 
-    totalElement.innerHTML =
-        "₱" + grandTotal.toLocaleString(undefined, {
+    document.getElementById("subTotal").innerHTML =
+        "₱" + subtotal.toFixed(2);
 
-            minimumFractionDigits: 2
-
-        });
+    computeGrandTotal();
 
 }
 
@@ -146,13 +147,48 @@ function decreaseQty(id) {
 }
 
 /* ==========================================================
-   REMOVE
+   COMPUTE GRAND TOTAL
 ========================================================== */
 
-function removeItem(id) {
+function computeGrandTotal() {
 
-    cart = cart.filter(item => item.id !== id);
+    let subtotal = 0;
 
-    renderCart();
+    cart.forEach(item => {
+
+        subtotal += item.qty * item.price;
+
+    });
+
+    const discountValue =
+        Number(document.getElementById("discount").value || 0);
+
+    const discountType =
+        document.querySelector(
+            "input[name='discountType']:checked"
+        ).value;
+
+    let discount = 0;
+
+    if (discountType === "peso") {
+
+        discount = discountValue;
+
+    } else {
+
+        discount = subtotal * (discountValue / 100);
+
+    }
+
+    if (discount > subtotal) {
+
+        discount = subtotal;
+
+    }
+
+    const grandTotal = subtotal - discount;
+
+    document.getElementById("grandTotal").innerHTML =
+        "₱" + grandTotal.toFixed(2);
 
 }
