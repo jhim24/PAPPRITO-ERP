@@ -3,45 +3,53 @@
 
 <head>
 
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
 
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>PAPPRITO POS</title>
+    <title>PAPPRITO POS v2</title>
 
-<link rel="stylesheet"
-      href="../assets/css/pos.css">
+    <!-- ==========================================================
+         FONT AWESOME
+    ========================================================== -->
 
-<link rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <!-- ==========================================================
+         POS CSS
+    ========================================================== -->
+
+    <link rel="stylesheet"
+          href="../assets/css/pos.css">
 
 </head>
 
 <body>
 
-<!-- ==========================================
+<!-- ==========================================================
      POS HEADER
-========================================== -->
+========================================================== -->
 
 <header class="pos-header">
 
-    <div class="logo">
+    <div class="header-left">
 
         <img src="../assets/img/logo.png"
-             alt="Logo">
+             alt="Logo"
+             class="logo">
 
         <div>
 
             <h2>PAPPRITO POS</h2>
 
-            <small>Restaurant Management</small>
+            <small>Restaurant Point of Sale</small>
 
         </div>
 
     </div>
 
-    <div class="header-search">
+    <div class="header-center">
 
         <input
 
@@ -53,11 +61,11 @@
 
     </div>
 
-    <div class="header-user">
+    <div class="header-right">
 
         <button id="btnBack">
 
-            <i class="fa fa-arrow-left"></i>
+            <i class="fa-solid fa-arrow-left"></i>
 
             Dashboard
 
@@ -67,52 +75,103 @@
 
 </header>
 
-<!-- ==========================================
-     MAIN
-========================================== -->
+<!-- ==========================================================
+     MAIN CONTENT
+========================================================== -->
 
-<div class="pos-main">
+<div class="pos-wrapper">
 
-    <!-- CATEGORY -->
+    <!-- ======================================================
+         LEFT PANEL
+    ======================================================= -->
 
-    <aside class="category-panel">
+    <section class="left-panel">
 
-        <h3>Categories</h3>
+        <!-- CATEGORY -->
 
-        <div id="categoryList"></div>
+        <div class="category-bar">
 
-    </aside>
+            <div id="categoryList">
 
-    <!-- PRODUCTS -->
+                <!-- Categories -->
 
-    <section class="product-panel">
+            </div>
 
-        <div id="productGrid"
-             class="product-grid">
+        </div>
+
+        <!-- PRODUCTS -->
+
+        <div class="products-area">
+
+            <div id="productGrid">
+
+                <!-- Products -->
+
+            </div>
 
         </div>
 
     </section>
 
-    <!-- CART -->
+    <!-- ======================================================
+         RIGHT PANEL
+    ======================================================= -->
 
     <aside class="cart-panel">
 
-        <h3>Current Order</h3>
+        <div class="cart-header">
 
-        <div id="cartItems">
-
-            No Item
+            <h3>Current Order</h3>
 
         </div>
 
-        <div class="cart-footer">
+        <!-- ==========================================
+             CART TABLE
+        ========================================== -->
 
-            <div class="total-row">
+        <div class="cart-body">
 
-                <span>Total</span>
+            <table id="cartTable">
 
-                <strong id="cartTotal">
+                <thead>
+
+                    <tr>
+
+                        <th>Sr</th>
+
+                        <th>Item</th>
+
+                        <th>Qty</th>
+
+                        <th>Price</th>
+
+                        <th>Total</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="cartItems">
+
+                    <!-- Cart -->
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        <!-- ==========================================
+             SUMMARY
+        ========================================== -->
+
+        <div class="cart-summary">
+
+            <div class="summary-row">
+
+                <span>Subtotal</span>
+
+                <strong id="subTotal">
 
                     ₱0.00
 
@@ -120,9 +179,113 @@
 
             </div>
 
-            <button id="checkoutBtn">
+            <div class="summary-row">
+
+                <span>Discount</span>
+
+                <input
+
+                    type="number"
+
+                    id="discount"
+
+                    value="0">
+
+            </div>
+
+            <div class="summary-row">
+
+                <label>
+
+                    <input
+
+                        type="radio"
+
+                        name="discountType"
+
+                        value="peso"
+
+                        checked>
+
+                    Peso
+
+                </label>
+
+                <label>
+
+                    <input
+
+                        type="radio"
+
+                        name="discountType"
+
+                        value="percent">
+
+                    %
+
+                </label>
+
+            </div>
+
+            <div class="summary-row grand-total">
+
+                <span>Grand Total</span>
+
+                <strong id="grandTotal">
+
+                    ₱0.00
+
+                </strong>
+
+            </div>
+
+            <div class="summary-row">
+
+                <span>Cash</span>
+
+                <input
+
+                    type="number"
+
+                    id="cashTendered">
+
+            </div>
+
+            <div class="summary-row">
+
+                <span>Change</span>
+
+                <strong id="change">
+
+                    ₱0.00
+
+                </strong>
+
+            </div>
+
+        </div>
+
+        <!-- ==========================================
+             BUTTONS
+        ========================================== -->
+
+        <div class="cart-buttons">
+
+            <button id="btnClear">
+
+                Clear
+
+            </button>
+
+            <button id="btnCheckout">
 
                 Checkout
+
+            </button>
+
+            <button id="btnPrint">
+
+                Print
 
             </button>
 
@@ -132,9 +295,9 @@
 
 </div>
 
-<!-- ==========================================
-     FIREBASE
-========================================== -->
+<!-- ==========================================================
+     POS JAVASCRIPT
+========================================================== -->
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 
@@ -142,16 +305,10 @@
 
 <script src="../firebase/firebase-config.js"></script>
 
-<!-- POS -->
-
 <script src="../assets/js/pos/pos-init.js"></script>
-
 <script src="../assets/js/pos/pos-category.js"></script>
-
 <script src="../assets/js/pos/pos-product.js"></script>
-
 <script src="../assets/js/pos/pos-cart.js"></script>
-
 <script src="../assets/js/pos/pos-payment.js"></script>
 
 </body>
