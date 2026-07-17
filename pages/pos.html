@@ -1,23 +1,45 @@
+<!--
+==========================================================
+PAPPRITO ERP
+Module : Point of Sale (POS)
+File   : pages/pos.html
+Description : Full Screen POS
+==========================================================
+-->
+
+<!-- ==========================================================
+     POS HEADER
+========================================================== -->
+
 <header class="pos-header">
 
-    <div class="logo-section">
+    <button id="btnBack" class="back-btn">
+        ← Back
+    </button>
+
+    <div class="pos-title">
         <img src="../assets/images/logo/logo.png" alt="PAPPRITO Logo">
         <div>
-            <h2>PAPPRITO ERP</h2>
-            <small>Point of Sale</small>
+            <h2>PAPPRITO POS</h2>
+            <small>Restaurant Point of Sale</small>
         </div>
     </div>
 
-    <div class="search-section">
+    <div class="header-right">
+
         <input
             type="text"
             id="searchProduct"
-            placeholder="Search product...">
-    </div>
+            placeholder="Search Product...">
 
-    <div class="cashier-section">
-        <span id="currentDate"></span>
-        <span id="cashierName">Administrator</span>
+        <span id="cashierName">
+            Administrator
+        </span>
+
+        <span id="currentDateTime">
+            --/--/---- --:--
+        </span>
+
     </div>
 
 </header>
