@@ -1,3 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>PAPPRITO POS</title>
+
+    <!-- ==========================================================
+         POS STYLES
+    ========================================================== -->
+
+    <link rel="stylesheet" href="../assets/css/pos.css">
+
+</head>
+
+<body>
+
 <!--
 ==========================================================
 PAPPRITO ERP
@@ -6,12 +27,6 @@ File   : pages/pos.html
 Description : Full Screen POS
 ==========================================================
 -->
-
-<!-- ==========================================================
-     POS STYLES
-========================================================== -->
-
-<link rel="stylesheet" href="../assets/css/pos.css">
 
 <!-- ==========================================================
      POS HEADER
@@ -24,11 +39,18 @@ Description : Full Screen POS
     </button>
 
     <div class="pos-title">
-        <img src="../assets/images/logo/logo.png" alt="PAPPRITO Logo">
+
+        <img src="../assets/images/logo/logo.png"
+             alt="PAPPRITO Logo">
+
         <div>
+
             <h2>PAPPRITO POS</h2>
+
             <small>Restaurant Point of Sale</small>
+
         </div>
+
     </div>
 
     <div class="header-right">
@@ -49,6 +71,7 @@ Description : Full Screen POS
     </div>
 
 </header>
+
 <!-- ==========================================================
      POS MAIN CONTENT
 ========================================================== -->
@@ -105,4 +128,30 @@ Description : Full Screen POS
 
 <footer class="payment-panel">
 
+    <!-- Payment Buttons -->
+    <!-- Total Amount -->
+    <!-- Checkout -->
+
 </footer>
+
+<!-- ==========================================================
+     POS JAVASCRIPT
+========================================================== -->
+
+<script src="../assets/js/firebase/firebase-config.js"></script>
+
+<script src="../assets/js/pos/pos-category.js"></script>
+
+<script src="../assets/js/pos/pos-product.js"></script>
+
+<script src="../assets/js/pos/pos-cart.js"></script>
+
+<script src="../assets/js/pos/pos-payment.js"></script>
+
+<script src="../assets/js/pos/pos-search.js"></script>
+
+<script src="../assets/js/pos/pos-init.js"></script>
+
+</body>
+
+</html>
