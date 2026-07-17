@@ -97,31 +97,61 @@ function renderProducts(products) {
 
     products.forEach(product => {
 
-        const image =
-            product.image && product.image !== ""
-            ? product.image
-            : "../assets/img/no-image.png";
+       const image =
+    product.image && product.image.trim() !== ""
+        ? product.image
+        : "../assets/img/no-image.png";
+
+const stock = Number(product.stock || 0);
+
+let stockClass = "stock-available";
+let stockText = "Available";
+
+if (stock <= 0) {
+
+    stockClass = "stock-out";
+    stockText = "Out of Stock";
+
+} else if (stock <= 10) {
+
+    stockClass = "stock-low";
+    stockText = "Low Stock";
+
+}
 
         grid.innerHTML += `
 
 <div class="product-card"
      onclick="addToCart(allProducts.find(x=>x.id=='${product.id}'))">
 
-    <img src="${image}">
+    <div class="product-stock ${stockClass}">
+        ${stockText}
+    </div>
+
+    <img src="${image}" alt="${product.name}">
 
     <div class="product-info">
 
         <div class="product-name">
-
             ${product.name}
+        </div>
 
+        <div class="product-category">
+            ${product.categoryName || "-"}
         </div>
 
         <div class="product-price">
-
             ₱${Number(product.sellingPrice || 0).toFixed(2)}
-
         </div>
+
+        <button
+            class="btn-add"
+            ${stock <= 0 ? "disabled" : ""}>
+
+            <i class="fa-solid fa-cart-plus"></i>
+            ${stock <= 0 ? "OUT OF STOCK" : "ADD TO CART"}
+
+        </button>
 
     </div>
 
