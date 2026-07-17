@@ -15,7 +15,12 @@ function loadProducts() {
         .orderByChild("status")
         .equalTo("Active")
         .on("value", snapshot => {
+console.log("Products Snapshot Exists:", snapshot.exists());
+console.log("Products Count:", snapshot.numChildren());
 
+snapshot.forEach(child => {
+    console.log(child.key, child.val());
+});
             allProducts = [];
 
             snapshot.forEach(child => {
