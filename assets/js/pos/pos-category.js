@@ -1,9 +1,11 @@
 /* ==========================================================
    PAPPRITO ERP
-   Enterprise POS v2
+   POS v2
    File : assets/js/pos/pos-category.js
-   Description : Load Categories from Firebase
+   Description : Category Module
 ========================================================== */
+
+let currentCategory = "ALL";
 
 /* ==========================================================
    LOAD CATEGORIES
@@ -11,24 +13,44 @@
 
 function loadCategories() {
 
+    const categoryList =
+        document.getElementById("categoryList");
+
+    if (!categoryList) return;
+
+    categoryList.innerHTML = "";
+
+    // ==========================================
+    // ALL BUTTON
+    // ==========================================
+
+    createCategoryButton("ALL", true);
+
     db.ref("categories")
+
         .orderByChild("status")
+
         .equalTo("Active")
+
         .once("value")
 
         .then(snapshot => {
-
-            allCategories = [];
 
             snapshot.forEach(child => {
 
                 const category = child.val();
 
-                allCategories.push(category);
+                // Change this if your category field has another name
+                const categoryName =
+                    category.categoryName ||
+                    category.name ||
+                    category.title;
+
+                if (!categoryName) return;
+
+                createCategoryButton(categoryName);
 
             });
-
-            renderCategories();
 
         })
 
@@ -41,89 +63,47 @@ function loadCategories() {
 }
 
 /* ==========================================================
-   RENDER CATEGORY BUTTONS
+   CREATE CATEGORY BUTTON
 ========================================================== */
 
-function renderCategories() {
+function createCategoryButton(name, active = false) {
 
-    const container =
+    const categoryList =
         document.getElementById("categoryList");
 
-    if (!container) return;
-
-    container.innerHTML = "";
-
-    // ==========================================
-    // ALL PRODUCTS
-    // ==========================================
-
-    const allButton =
+    const button =
         document.createElement("button");
 
-    allButton.className =
-        "category-btn active";
+    button.className = "category-btn";
 
-    allButton.innerHTML =
-        "All Products";
+    if (active) {
 
-    allButton.onclick = function () {
+        button.classList.add("active");
 
-        selectedCategory = "ALL";
+    }
 
-        activateCategory(this);
+    button.innerHTML = name;
+
+    button.onclick = function () {
+
+        document
+
+            .querySelectorAll(".category-btn")
+
+            .forEach(btn => {
+
+                btn.classList.remove("active");
+
+            });
+
+        this.classList.add("active");
+
+        currentCategory = name;
 
         filterProducts();
 
     };
 
-    container.appendChild(allButton);
-
-    // ==========================================
-    // FIREBASE CATEGORIES
-    // ==========================================
-
-    allCategories.forEach(category => {
-
-        const button =
-            document.createElement("button");
-
-        button.className =
-            "category-btn";
-
-        button.innerHTML =
-            category.categoryName;
-
-        button.onclick = function () {
-
-            selectedCategory =
-                category.categoryName;
-
-            activateCategory(this);
-
-            filterProducts();
-
-        };
-
-        container.appendChild(button);
-
-    });
-
-}
-
-/* ==========================================================
-   ACTIVE CATEGORY
-========================================================== */
-
-function activateCategory(button) {
-
-    document
-        .querySelectorAll(".category-btn")
-        .forEach(item => {
-
-            item.classList.remove("active");
-
-        });
-
-    button.classList.add("active");
+    categoryList.appendChild(button);
 
 }
