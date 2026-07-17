@@ -1,91 +1,124 @@
-/*
-==========================================================
-PAPPRITO ERP
-Module : Point of Sale (POS)
-File   : assets/js/pos/pos-product.js
-Description : Load & Render Products
-==========================================================
-*/
+/* ==========================================================
+   PAPPRITO ERP
+   Enterprise POS v2
+   File : assets/js/pos/pos-product.js
+   Description : Load Products from Firebase
+========================================================== */
 
-// ==========================================================
-// LOAD ALL PRODUCTS
-// ==========================================================
+/* ==========================================================
+   LOAD PRODUCTS
+========================================================== */
 
-function loadPOSProducts() {
+function loadProducts() {
 
-    const productGrid = document.getElementById("productGrid");
-
-    productGrid.innerHTML = "";
-
-    // ==========================================================
-    // GET ACTIVE PRODUCTS FROM FIREBASE
-    // ==========================================================
-
-    firebase.database()
-        .ref("products")
+    db.ref("products")
         .orderByChild("status")
         .equalTo("Active")
-        .on("value", function(snapshot){
+        .on("value", snapshot => {
 
-            productGrid.innerHTML = "";
+            allProducts = [];
 
-            snapshot.forEach(function(child){
+            snapshot.forEach(child => {
 
                 const product = child.val();
 
-                // ==========================================================
-                // SHOW ONLY PRODUCTS ENABLED FOR POS
-                // ==========================================================
+                product.id = child.key;
 
-                if(product.showPOS === false){
-                    return;
+                // Only products available in POS
+                if (product.showPOS === true) {
+
+                    allProducts.push(product);
+
                 }
-
-                // ==========================================================
-                // PRODUCT IMAGE
-                // ==========================================================
-
-                const image = product.image && product.image !== ""
-                    ? product.image
-                    : "../assets/images/no-image.png";
-
-                // ==========================================================
-                // PRODUCT CARD
-                // ==========================================================
-
-                productGrid.innerHTML += `
-
-                    <div class="product-card">
-
-                        <img
-                            src="${image}"
-                            class="product-image"
-                            alt="${product.productName}">
-
-                        <div class="product-info">
-
-                            <h3>${product.productName}</h3>
-
-                            <small>${product.categoryName}</small>
-
-                            <h2>₱${Number(product.sellingPrice || 0).toFixed(2)}</h2>
-
-                            <button
-                                class="add-cart-btn"
-                                data-id="${child.key}">
-
-                                Add to Cart
-
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                `;
 
             });
 
+            filterProducts();
+
+        }, error => {
+
+            console.error("Product Error:", error);
+
         });
+
+}
+
+/* ==========================================================
+   RENDER PRODUCTS
+========================================================== */
+
+function renderProducts(products) {
+
+    const grid = document.getElementById("productGrid");
+
+    if (!grid) return;
+
+    grid.innerHTML = "";
+
+    if (products.length === 0) {
+
+        grid.innerHTML = `
+            <div style="
+                grid-column:1/-1;
+                text-align:center;
+                padding:40px;
+                color:#777;
+                font-size:18px;
+            ">
+                No products found.
+            </div>
+        `;
+
+        return;
+
+    }
+
+    products.forEach(product => {
+
+        const card = document.createElement("div");
+
+        card.className = "product-card";
+
+        const image =
+            product.image ||
+            "../assets/img/no-image.png";
+
+        const price =
+            Number(product.sellingPrice || 0);
+
+        card.innerHTML = `
+
+            <img src="${image}"
+                 alt="${product.productName}">
+
+            <div class="product-info">
+
+                <div class="product-name">
+
+                    ${product.productName}
+
+                </div>
+
+                <div class="product-price">
+
+                    ₱${price.toLocaleString(undefined,{
+                        minimumFractionDigits:2
+                    })}
+
+                </div>
+
+            </div>
+
+        `;
+
+        card.onclick = function () {
+
+            addToCart(product);
+
+        };
+
+        grid.appendChild(card);
+
+    });
 
 }
