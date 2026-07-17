@@ -25,11 +25,11 @@ function loadProducts() {
                 product.id = child.key;
 
                 // Only products available in POS
-                if (product.showPOS === true) {
+               if (product.status === "Active") {
 
-                    allProducts.push(product);
+    allProducts.push(product);
 
-                }
+}
 
             });
 
@@ -89,13 +89,13 @@ function renderProducts(products) {
         card.innerHTML = `
 
             <img src="${image}"
-                 alt="${product.productName}">
+                alt="${product.name}"
 
             <div class="product-info">
 
                 <div class="product-name">
 
-                    ${product.productName}
+                   ${product.name}
 
                 </div>
 
