@@ -1,0 +1,23 @@
+/*
+==========================================================
+PAPPRITO ERP
+Module : Point of Sale (POS)
+File   : assets/css/pos.css
+Description : POS Responsive Layout
+==========================================================
+*/
+
+/* ==========================================================
+   GLOBAL RESET
+========================================================== */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Segoe UI',sans-serif;
+    background:#f5f6fa;
+}
