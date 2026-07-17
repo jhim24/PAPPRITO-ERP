@@ -169,12 +169,12 @@ function openDashboard(){
 }
 
 // ==========================================
-// POS
+// POS (FULL SCREEN)
 // ==========================================
 
 function openPOS(){
 
-    loadPage("pages/pos.html");
+    window.location.href = "pages/pos.html";
 
 }
 
