@@ -22,7 +22,7 @@ let selectedProductFile = null;
 // ==========================================================
 
 const PRODUCT_DEFAULT_IMAGE =
-    "assets/img/no-product.png";
+    "assets/img/logo.png";
 
 
 // ==========================================================
@@ -36,9 +36,9 @@ function initializeProductImage() {
     );
 
 
-    // ----------------------------------------------
-    // File Upload
-    // ----------------------------------------------
+    // ======================================================
+    // FILE INPUT
+    // ======================================================
 
     const imageFile =
         document.getElementById(
@@ -67,9 +67,9 @@ function initializeProductImage() {
     }
 
 
-    // ----------------------------------------------
-    // Image URL
-    // ----------------------------------------------
+    // ======================================================
+    // IMAGE URL
+    // ======================================================
 
     const imageURL =
         document.getElementById(
@@ -104,9 +104,9 @@ function initializeProductImage() {
     }
 
 
-    // ----------------------------------------------
-    // Default Image
-    // ----------------------------------------------
+    // ======================================================
+    // DEFAULT IMAGE
+    // ======================================================
 
     const btnDefault =
         document.getElementById(
@@ -135,9 +135,9 @@ function initializeProductImage() {
     }
 
 
-    // ----------------------------------------------
-    // Remove Image
-    // ----------------------------------------------
+    // ======================================================
+    // REMOVE IMAGE
+    // ======================================================
 
     const btnRemove =
         document.getElementById(
@@ -166,9 +166,9 @@ function initializeProductImage() {
     }
 
 
-    // ----------------------------------------------
-    // Initial Preview
-    // ----------------------------------------------
+    // ======================================================
+    // INITIAL PREVIEW
+    // ======================================================
 
     updateProductImagePreview(
         selectedProductImage
@@ -181,7 +181,9 @@ function initializeProductImage() {
 // HANDLE IMAGE FILE
 // ==========================================================
 
-function handleProductImageFile(event) {
+function handleProductImageFile(
+    event
+) {
 
     const file =
         event.target.files &&
@@ -202,9 +204,9 @@ function handleProductImageFile(event) {
     }
 
 
-    // ----------------------------------------------
-    // Validate File Type
-    // ----------------------------------------------
+    // ======================================================
+    // ALLOWED TYPES
+    // ======================================================
 
     const allowedTypes = [
 
@@ -227,7 +229,8 @@ function handleProductImageFile(event) {
         );
 
 
-        event.target.value = "";
+        event.target.value =
+            "";
 
         selectedProductFile =
             null;
@@ -237,16 +240,17 @@ function handleProductImageFile(event) {
     }
 
 
-    // ----------------------------------------------
-    // Validate File Size
-    // ----------------------------------------------
+    // ======================================================
+    // FILE SIZE
+    // ======================================================
 
     const maxSize =
         2 * 1024 * 1024;
 
 
     if (
-        file.size > maxSize
+        file.size >
+        maxSize
     ) {
 
         alert(
@@ -255,7 +259,8 @@ function handleProductImageFile(event) {
         );
 
 
-        event.target.value = "";
+        event.target.value =
+            "";
 
         selectedProductFile =
             null;
@@ -265,17 +270,17 @@ function handleProductImageFile(event) {
     }
 
 
-    // ----------------------------------------------
-    // Save File
-    // ----------------------------------------------
+    // ======================================================
+    // SAVE FILE
+    // ======================================================
 
     selectedProductFile =
         file;
 
 
-    // ----------------------------------------------
-    // Preview Using FileReader
-    // ----------------------------------------------
+    // ======================================================
+    // PREVIEW
+    // ======================================================
 
     const reader =
         new FileReader();
@@ -305,6 +310,7 @@ function handleProductImageFile(event) {
             console.error(
                 "Unable to preview product image."
             );
+
 
             alert(
                 "Unable to preview the selected image."
@@ -343,35 +349,39 @@ function handleProductImageURL() {
         input.value.trim();
 
 
-    // ----------------------------------------------
-    // Empty URL
-    // ----------------------------------------------
+    // ======================================================
+    // EMPTY
+    // ======================================================
 
-    if (url === "") {
+    if (
+        url === ""
+    ) {
 
         selectedProductImage =
             "";
 
+
         updateProductImagePreview(
             PRODUCT_DEFAULT_IMAGE
         );
+
 
         return;
 
     }
 
 
-    // ----------------------------------------------
-    // Save URL
-    // ----------------------------------------------
+    // ======================================================
+    // SAVE URL
+    // ======================================================
 
     selectedProductImage =
         url;
 
 
-    // ----------------------------------------------
-    // Preview
-    // ----------------------------------------------
+    // ======================================================
+    // PREVIEW
+    // ======================================================
 
     updateProductImagePreview(
         url
@@ -381,7 +391,7 @@ function handleProductImageURL() {
 
 
 // ==========================================================
-// UPDATE IMAGE PREVIEW
+// UPDATE PREVIEW
 // ==========================================================
 
 function updateProductImagePreview(
@@ -403,7 +413,9 @@ function updateProductImagePreview(
 
     const source =
         image &&
-        String(image).trim() !== ""
+        String(
+            image
+        ).trim() !== ""
 
             ? image
 
@@ -414,11 +426,16 @@ function updateProductImagePreview(
         source;
 
 
+    // ======================================================
+    // IMAGE ERROR FALLBACK
+    // ======================================================
+
     preview.onerror =
         function () {
 
             this.onerror =
                 null;
+
 
             this.src =
                 PRODUCT_DEFAULT_IMAGE;
@@ -442,9 +459,9 @@ function setDefaultProductImage() {
         null;
 
 
-    // ----------------------------------------------
-    // Clear File
-    // ----------------------------------------------
+    // ------------------------------------------------------
+    // CLEAR FILE
+    // ------------------------------------------------------
 
     const imageFile =
         document.getElementById(
@@ -454,14 +471,15 @@ function setDefaultProductImage() {
 
     if (imageFile) {
 
-        imageFile.value = "";
+        imageFile.value =
+            "";
 
     }
 
 
-    // ----------------------------------------------
-    // Set URL
-    // ----------------------------------------------
+    // ------------------------------------------------------
+    // CLEAR URL
+    // ------------------------------------------------------
 
     const imageURL =
         document.getElementById(
@@ -477,9 +495,9 @@ function setDefaultProductImage() {
     }
 
 
-    // ----------------------------------------------
-    // Preview
-    // ----------------------------------------------
+    // ------------------------------------------------------
+    // PREVIEW
+    // ------------------------------------------------------
 
     updateProductImagePreview(
         PRODUCT_DEFAULT_IMAGE
@@ -502,9 +520,9 @@ function removeProductImage() {
         null;
 
 
-    // ----------------------------------------------
-    // Clear File
-    // ----------------------------------------------
+    // ------------------------------------------------------
+    // CLEAR FILE
+    // ------------------------------------------------------
 
     const imageFile =
         document.getElementById(
@@ -520,9 +538,9 @@ function removeProductImage() {
     }
 
 
-    // ----------------------------------------------
-    // Clear URL
-    // ----------------------------------------------
+    // ------------------------------------------------------
+    // CLEAR URL
+    // ------------------------------------------------------
 
     const imageURL =
         document.getElementById(
@@ -538,9 +556,9 @@ function removeProductImage() {
     }
 
 
-    // ----------------------------------------------
-    // Preview
-    // ----------------------------------------------
+    // ------------------------------------------------------
+    // PREVIEW
+    // ------------------------------------------------------
 
     updateProductImagePreview(
         PRODUCT_DEFAULT_IMAGE
@@ -565,6 +583,10 @@ function loadProductImage(
         image || "";
 
 
+    // ------------------------------------------------------
+    // CLEAR FILE INPUT
+    // ------------------------------------------------------
+
     const imageFile =
         document.getElementById(
             "productImageFile"
@@ -579,6 +601,10 @@ function loadProductImage(
     }
 
 
+    // ------------------------------------------------------
+    // LOAD URL
+    // ------------------------------------------------------
+
     const imageURL =
         document.getElementById(
             "productImageURL"
@@ -592,6 +618,10 @@ function loadProductImage(
 
     }
 
+
+    // ------------------------------------------------------
+    // PREVIEW
+    // ------------------------------------------------------
 
     updateProductImagePreview(
         image
@@ -613,6 +643,10 @@ function clearProductImageState() {
         null;
 
 
+    // ------------------------------------------------------
+    // CLEAR FILE
+    // ------------------------------------------------------
+
     const imageFile =
         document.getElementById(
             "productImageFile"
@@ -627,6 +661,10 @@ function clearProductImageState() {
     }
 
 
+    // ------------------------------------------------------
+    // CLEAR URL
+    // ------------------------------------------------------
+
     const imageURL =
         document.getElementById(
             "productImageURL"
@@ -640,6 +678,10 @@ function clearProductImageState() {
 
     }
 
+
+    // ------------------------------------------------------
+    // DEFAULT PREVIEW
+    // ------------------------------------------------------
 
     updateProductImagePreview(
         PRODUCT_DEFAULT_IMAGE
