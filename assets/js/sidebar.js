@@ -1,93 +1,283 @@
-// ==========================================
+// ==========================================================
 // PAPPRITO ERP
 // SIDEBAR CONTROLLER
-// ==========================================
+// File : assets/js/sidebar.js
+// Description : Responsive Sidebar Controller
+// ==========================================================
 
-document.addEventListener("DOMContentLoaded", () => {
+(function () {
 
-    initializeSidebar();
+    "use strict";
 
-});
+    // ======================================================
+    // GET SIDEBAR
+    // ======================================================
 
-// ==========================================
-// INITIALIZE SIDEBAR
-// ==========================================
+    function getSidebar() {
 
-function initializeSidebar(){
-
-    const menuToggle = document.getElementById("menuToggle");
-
-    const sidebar = document.querySelector(".sidebar");
-
-    // -----------------------------
-    // TOGGLE SIDEBAR
-    // -----------------------------
-
-    if(menuToggle){
-
-        menuToggle.addEventListener("click", ()=>{
-
-            sidebar.classList.toggle("show");
-
-        });
+        return document.querySelector(".sidebar");
 
     }
 
-    // -----------------------------
-    // ACTIVE MENU
-    // -----------------------------
+    // ======================================================
+    // GET MENU TOGGLE
+    // ======================================================
 
-    document.querySelectorAll(".sidebar-menu a").forEach(link=>{
+    function getMenuToggle() {
 
-        link.addEventListener("click",function(){
+        return document.getElementById("menuToggle");
 
-            document.querySelectorAll(".sidebar-menu a")
-            .forEach(item=>{
+    }
 
-                item.classList.remove("active");
+    // ======================================================
+    // OPEN SIDEBAR
+    // ======================================================
 
-            });
+    function openSidebar() {
 
-            this.classList.add("active");
+        const sidebar = getSidebar();
 
-            // Close sidebar on mobile
+        if (!sidebar) return;
 
-            if(window.innerWidth <= 992){
+        sidebar.classList.add("show");
 
-                sidebar.classList.remove("show");
+        document.body.classList.add("sidebar-open");
 
-            }
+    }
 
-        });
+    // ======================================================
+    // CLOSE SIDEBAR
+    // ======================================================
 
-    });
+    function closeSidebar() {
 
-}
+        const sidebar = getSidebar();
 
-// ==========================================
-// AUTO CLOSE WHEN CLICK OUTSIDE
-// ==========================================
-
-document.addEventListener("click",function(e){
-
-    const sidebar = document.querySelector(".sidebar");
-
-    const toggle = document.getElementById("menuToggle");
-
-    if(!sidebar || !toggle) return;
-
-    if(window.innerWidth > 992) return;
-
-    if(
-
-        !sidebar.contains(e.target) &&
-
-        !toggle.contains(e.target)
-
-    ){
+        if (!sidebar) return;
 
         sidebar.classList.remove("show");
 
+        document.body.classList.remove("sidebar-open");
+
     }
 
-});
+    // ======================================================
+    // TOGGLE SIDEBAR
+    // ======================================================
+
+    function toggleSidebar() {
+
+        const sidebar = getSidebar();
+
+        if (!sidebar) return;
+
+        sidebar.classList.toggle("show");
+
+        document.body.classList.toggle(
+            "sidebar-open",
+            sidebar.classList.contains("show")
+        );
+
+    }
+
+    // ======================================================
+    // INITIALIZE SIDEBAR
+    // ======================================================
+
+    window.initializeSidebar = function () {
+
+        /*
+         * IMPORTANT:
+         *
+         * Sidebar and navbar are loaded dynamically
+         * by app.js.
+         *
+         * Therefore we do NOT depend on
+         * DOMContentLoaded.
+         */
+
+        const sidebar = getSidebar();
+
+        if (!sidebar) {
+
+            console.warn(
+                "PAPPRITO SIDEBAR: Sidebar element not found."
+            );
+
+            return;
+
+        }
+
+        // --------------------------------------------------
+        // Remove old initialization marker
+        // --------------------------------------------------
+
+        sidebar.dataset.sidebarReady = "true";
+
+        // --------------------------------------------------
+        // Restore active menu
+        // --------------------------------------------------
+
+        const currentPage =
+            localStorage.getItem("currentPage");
+
+        const menuLinks =
+            sidebar.querySelectorAll(".sidebar-menu a");
+
+        menuLinks.forEach(link => {
+
+            link.classList.remove("active");
+
+        });
+
+        if (currentPage) {
+
+            menuLinks.forEach(link => {
+
+                const onclick =
+                    link.getAttribute("onclick") || "";
+
+                if (
+                    currentPage.includes("dashboard") &&
+                    onclick.includes("openDashboard")
+                ) {
+
+                    link.classList.add("active");
+
+                }
+
+            });
+
+        }
+
+    };
+
+    // ======================================================
+    // GLOBAL CLICK HANDLER
+    // ======================================================
+    //
+    // Event delegation is intentional.
+    //
+    // This allows the hamburger to work even when
+    // #menuToggle is dynamically inserted AFTER
+    // DOMContentLoaded.
+    //
+    // ======================================================
+
+    document.addEventListener("click", function (event) {
+
+        const menuToggle =
+            event.target.closest("#menuToggle");
+
+        // --------------------------------------------------
+        // HAMBURGER
+        // --------------------------------------------------
+
+        if (menuToggle) {
+
+            event.preventDefault();
+
+            event.stopPropagation();
+
+            toggleSidebar();
+
+            return;
+
+        }
+
+        // --------------------------------------------------
+        // SIDEBAR MENU
+        // --------------------------------------------------
+
+        const menuLink =
+            event.target.closest(".sidebar-menu a");
+
+        if (menuLink) {
+
+            const sidebar = getSidebar();
+
+            // Active menu
+
+            if (sidebar) {
+
+                sidebar
+                    .querySelectorAll(".sidebar-menu a")
+                    .forEach(link => {
+
+                        link.classList.remove("active");
+
+                    });
+
+            }
+
+            menuLink.classList.add("active");
+
+            // Save active menu
+
+            localStorage.setItem(
+                "activeMenu",
+                menuLink.innerText.trim()
+            );
+
+            // Close sidebar on mobile
+
+            if (window.innerWidth <= 992) {
+
+                closeSidebar();
+
+            }
+
+            return;
+
+        }
+
+        // --------------------------------------------------
+        // CLICK OUTSIDE SIDEBAR
+        // --------------------------------------------------
+
+        const sidebar = getSidebar();
+
+        if (!sidebar) return;
+
+        if (window.innerWidth > 992) return;
+
+        if (
+            sidebar.classList.contains("show") &&
+            !sidebar.contains(event.target)
+        ) {
+
+            closeSidebar();
+
+        }
+
+    });
+
+    // ======================================================
+    // ESC KEY
+    // ======================================================
+
+    document.addEventListener("keydown", function (event) {
+
+        if (event.key !== "Escape") return;
+
+        if (window.innerWidth > 992) return;
+
+        closeSidebar();
+
+    });
+
+    // ======================================================
+    // WINDOW RESIZE
+    // ======================================================
+
+    window.addEventListener("resize", function () {
+
+        if (window.innerWidth > 992) {
+
+            closeSidebar();
+
+        }
+
+    });
+
+})();
