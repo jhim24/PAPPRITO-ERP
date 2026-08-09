@@ -16,7 +16,7 @@ let editingProductId = null;
 
 
 // ==========================================================
-// INITIALIZE PRODUCT SAVE
+// INITIALIZE
 // ==========================================================
 
 function initializeProductSave() {
@@ -34,8 +34,6 @@ function initializeProductSave() {
 
     }
 
-    // Prevent duplicate event listener
-
     if (
         btnSave.dataset.saveInitialized === "true"
     ) {
@@ -44,7 +42,8 @@ function initializeProductSave() {
 
     }
 
-    btnSave.dataset.saveInitialized = "true";
+    btnSave.dataset.saveInitialized =
+        "true";
 
     btnSave.addEventListener(
         "click",
@@ -59,18 +58,21 @@ function initializeProductSave() {
 
 
 // ==========================================================
-// SAVE PRODUCT
+// SAVE / UPDATE PRODUCT
 // ==========================================================
 
 async function saveProduct() {
 
     const btnSave =
-        document.getElementById("btnSaveProduct");
+        document.getElementById(
+            "btnSaveProduct"
+        );
 
     const btnText =
         document.getElementById(
             "btnSaveProductText"
         );
+
 
     try {
 
@@ -91,14 +93,38 @@ async function saveProduct() {
 
 
         // ==================================================
-        // GET FORM ELEMENTS
+        // DISABLE BUTTON
+        // ==================================================
+
+        if (btnSave) {
+
+            btnSave.disabled = true;
+
+        }
+
+        if (btnText) {
+
+            btnText.textContent =
+                editingProductId
+                    ? "Updating..."
+                    : "Saving...";
+
+        }
+
+
+        // ==================================================
+        // FIELDS
         // ==================================================
 
         const codeInput =
-            document.getElementById("productCode");
+            document.getElementById(
+                "productCode"
+            );
 
         const nameInput =
-            document.getElementById("productName");
+            document.getElementById(
+                "productName"
+            );
 
         const categoryInput =
             document.getElementById(
@@ -111,7 +137,9 @@ async function saveProduct() {
             );
 
         const costPriceInput =
-            document.getElementById("costPrice");
+            document.getElementById(
+                "costPrice"
+            );
 
         const sellingPriceInput =
             document.getElementById(
@@ -145,7 +173,7 @@ async function saveProduct() {
 
 
         // ==================================================
-        // VALIDATE REQUIRED ELEMENTS
+        // REQUIRED
         // ==================================================
 
         if (!nameInput) {
@@ -166,7 +194,7 @@ async function saveProduct() {
 
 
         // ==================================================
-        // GET VALUES
+        // VALUES
         // ==================================================
 
         const code =
@@ -210,7 +238,7 @@ async function saveProduct() {
             Number(
                 currentStockInput
                     ? currentStockInput.value
-                    : openingStock
+                    : 0
             ) || 0;
 
         const reorderLevel =
@@ -232,35 +260,10 @@ async function saveProduct() {
 
 
         // ==================================================
-        // GET CATEGORY NAME
-        // ==================================================
-
-        let categoryName = "";
-
-        if (
-            categoryInput.selectedIndex >= 0
-        ) {
-
-            const selectedOption =
-                categoryInput.options[
-                    categoryInput.selectedIndex
-                ];
-
-            if (selectedOption) {
-
-                categoryName =
-                    selectedOption.textContent.trim();
-
-            }
-
-        }
-
-
-        // ==================================================
         // VALIDATION
         // ==================================================
 
-        if (name === "") {
+        if (!name) {
 
             alert(
                 "Please enter Product Name."
@@ -273,24 +276,13 @@ async function saveProduct() {
         }
 
 
-        if (categoryId === "") {
+        if (!categoryId) {
 
             alert(
                 "Please select Product Category."
             );
 
             categoryInput.focus();
-
-            return;
-
-        }
-
-
-        if (sellingPrice < 0) {
-
-            alert(
-                "Selling Price cannot be negative."
-            );
 
             return;
 
@@ -308,6 +300,17 @@ async function saveProduct() {
         }
 
 
+        if (sellingPrice < 0) {
+
+            alert(
+                "Selling Price cannot be negative."
+            );
+
+            return;
+
+        }
+
+
         if (openingStock < 0) {
 
             alert(
@@ -315,6 +318,31 @@ async function saveProduct() {
             );
 
             return;
+
+        }
+
+
+        // ==================================================
+        // CATEGORY NAME
+        // ==================================================
+
+        let categoryName = "";
+
+        if (
+            categoryInput.selectedIndex >= 0
+        ) {
+
+            const option =
+                categoryInput.options[
+                    categoryInput.selectedIndex
+                ];
+
+            if (option) {
+
+                categoryName =
+                    option.textContent.trim();
+
+            }
 
         }
 
@@ -355,36 +383,32 @@ async function saveProduct() {
 
 
         // ==================================================
-        // IMAGE STATE
+        // IMAGE
+        // ==================================================
+        //
+        // IMPORTANT:
+        // We DO NOT upload to Firebase Storage here.
+        //
+        // This prevents:
+        //
+        // storage/retry-limit-exceeded
+        //
+        // from blocking Product Update.
+        //
         // ==================================================
 
         let imageURL = "";
 
-        if (
-            typeof selectedProductImage !==
-            "undefined"
-        ) {
 
-            imageURL =
-                selectedProductImage || "";
-
-        }
-
+        // --------------------------------------------------
+        // IMAGE URL FIELD
+        // --------------------------------------------------
 
         const imageURLInput =
             document.getElementById(
                 "productImageURL"
             );
 
-        const imageFileInput =
-            document.getElementById(
-                "productImageFile"
-            );
-
-
-        // ==================================================
-        // IMAGE URL
-        // ==================================================
 
         if (
             imageURLInput &&
@@ -397,135 +421,73 @@ async function saveProduct() {
         }
 
 
-        // ==================================================
-        // IMAGE FILE UPLOAD
-        // ==================================================
+        // --------------------------------------------------
+        // EXISTING IMAGE
+        // --------------------------------------------------
 
         if (
-            imageFileInput &&
-            imageFileInput.files &&
-            imageFileInput.files.length > 0
+            !imageURL &&
+            typeof selectedProductImage !==
+            "undefined"
         ) {
 
-            const file =
-                imageFileInput.files[0];
-
-
-            // ----------------------------------------------
-            // Firebase Storage Check
-            // ----------------------------------------------
+            // Only keep a real URL.
+            // Do NOT save local blob/data
+            // generated from file preview.
 
             if (
-                typeof firebase.storage !==
-                "function"
-            ) {
-
-                throw new Error(
-                    "Firebase Storage is not loaded."
-                );
-
-            }
-
-
-            // ----------------------------------------------
-            // File Type
-            // ----------------------------------------------
-
-            const allowedTypes = [
-
-                "image/jpeg",
-                "image/png",
-                "image/webp"
-
-            ];
-
-
-            if (
-                !allowedTypes.includes(
-                    file.type
+                selectedProductImage &&
+                (
+                    selectedProductImage.startsWith(
+                        "http://"
+                    )
+                    ||
+                    selectedProductImage.startsWith(
+                        "https://"
+                    )
                 )
             ) {
 
-                throw new Error(
-                    "Only JPG, PNG and WEBP images are allowed."
-                );
+                imageURL =
+                    selectedProductImage;
 
             }
 
+        }
 
-            // ----------------------------------------------
-            // File Size
-            // ----------------------------------------------
 
-            const maxSize =
-                2 * 1024 * 1024;
+        // ==================================================
+        // IF EDITING
+        // PRESERVE EXISTING IMAGE
+        // ==================================================
+
+        if (
+            editingProductId &&
+            !imageURL
+        ) {
+
+            const existingSnapshot =
+                await db
+                    .ref(
+                        "products/" +
+                        editingProductId
+                    )
+                    .once("value");
 
 
             if (
-                file.size > maxSize
+                existingSnapshot.exists()
             ) {
 
-                throw new Error(
-                    "Image size must not exceed 2MB."
-                );
+                const existingProduct =
+                    existingSnapshot.val() || {};
+
+
+                imageURL =
+                    existingProduct.image ||
+                    "";
 
             }
-
-
-            // ----------------------------------------------
-            // Safe File Name
-            // ----------------------------------------------
-
-            const safeName =
-                file.name.replace(
-                    /[^a-zA-Z0-9._-]/g,
-                    "_"
-                );
-
-
-            const storagePath =
-                "products/" +
-                Date.now() +
-                "_" +
-                safeName;
-
-
-            console.log(
-                "Uploading product image:",
-                storagePath
-            );
-
-
-            // ----------------------------------------------
-            // Upload
-            // ----------------------------------------------
-
-            const storage =
-                firebase.storage();
-
-            const storageRef =
-                storage
-                    .ref()
-                    .child(storagePath);
-
-
-            const uploadSnapshot =
-                await storageRef.put(file);
-
-
-            // ----------------------------------------------
-            // Download URL
-            // ----------------------------------------------
-
-            imageURL =
-                await uploadSnapshot
-                    .ref
-                    .getDownloadURL();
-
-
-            console.log(
-                "Product image uploaded successfully."
-            );
 
         }
 
@@ -602,7 +564,7 @@ async function saveProduct() {
 
 
         // ==================================================
-        // UPDATE EXISTING PRODUCT
+        // UPDATE EXISTING
         // ==================================================
 
         if (editingProductId) {
@@ -624,7 +586,7 @@ async function saveProduct() {
 
 
             console.log(
-                "Product update successful."
+                "Product updated successfully."
             );
 
 
@@ -636,7 +598,7 @@ async function saveProduct() {
 
 
         // ==================================================
-        // CREATE NEW PRODUCT
+        // CREATE NEW
         // ==================================================
 
         else {
@@ -672,7 +634,7 @@ async function saveProduct() {
 
 
         // ==================================================
-        // REFRESH PRODUCT LIST
+        // REFRESH PRODUCT TABLE
         // ==================================================
 
         if (
@@ -680,7 +642,12 @@ async function saveProduct() {
             "function"
         ) {
 
-            startProductListener();
+            // Listener already exists.
+            // No need to create another listener.
+
+            renderProductTable();
+
+            updateProductCounter();
 
         }
 
@@ -742,10 +709,6 @@ async function saveProduct() {
 
     finally {
 
-        // ==================================================
-        // ALWAYS RESTORE BUTTON
-        // ==================================================
-
         if (btnSave) {
 
             btnSave.disabled =
@@ -757,7 +720,9 @@ async function saveProduct() {
         if (btnText) {
 
             btnText.textContent =
-                "Save Product";
+                editingProductId
+                    ? "Update Product"
+                    : "Save Product";
 
         }
 
@@ -772,17 +737,13 @@ async function saveProduct() {
 
 function resetProductForm() {
 
-    // ------------------------------------------------------
-    // Reset Edit State
-    // ------------------------------------------------------
-
     editingProductId =
         null;
 
 
-    // ------------------------------------------------------
-    // Reset Image State
-    // ------------------------------------------------------
+    // ======================================================
+    // IMAGE STATE
+    // ======================================================
 
     if (
         typeof clearProductImageState ===
@@ -818,44 +779,43 @@ function resetProductForm() {
 
 
     // ======================================================
-    // TEXT FIELDS
+    // TEXT
     // ======================================================
 
-    const textFields = [
+    const productName =
+        document.getElementById(
+            "productName"
+        );
 
-        "productName",
-        "productDescription"
+    if (productName) {
 
-    ];
+        productName.value =
+            "";
 
-
-    textFields.forEach(
-        function (id) {
-
-            const element =
-                document.getElementById(id);
+    }
 
 
-            if (element) {
+    const description =
+        document.getElementById(
+            "productDescription"
+        );
 
-                element.value =
-                    "";
+    if (description) {
 
-            }
+        description.value =
+            "";
 
-        }
-    );
+    }
 
 
     // ======================================================
-    // PRODUCT CODE
+    // CODE
     // ======================================================
 
     const code =
         document.getElementById(
             "productCode"
         );
-
 
     if (code) {
 
@@ -874,7 +834,6 @@ function resetProductForm() {
             "productCategory"
         );
 
-
     if (category) {
 
         category.value =
@@ -884,72 +843,48 @@ function resetProductForm() {
 
 
     // ======================================================
-    // NUMERIC FIELDS
+    // NUMERIC
     // ======================================================
 
-    const costPrice =
-        document.getElementById(
-            "costPrice"
+    const fields = {
+
+        costPrice:
+            "0",
+
+        sellingPrice:
+            "0",
+
+        openingStock:
+            "0",
+
+        currentStock:
+            "0",
+
+        reorderLevel:
+            "10"
+
+    };
+
+
+    Object.keys(fields)
+        .forEach(
+            function (id) {
+
+                const element =
+                    document.getElementById(
+                        id
+                    );
+
+
+                if (element) {
+
+                    element.value =
+                        fields[id];
+
+                }
+
+            }
         );
-
-    if (costPrice) {
-
-        costPrice.value =
-            "0";
-
-    }
-
-
-    const sellingPrice =
-        document.getElementById(
-            "sellingPrice"
-        );
-
-    if (sellingPrice) {
-
-        sellingPrice.value =
-            "0";
-
-    }
-
-
-    const openingStock =
-        document.getElementById(
-            "openingStock"
-        );
-
-    if (openingStock) {
-
-        openingStock.value =
-            "0";
-
-    }
-
-
-    const currentStock =
-        document.getElementById(
-            "currentStock"
-        );
-
-    if (currentStock) {
-
-        currentStock.value =
-            "0";
-
-    }
-
-
-    const reorderLevel =
-        document.getElementById(
-            "reorderLevel"
-        );
-
-    if (reorderLevel) {
-
-        reorderLevel.value =
-            "10";
-
-    }
 
 
     // ======================================================
@@ -987,85 +922,53 @@ function resetProductForm() {
 
 
     // ======================================================
-    // PRODUCT SETTINGS
+    // CHECKBOXES
     // ======================================================
 
-    const showPOS =
-        document.getElementById(
-            "showPOS"
+    const checkboxDefaults = {
+
+        showPOS:
+            true,
+
+        showKitchen:
+            true,
+
+        showMenu:
+            true,
+
+        inventoryTracking:
+            true,
+
+        featuredProduct:
+            false,
+
+        bestSeller:
+            false
+
+    };
+
+
+    Object.keys(
+        checkboxDefaults
+    )
+        .forEach(
+            function (id) {
+
+                const element =
+                    document.getElementById(
+                        id
+                    );
+
+
+                if (element) {
+
+                    element.checked =
+                        checkboxDefaults[id];
+
+                }
+
+            }
         );
-
-    if (showPOS) {
-
-        showPOS.checked =
-            true;
-
-    }
-
-
-    const showKitchen =
-        document.getElementById(
-            "showKitchen"
-        );
-
-    if (showKitchen) {
-
-        showKitchen.checked =
-            true;
-
-    }
-
-
-    const showMenu =
-        document.getElementById(
-            "showMenu"
-        );
-
-    if (showMenu) {
-
-        showMenu.checked =
-            true;
-
-    }
-
-
-    const inventoryTracking =
-        document.getElementById(
-            "inventoryTracking"
-        );
-
-    if (inventoryTracking) {
-
-        inventoryTracking.checked =
-            true;
-
-    }
-
-
-    const featuredProduct =
-        document.getElementById(
-            "featuredProduct"
-        );
-
-    if (featuredProduct) {
-
-        featuredProduct.checked =
-            false;
-
-    }
-
-
-    const bestSeller =
-        document.getElementById(
-            "bestSeller"
-        );
-
-    if (bestSeller) {
-
-        bestSeller.checked =
-            false;
-
-    }
 
 
     // ======================================================
