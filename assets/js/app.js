@@ -2,10 +2,17 @@
 // PAPPRITO ERP
 // APP CONTROLLER
 // File : assets/js/app.js
-// Description : Component Loader & Navigation
+// Description : Component Loader, Navigation & Page Control
 // ==========================================================
 
 "use strict";
+
+
+// ==========================================================
+// GLOBAL PAGE STATE
+// ==========================================================
+
+let currentERPPage = "";
 
 
 // ==========================================================
@@ -62,28 +69,47 @@ async function loadComponent(id, file) {
 
 
 // ==========================================================
-// PAPPRITO ERP
-// NAVIGATION
+// LOAD PAGE
 // ==========================================================
 
 async function loadPage(page) {
 
     try {
 
+        console.log(
+            "Loading page:",
+            page
+        );
+
+
+        // ==================================================
+        // FETCH PAGE
+        // ==================================================
+
         const response =
             await fetch(page);
 
+
         if (!response.ok) {
 
-            throw new Error(page);
+            throw new Error(
+                "Unable to load page: " + page
+            );
 
         }
+
 
         const html =
             await response.text();
 
+
+        // ==================================================
+        // CONTENT CONTAINER
+        // ==================================================
+
         const content =
             document.getElementById("content");
+
 
         if (!content) {
 
@@ -93,12 +119,19 @@ async function loadPage(page) {
 
         }
 
+
+        // ==================================================
+        // INSERT PAGE
+        // ==================================================
+
         content.innerHTML = html;
 
 
         // ==================================================
         // SAVE CURRENT PAGE
         // ==================================================
+
+        currentERPPage = page;
 
         localStorage.setItem(
             "currentPage",
@@ -107,148 +140,18 @@ async function loadPage(page) {
 
 
         // ==================================================
-        // INITIALIZE PAGE MODULES
+        // INITIALIZE PAGE
         // ==================================================
 
-        switch (page) {
+        await initializePage(
+            page
+        );
 
 
-            // ==============================================
-            // CATEGORIES
-            // ==============================================
-
-            case "pages/categories.html":
-
-                if (
-                    typeof loadCategories ===
-                    "function"
-                ) {
-
-                    loadCategories();
-
-                }
-
-                if (
-                    typeof initializeCategoryPage ===
-                    "function"
-                ) {
-
-                    initializeCategoryPage();
-
-                }
-
-                break;
-
-
-            // ==============================================
-            // PRODUCTS
-            // ==============================================
-
-            case "pages/products.html":
-
-                console.log(
-                    "=== PRODUCTS PAGE ==="
-                );
-
-                console.log(
-                    "initializeProductPage =",
-                    typeof initializeProductPage
-                );
-
-                console.log(
-                    "initializeProductImage =",
-                    typeof initializeProductImage
-                );
-
-                console.log(
-                    "loadProducts =",
-                    typeof loadProducts
-                );
-
-
-                if (
-                    typeof initializeProductPage ===
-                    "function"
-                ) {
-
-                    console.log(
-                        "Running initializeProductPage()"
-                    );
-
-                    initializeProductPage();
-
-                }
-
-
-                if (
-                    typeof initializeProductImage ===
-                    "function"
-                ) {
-
-                    console.log(
-                        "Running initializeProductImage()"
-                    );
-
-                    initializeProductImage();
-
-                }
-
-
-                if (
-                    typeof loadProducts ===
-                    "function"
-                ) {
-
-                    console.log(
-                        "Running loadProducts()"
-                    );
-
-                    loadProducts();
-
-                }
-                else {
-
-                    console.log(
-                        "loadProducts NOT FOUND"
-                    );
-
-                }
-
-                break;
-
-
-            // ==============================================
-            // DASHBOARD
-            // ==============================================
-
-            case "pages/dashboard.html":
-
-                if (
-                    typeof loadDashboard ===
-                    "function"
-                ) {
-
-                    loadDashboard();
-
-                }
-
-                break;
-
-
-            // ==============================================
-            // DEFAULT
-            // ==============================================
-
-            default:
-
-                console.log(
-                    "Page loaded:",
-                    page
-                );
-
-                break;
-
-        }
+        console.log(
+            "Page loaded successfully:",
+            page
+        );
 
     }
 
@@ -261,7 +164,10 @@ async function loadPage(page) {
 
 
         const content =
-            document.getElementById("content");
+            document.getElementById(
+                "content"
+            );
+
 
         if (content) {
 
@@ -271,12 +177,16 @@ async function loadPage(page) {
 
                     <div class="alert alert-danger">
 
-                        <h4>
+                        <h4 class="mb-3">
+
                             Page Not Found
+
                         </h4>
 
-                        <p>
+                        <p class="mb-0">
+
                             ${page}
+
                         </p>
 
                     </div>
@@ -286,6 +196,139 @@ async function loadPage(page) {
             `;
 
         }
+
+    }
+
+}
+
+
+// ==========================================================
+// PAGE INITIALIZATION CONTROLLER
+// ==========================================================
+
+async function initializePage(page) {
+
+    switch (page) {
+
+
+        // ==================================================
+        // CATEGORIES
+        // ==================================================
+
+        case "pages/categories.html":
+
+            console.log(
+                "=== CATEGORIES PAGE ==="
+            );
+
+
+            if (
+                typeof loadCategories ===
+                "function"
+            ) {
+
+                loadCategories();
+
+            }
+
+
+            if (
+                typeof initializeCategoryPage ===
+                "function"
+            ) {
+
+                initializeCategoryPage();
+
+            }
+
+            break;
+
+
+        // ==================================================
+        // PRODUCTS
+        // ==================================================
+
+        case "pages/products.html":
+
+            console.log(
+                "=== PRODUCTS PAGE ==="
+            );
+
+
+            // ----------------------------------------------
+            // ONLY ONE PRODUCT INITIALIZATION
+            // ----------------------------------------------
+
+            if (
+                typeof initializeProductPage ===
+                "function"
+            ) {
+
+                console.log(
+                    "Initializing Product Page..."
+                );
+
+                initializeProductPage();
+
+            }
+            else {
+
+                console.error(
+                    "initializeProductPage() not found."
+                );
+
+            }
+
+            /*
+             * IMPORTANT:
+             *
+             * Do NOT call these here:
+             *
+             * initializeProductImage()
+             * loadProducts()
+             *
+             * They are already handled by the
+             * Product initialization engine.
+             */
+
+            break;
+
+
+        // ==================================================
+        // DASHBOARD
+        // ==================================================
+
+        case "pages/dashboard.html":
+
+            console.log(
+                "=== DASHBOARD PAGE ==="
+            );
+
+
+            if (
+                typeof loadDashboard ===
+                "function"
+            ) {
+
+                loadDashboard();
+
+            }
+
+            break;
+
+
+        // ==================================================
+        // DEFAULT
+        // ==================================================
+
+        default:
+
+            console.log(
+                "Page loaded without special initialization:",
+                page
+            );
+
+            break;
 
     }
 
@@ -422,7 +465,7 @@ function openStockOut() {
 
 
 // ==========================================================
-// PURCHASE ORDER
+// PURCHASE ORDERS
 // ==========================================================
 
 function openPurchaseOrders() {
@@ -557,17 +600,22 @@ function openCompanyProfile() {
 
 function logoutERP() {
 
-    if (
-        !confirm(
+    const confirmed =
+        confirm(
             "Are you sure you want to logout?"
-        )
-    ) {
+        );
+
+
+    if (!confirmed) {
 
         return;
 
     }
 
+
     localStorage.clear();
+
+    sessionStorage.clear();
 
     location.reload();
 
@@ -583,7 +631,15 @@ document.addEventListener(
     async function () {
 
         console.log(
-            "=== PAPPRITO ERP INITIALIZING ==="
+            "=========================================="
+        );
+
+        console.log(
+            "PAPPRITO ERP INITIALIZING..."
+        );
+
+        console.log(
+            "=========================================="
         );
 
 
@@ -611,16 +667,48 @@ document.addEventListener(
             initializeSidebar();
 
         }
+        else {
+
+            if (!sidebarLoaded) {
+
+                console.error(
+                    "Sidebar failed to load."
+                );
+
+            }
+
+            if (
+                typeof initializeSidebar !==
+                "function"
+            ) {
+
+                console.warn(
+                    "initializeSidebar() not found."
+                );
+
+            }
+
+        }
 
 
         // ==================================================
         // LOAD NAVBAR
         // ==================================================
 
-        await loadComponent(
-            "navbar",
-            "components/navbar.html"
-        );
+        const navbarLoaded =
+            await loadComponent(
+                "navbar",
+                "components/navbar.html"
+            );
+
+
+        if (!navbarLoaded) {
+
+            console.error(
+                "Navbar failed to load."
+            );
+
+        }
 
 
         // ==================================================
@@ -633,13 +721,17 @@ document.addEventListener(
             );
 
 
-        if (savedPage) {
+        if (
+            savedPage &&
+            savedPage.trim() !== ""
+        ) {
 
             await loadPage(
                 savedPage
             );
 
         }
+
         else {
 
             await loadPage(
@@ -649,8 +741,20 @@ document.addEventListener(
         }
 
 
+        // ==================================================
+        // READY
+        // ==================================================
+
         console.log(
-            "=== PAPPRITO ERP READY ==="
+            "=========================================="
+        );
+
+        console.log(
+            "PAPPRITO ERP READY"
+        );
+
+        console.log(
+            "=========================================="
         );
 
     }
