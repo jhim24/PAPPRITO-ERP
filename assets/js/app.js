@@ -1,8 +1,9 @@
 // ==========================================================
 // PAPPRITO ERP
-// APP / NAVIGATION ENGINE
+// APP / NAVIGATION ENGINE V2
 // File : assets/js/app.js
 // Description : Main ERP Navigation + Component Loader
+// Mobile Hamburger Fixed
 // ==========================================================
 
 "use strict";
@@ -40,34 +41,26 @@ const productScripts = [
 // LOAD HTML COMPONENT
 // ==========================================================
 
-async function loadComponent(
-    id,
-    file
-) {
+async function loadComponent(id, file) {
 
     try {
 
         const response =
             await fetch(file);
 
-
         if (!response.ok) {
 
             throw new Error(
-                "Unable to load: " +
-                file
+                "Unable to load: " + file
             );
 
         }
 
-
         const html =
             await response.text();
 
-
         const element =
             document.getElementById(id);
-
 
         if (!element) {
 
@@ -76,14 +69,13 @@ async function loadComponent(
                 id
             );
 
-            return;
+            return false;
 
         }
 
+        element.innerHTML = html;
 
-        element.innerHTML =
-            html;
-
+        return true;
 
     }
 
@@ -94,6 +86,8 @@ async function loadComponent(
             error
         );
 
+        return false;
+
     }
 
 }
@@ -103,25 +97,15 @@ async function loadComponent(
 // LOAD JAVASCRIPT FILE
 // ==========================================================
 
-function loadScript(
-    src
-) {
+function loadScript(src) {
 
     return new Promise(
-        function (
-            resolve,
-            reject
-        ) {
-
-            // ----------------------------------------------
-            // CHECK IF ALREADY LOADED
-            // ----------------------------------------------
+        function(resolve, reject) {
 
             const existing =
                 document.querySelector(
                     `script[data-papprito-script="${src}"]`
                 );
-
 
             if (existing) {
 
@@ -131,61 +115,40 @@ function loadScript(
 
             }
 
-
-            // ----------------------------------------------
-            // CREATE SCRIPT
-            // ----------------------------------------------
-
             const script =
-                document.createElement(
-                    "script"
+                document.createElement("script");
+
+            script.src = src;
+
+            script.dataset.pappritoScript = src;
+
+            script.onload = function() {
+
+                console.log(
+                    "Loaded:",
+                    src
                 );
 
+                resolve();
 
-            script.src =
-                src;
+            };
 
+            script.onerror = function() {
 
-            script.dataset.pappritoScript =
-                src;
+                console.error(
+                    "Failed to load:",
+                    src
+                );
 
+                reject(
+                    new Error(
+                        "Unable to load " + src
+                    )
+                );
 
-            script.onload =
-                function () {
+            };
 
-                    console.log(
-                        "Loaded:",
-                        src
-                    );
-
-
-                    resolve();
-
-                };
-
-
-            script.onerror =
-                function () {
-
-                    console.error(
-                        "Failed to load:",
-                        src
-                    );
-
-
-                    reject(
-                        new Error(
-                            "Unable to load " +
-                            src
-                        )
-                    );
-
-                };
-
-
-            document.body.appendChild(
-                script
-            );
+            document.body.appendChild(script);
 
         }
     );
@@ -199,18 +162,11 @@ function loadScript(
 
 async function loadProductScripts() {
 
-    // ------------------------------------------------------
-    // ALREADY LOADED
-    // ------------------------------------------------------
-
-    if (
-        productScriptsLoaded
-    ) {
+    if (productScriptsLoaded) {
 
         return;
 
     }
-
 
     console.log(
         "=========================================="
@@ -224,38 +180,20 @@ async function loadProductScripts() {
         "=========================================="
     );
 
-
     try {
-
-        // --------------------------------------------------
-        // LOAD ONE BY ONE
-        // --------------------------------------------------
 
         for (
             const script of productScripts
         ) {
 
-            await loadScript(
-                script
-            );
+            await loadScript(script);
 
         }
 
-
-        productScriptsLoaded =
-            true;
-
-
-        console.log(
-            "=========================================="
-        );
+        productScriptsLoaded = true;
 
         console.log(
             "ALL PRODUCT ENGINES LOADED."
-        );
-
-        console.log(
-            "=========================================="
         );
 
     }
@@ -266,7 +204,6 @@ async function loadProductScripts() {
             "Product Script Loading Error:",
             error
         );
-
 
         throw error;
 
@@ -279,9 +216,7 @@ async function loadProductScripts() {
 // LOAD PAGE
 // ==========================================================
 
-async function loadPage(
-    page
-) {
+async function loadPage(page) {
 
     try {
 
@@ -290,38 +225,22 @@ async function loadPage(
             page
         );
 
-
-        // ==================================================
-        // GET PAGE
-        // ==================================================
-
         const response =
             await fetch(page);
-
 
         if (!response.ok) {
 
             throw new Error(
-                "Unable to load page: " +
-                page
+                "Unable to load page: " + page
             );
 
         }
 
-
         const html =
             await response.text();
 
-
-        // ==================================================
-        // CONTENT CONTAINER
-        // ==================================================
-
         const content =
-            document.getElementById(
-                "content"
-            );
-
+            document.getElementById("content");
 
         if (!content) {
 
@@ -331,18 +250,7 @@ async function loadPage(
 
         }
 
-
-        // ==================================================
-        // LOAD HTML
-        // ==================================================
-
-        content.innerHTML =
-            html;
-
-
-        // ==================================================
-        // SAVE CURRENT PAGE
-        // ==================================================
+        content.innerHTML = html;
 
         localStorage.setItem(
             "currentPage",
@@ -363,11 +271,6 @@ async function loadPage(
 
             case "pages/dashboard.html":
 
-                console.log(
-                    "=== DASHBOARD PAGE ==="
-                );
-
-
                 if (
                     typeof loadDashboard ===
                     "function"
@@ -376,7 +279,6 @@ async function loadPage(
                     loadDashboard();
 
                 }
-
 
                 break;
 
@@ -391,29 +293,15 @@ async function loadPage(
                     "=== PRODUCTS PAGE ==="
                 );
 
-
                 try {
-
-                    // ------------------------------------------
-                    // LOAD PRODUCT JS FIRST
-                    // ------------------------------------------
 
                     await loadProductScripts();
 
-
-                    // ------------------------------------------
-                    // INITIALIZE PRODUCT PAGE
-                    // ------------------------------------------
 
                     if (
                         typeof initializeProductPage ===
                         "function"
                     ) {
-
-                        console.log(
-                            "Running initializeProductPage()"
-                        );
-
 
                         initializeProductPage();
 
@@ -428,40 +316,14 @@ async function loadPage(
                     }
 
 
-                    // ------------------------------------------
-                    // PRODUCT IMAGE
-                    // ------------------------------------------
-
-                    if (
-                        typeof initializeProductImage ===
-                        "function"
-                    ) {
-
-                        console.log(
-                            "Product Image Engine ready."
-                        );
-
-                    }
-
-
-                    // ------------------------------------------
-                    // PRODUCT LISTENER
-                    // ------------------------------------------
-
                     if (
                         typeof startProductListener ===
                         "function"
                     ) {
 
-                        console.log(
-                            "Starting Product Firebase Listener..."
-                        );
-
-
                         startProductListener();
 
                     }
-
 
                     console.log(
                         "Product Master initialized successfully."
@@ -476,7 +338,6 @@ async function loadPage(
                         productError
                     );
 
-
                     content.innerHTML += `
 
                         <div class="alert alert-danger m-3">
@@ -485,25 +346,17 @@ async function loadPage(
                                 Product Module Error
                             </strong>
 
-                            <br>
-
-                            Unable to initialize
-                            Product Master.
-
                             <br><br>
 
-                            <small>
-                                ${escapeAppHTML(
-                                    productError.message
-                                )}
-                            </small>
+                            ${escapeAppHTML(
+                                productError.message
+                            )}
 
                         </div>
 
                     `;
 
                 }
-
 
                 break;
 
@@ -514,11 +367,6 @@ async function loadPage(
 
             case "pages/categories.html":
 
-                console.log(
-                    "=== CATEGORIES PAGE ==="
-                );
-
-
                 if (
                     typeof loadCategories ===
                     "function"
@@ -528,7 +376,6 @@ async function loadPage(
 
                 }
 
-
                 if (
                     typeof initializeCategoryPage ===
                     "function"
@@ -537,7 +384,6 @@ async function loadPage(
                     initializeCategoryPage();
 
                 }
-
 
                 break;
 
@@ -830,10 +676,6 @@ async function loadPage(
                 break;
 
 
-            // ==================================================
-            // DEFAULT
-            // ==================================================
-
             default:
 
                 console.log(
@@ -860,12 +702,8 @@ async function loadPage(
             error
         );
 
-
         const content =
-            document.getElementById(
-                "content"
-            );
-
+            document.getElementById("content");
 
         if (content) {
 
@@ -905,10 +743,12 @@ async function loadPage(
 
 
 // ==========================================================
-// DASHBOARD
+// NAVIGATION FUNCTIONS
 // ==========================================================
 
 function openDashboard() {
+
+    closeSidebarMobile();
 
     loadPage(
         "pages/dashboard.html"
@@ -916,10 +756,6 @@ function openDashboard() {
 
 }
 
-
-// ==========================================================
-// POS
-// ==========================================================
 
 function openPOS() {
 
@@ -929,11 +765,9 @@ function openPOS() {
 }
 
 
-// ==========================================================
-// RECEIVING ORDERS
-// ==========================================================
-
 function openReceivingOrders() {
+
+    closeSidebarMobile();
 
     loadPage(
         "pages/receiving-orders.html"
@@ -942,11 +776,9 @@ function openReceivingOrders() {
 }
 
 
-// ==========================================================
-// KITCHEN
-// ==========================================================
-
 function openKitchen() {
+
+    closeSidebarMobile();
 
     loadPage(
         "pages/kitchen.html"
@@ -955,11 +787,9 @@ function openKitchen() {
 }
 
 
-// ==========================================================
-// TABLES
-// ==========================================================
-
 function openTables() {
+
+    closeSidebarMobile();
 
     loadPage(
         "pages/tables.html"
@@ -968,11 +798,9 @@ function openTables() {
 }
 
 
-// ==========================================================
-// PRODUCTS
-// ==========================================================
-
 function openProducts() {
+
+    closeSidebarMobile();
 
     loadPage(
         "pages/products.html"
@@ -981,11 +809,9 @@ function openProducts() {
 }
 
 
-// ==========================================================
-// CATEGORIES
-// ==========================================================
-
 function openCategory() {
+
+    closeSidebarMobile();
 
     loadPage(
         "pages/categories.html"
@@ -994,11 +820,9 @@ function openCategory() {
 }
 
 
-// ==========================================================
-// INVENTORY
-// ==========================================================
-
 function openInventory() {
+
+    closeSidebarMobile();
 
     loadPage(
         "pages/inventory.html"
@@ -1007,11 +831,9 @@ function openInventory() {
 }
 
 
-// ==========================================================
-// STOCK IN
-// ==========================================================
-
 function openStockIn() {
+
+    closeSidebarMobile();
 
     loadPage(
         "pages/stock-in.html"
@@ -1020,11 +842,9 @@ function openStockIn() {
 }
 
 
-// ==========================================================
-// STOCK OUT
-// ==========================================================
-
 function openStockOut() {
+
+    closeSidebarMobile();
 
     loadPage(
         "pages/stock-out.html"
@@ -1033,11 +853,9 @@ function openStockOut() {
 }
 
 
-// ==========================================================
-// PURCHASE ORDERS
-// ==========================================================
-
 function openPurchaseOrders() {
+
+    closeSidebarMobile();
 
     loadPage(
         "pages/purchase-orders.html"
@@ -1046,11 +864,9 @@ function openPurchaseOrders() {
 }
 
 
-// ==========================================================
-// SUPPLIERS
-// ==========================================================
-
 function openSuppliers() {
+
+    closeSidebarMobile();
 
     loadPage(
         "pages/suppliers.html"
@@ -1059,11 +875,9 @@ function openSuppliers() {
 }
 
 
-// ==========================================================
-// CUSTOMERS
-// ==========================================================
-
 function openCustomers() {
+
+    closeSidebarMobile();
 
     loadPage(
         "pages/customers.html"
@@ -1072,11 +886,9 @@ function openCustomers() {
 }
 
 
-// ==========================================================
-// SALES
-// ==========================================================
-
 function openSales() {
+
+    closeSidebarMobile();
 
     loadPage(
         "pages/sales.html"
@@ -1085,11 +897,9 @@ function openSales() {
 }
 
 
-// ==========================================================
-// REPORTS
-// ==========================================================
-
 function openReports() {
+
+    closeSidebarMobile();
 
     loadPage(
         "pages/reports.html"
@@ -1098,11 +908,9 @@ function openReports() {
 }
 
 
-// ==========================================================
-// EMPLOYEES
-// ==========================================================
-
 function openEmployees() {
+
+    closeSidebarMobile();
 
     loadPage(
         "pages/employees.html"
@@ -1111,11 +919,9 @@ function openEmployees() {
 }
 
 
-// ==========================================================
-// ATTENDANCE
-// ==========================================================
-
 function openAttendance() {
+
+    closeSidebarMobile();
 
     loadPage(
         "pages/attendance.html"
@@ -1124,11 +930,9 @@ function openAttendance() {
 }
 
 
-// ==========================================================
-// PAYROLL
-// ==========================================================
-
 function openPayroll() {
+
+    closeSidebarMobile();
 
     loadPage(
         "pages/payroll.html"
@@ -1137,11 +941,9 @@ function openPayroll() {
 }
 
 
-// ==========================================================
-// SETTINGS
-// ==========================================================
-
 function openSettings() {
+
+    closeSidebarMobile();
 
     loadPage(
         "pages/settings.html"
@@ -1150,11 +952,9 @@ function openSettings() {
 }
 
 
-// ==========================================================
-// COMPANY PROFILE
-// ==========================================================
-
 function openCompanyProfile() {
+
+    closeSidebarMobile();
 
     loadPage(
         "pages/company-profile.html"
@@ -1169,29 +969,17 @@ function openCompanyProfile() {
 
 function logoutERP() {
 
-    const confirmed =
-        confirm(
+    if (
+        !confirm(
             "Are you sure you want to logout?"
-        );
-
-
-    if (!confirmed) {
+        )
+    ) {
 
         return;
 
     }
 
-
-    // ------------------------------------------------------
-    // CLEAR ERP SESSION
-    // ------------------------------------------------------
-
     localStorage.clear();
-
-
-    // ------------------------------------------------------
-    // RELOAD
-    // ------------------------------------------------------
 
     location.reload();
 
@@ -1199,59 +987,76 @@ function logoutERP() {
 
 
 // ==========================================================
-// SIDEBAR MOBILE TOGGLE
+// MOBILE SIDEBAR
 // ==========================================================
 
 function toggleSidebar() {
 
     const sidebar =
-        document.getElementById(
-            "sidebar"
-        );
-
+        document.getElementById("sidebar");
 
     if (!sidebar) {
+
+        console.warn(
+            "Sidebar element not found."
+        );
 
         return;
 
     }
 
 
-    sidebar.classList.toggle(
-        "show"
-    );
+    const isOpen =
+        sidebar.classList.contains("show");
 
 
-    document.body.classList.toggle(
-        "sidebar-open"
+    if (isOpen) {
+
+        sidebar.classList.remove("show");
+
+        document.body.classList.remove(
+            "sidebar-open"
+        );
+
+    }
+
+    else {
+
+        sidebar.classList.add("show");
+
+        document.body.classList.add(
+            "sidebar-open"
+        );
+
+    }
+
+
+    console.log(
+        "Sidebar:",
+        isOpen
+            ? "CLOSED"
+            : "OPEN"
     );
 
 }
 
 
 // ==========================================================
-// CLOSE SIDEBAR ON MOBILE
+// CLOSE MOBILE SIDEBAR
 // ==========================================================
 
 function closeSidebarMobile() {
 
     const sidebar =
-        document.getElementById(
-            "sidebar"
+        document.getElementById("sidebar");
+
+    if (sidebar) {
+
+        sidebar.classList.remove(
+            "show"
         );
 
-
-    if (!sidebar) {
-
-        return;
-
     }
-
-
-    sidebar.classList.remove(
-        "show"
-    );
-
 
     document.body.classList.remove(
         "sidebar-open"
@@ -1264,9 +1069,7 @@ function closeSidebarMobile() {
 // ESCAPE HTML
 // ==========================================================
 
-function escapeAppHTML(
-    value
-) {
+function escapeAppHTML(value) {
 
     return String(
         value ?? ""
@@ -1301,26 +1104,43 @@ function escapeAppHTML(
 
 
 // ==========================================================
-// GLOBAL SIDEBAR CLICK HANDLER
+// UNIVERSAL MOBILE HAMBURGER HANDLER
+// ==========================================================
+//
+// Supports:
+//
+// #sidebarToggle
+// .sidebar-toggle
+// [data-sidebar-toggle]
+// .navbar-toggler
+// buttons containing fa-bars
+//
+// This uses EVENT DELEGATION so it still works
+// even when navbar.html is loaded dynamically.
 // ==========================================================
 
 document.addEventListener(
     "click",
-    function (event) {
+    function(event) {
 
-        // --------------------------------------------------
-        // HAMBURGER
-        // --------------------------------------------------
-
-        const hamburger =
+        const target =
             event.target.closest(
-                "#sidebarToggle, .sidebar-toggle, [data-sidebar-toggle]"
+                "#sidebarToggle, " +
+                ".sidebar-toggle, " +
+                "[data-sidebar-toggle], " +
+                ".navbar-toggler"
             );
 
 
-        if (hamburger) {
+        // ==================================================
+        // HAMBURGER FOUND
+        // ==================================================
+
+        if (target) {
 
             event.preventDefault();
+
+            event.stopPropagation();
 
             toggleSidebar();
 
@@ -1329,9 +1149,37 @@ document.addEventListener(
         }
 
 
-        // --------------------------------------------------
-        // MOBILE SIDEBAR NAVIGATION
-        // --------------------------------------------------
+        // ==================================================
+        // ALSO DETECT BUTTON WITH FA-BARS
+        // ==================================================
+
+        const bars =
+            event.target.closest(
+                "button"
+            );
+
+
+        if (
+            bars &&
+            bars.querySelector(
+                ".fa-bars"
+            )
+        ) {
+
+            event.preventDefault();
+
+            event.stopPropagation();
+
+            toggleSidebar();
+
+            return;
+
+        }
+
+
+        // ==================================================
+        // CLICK SIDEBAR LINK ON MOBILE
+        // ==================================================
 
         const navLink =
             event.target.closest(
@@ -1345,13 +1193,83 @@ document.addEventListener(
         ) {
 
             setTimeout(
-                function () {
+                function() {
 
                     closeSidebarMobile();
 
                 },
                 100
             );
+
+        }
+
+
+        // ==================================================
+        // CLICK OVERLAY
+        // ==================================================
+
+        const sidebar =
+            document.getElementById(
+                "sidebar"
+            );
+
+
+        if (
+            sidebar &&
+            sidebar.classList.contains("show") &&
+            window.innerWidth <= 992
+        ) {
+
+            if (
+                !event.target.closest(
+                    "#sidebar"
+                )
+            ) {
+
+                closeSidebarMobile();
+
+            }
+
+        }
+
+    },
+    true
+);
+
+
+// ==========================================================
+// ESC KEY CLOSE
+// ==========================================================
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (
+            event.key === "Escape"
+        ) {
+
+            closeSidebarMobile();
+
+        }
+
+    }
+);
+
+
+// ==========================================================
+// WINDOW RESIZE
+// ==========================================================
+
+window.addEventListener(
+    "resize",
+    function() {
+
+        if (
+            window.innerWidth > 992
+        ) {
+
+            closeSidebarMobile();
 
         }
 
@@ -1365,7 +1283,7 @@ document.addEventListener(
 
 document.addEventListener(
     "DOMContentLoaded",
-    async function () {
+    async function() {
 
         console.log(
             "=========================================="
@@ -1401,29 +1319,21 @@ document.addEventListener(
 
 
         // ==================================================
-        // INITIALIZE SIDEBAR
+        // IMPORTANT
+        //
+        // DO NOT CALL initializeSidebar()
+        //
+        // Hamburger is handled by delegated
+        // event listener above.
         // ==================================================
 
-        if (
-            typeof initializeSidebar ===
-            "function"
-        ) {
-
-            initializeSidebar();
-
-        }
-
-        else {
-
-            console.warn(
-                "initializeSidebar() not found."
-            );
-
-        }
+        console.log(
+            "Sidebar component loaded."
+        );
 
 
         // ==================================================
-        // INITIALIZE NAVBAR
+        // NAVBAR INITIALIZATION
         // ==================================================
 
         if (
@@ -1437,7 +1347,7 @@ document.addEventListener(
 
 
         // ==================================================
-        // RESTORE PAGE
+        // RESTORE CURRENT PAGE
         // ==================================================
 
         const savedPage =
