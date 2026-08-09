@@ -1,153 +1,283 @@
-// ==========================================
+// ==========================================================
+// PAPPRITO ERP
+// APP CONTROLLER
+// File : assets/js/app.js
+// Description : Component Loader & Navigation
+// ==========================================================
+
+"use strict";
+
+
+// ==========================================================
 // LOAD HTML COMPONENT
-// ==========================================
+// ==========================================================
 
-async function loadComponent(id, file){
+async function loadComponent(id, file) {
 
-    try{
+    try {
 
         const response = await fetch(file);
 
-        if(!response.ok){
+        if (!response.ok) {
 
-            throw new Error("Unable to load: " + file);
+            throw new Error(
+                "Unable to load component: " + file
+            );
 
         }
 
         const html = await response.text();
 
-        const element = document.getElementById(id);
+        const element =
+            document.getElementById(id);
 
-        if(element){
+        if (!element) {
 
-            element.innerHTML = html;
+            console.warn(
+                "Component container not found: #" + id
+            );
+
+            return false;
 
         }
 
+        element.innerHTML = html;
+
+        return true;
+
     }
 
-    catch(error){
+    catch (error) {
 
-        console.error("Component Error:", error);
+        console.error(
+            "Component Error:",
+            error
+        );
+
+        return false;
 
     }
 
 }
 
-// ==========================================
+
+// ==========================================================
 // PAPPRITO ERP
 // NAVIGATION
-// ==========================================
+// ==========================================================
 
-function loadPage(page) {
+async function loadPage(page) {
 
-    fetch(page)
+    try {
 
-        .then(response => {
+        const response =
+            await fetch(page);
 
-            if (!response.ok) {
+        if (!response.ok) {
 
-                throw new Error(page);
-
-            }
-
-            return response.text();
-
-        })
-
-        .then(html => {
-
-            const content = document.getElementById("content");
-
-            content.innerHTML = html;
-
-            // Save Current Page
-            localStorage.setItem("currentPage", page);
-
-            // ==========================================
-            // INITIALIZE PAGE MODULES
-            // ==========================================
-
-           switch (page) {
-
-    case "pages/categories.html":
-
-        if (typeof loadCategories === "function") {
-
-            loadCategories();
+            throw new Error(page);
 
         }
 
-        if (typeof initializeCategoryPage === "function") {
+        const html =
+            await response.text();
 
-            initializeCategoryPage();
+        const content =
+            document.getElementById("content");
 
-        }
+        if (!content) {
 
-        break;
-
-    case "pages/products.html":
-
-    console.log("=== PRODUCTS PAGE ===");
-
-    console.log("initializeProductPage =", typeof initializeProductPage);
-    console.log("initializeProductImage =", typeof initializeProductImage);
-    console.log("loadProducts =", typeof loadProducts);
-
-    if (typeof initializeProductPage === "function") {
-
-        console.log("Running initializeProductPage()");
-        initializeProductPage();
-
-    }
-
-    if (typeof initializeProductImage === "function") {
-
-        console.log("Running initializeProductImage()");
-        initializeProductImage();
-
-    }
-
-    if (typeof loadProducts === "function") {
-
-        console.log("Running loadProducts()");
-        loadProducts();
-
-    } else {
-
-        console.log("loadProducts NOT FOUND");
-
-    }
-
-    break;
-                   
-    case "pages/dashboard.html":
-
-        if (typeof loadDashboard === "function") {
-
-            loadDashboard();
+            throw new Error(
+                "Content container not found."
+            );
 
         }
 
-        break;
+        content.innerHTML = html;
 
-}
 
-        })
+        // ==================================================
+        // SAVE CURRENT PAGE
+        // ==================================================
 
-        .catch(error => {
+        localStorage.setItem(
+            "currentPage",
+            page
+        );
 
-            console.error("Load Page Error:", error);
 
-            document.getElementById("content").innerHTML = `
+        // ==================================================
+        // INITIALIZE PAGE MODULES
+        // ==================================================
+
+        switch (page) {
+
+
+            // ==============================================
+            // CATEGORIES
+            // ==============================================
+
+            case "pages/categories.html":
+
+                if (
+                    typeof loadCategories ===
+                    "function"
+                ) {
+
+                    loadCategories();
+
+                }
+
+                if (
+                    typeof initializeCategoryPage ===
+                    "function"
+                ) {
+
+                    initializeCategoryPage();
+
+                }
+
+                break;
+
+
+            // ==============================================
+            // PRODUCTS
+            // ==============================================
+
+            case "pages/products.html":
+
+                console.log(
+                    "=== PRODUCTS PAGE ==="
+                );
+
+                console.log(
+                    "initializeProductPage =",
+                    typeof initializeProductPage
+                );
+
+                console.log(
+                    "initializeProductImage =",
+                    typeof initializeProductImage
+                );
+
+                console.log(
+                    "loadProducts =",
+                    typeof loadProducts
+                );
+
+
+                if (
+                    typeof initializeProductPage ===
+                    "function"
+                ) {
+
+                    console.log(
+                        "Running initializeProductPage()"
+                    );
+
+                    initializeProductPage();
+
+                }
+
+
+                if (
+                    typeof initializeProductImage ===
+                    "function"
+                ) {
+
+                    console.log(
+                        "Running initializeProductImage()"
+                    );
+
+                    initializeProductImage();
+
+                }
+
+
+                if (
+                    typeof loadProducts ===
+                    "function"
+                ) {
+
+                    console.log(
+                        "Running loadProducts()"
+                    );
+
+                    loadProducts();
+
+                }
+                else {
+
+                    console.log(
+                        "loadProducts NOT FOUND"
+                    );
+
+                }
+
+                break;
+
+
+            // ==============================================
+            // DASHBOARD
+            // ==============================================
+
+            case "pages/dashboard.html":
+
+                if (
+                    typeof loadDashboard ===
+                    "function"
+                ) {
+
+                    loadDashboard();
+
+                }
+
+                break;
+
+
+            // ==============================================
+            // DEFAULT
+            // ==============================================
+
+            default:
+
+                console.log(
+                    "Page loaded:",
+                    page
+                );
+
+                break;
+
+        }
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Load Page Error:",
+            error
+        );
+
+
+        const content =
+            document.getElementById("content");
+
+        if (content) {
+
+            content.innerHTML = `
 
                 <div class="container-fluid p-5">
 
                     <div class="alert alert-danger">
 
-                        <h4>Page Not Found</h4>
+                        <h4>
+                            Page Not Found
+                        </h4>
 
-                        <p>${page}</p>
+                        <p>
+                            ${page}
+                        </p>
 
                     </div>
 
@@ -155,267 +285,373 @@ function loadPage(page) {
 
             `;
 
-        });
+        }
+
+    }
 
 }
-// ==========================================
+
+
+// ==========================================================
 // DASHBOARD
-// ==========================================
+// ==========================================================
 
-function openDashboard(){
+function openDashboard() {
 
-    loadPage("pages/dashboard.html");
-
-}
-
-// ==========================================
-// POS (FULL SCREEN)
-// ==========================================
-
-function openPOS(){
-
-    window.location.href = "pages/pos.html";
+    loadPage(
+        "pages/dashboard.html"
+    );
 
 }
 
-// ==========================================
+
+// ==========================================================
+// POS
+// ==========================================================
+
+function openPOS() {
+
+    window.location.href =
+        "pages/pos.html";
+
+}
+
+
+// ==========================================================
 // RECEIVING ORDERS
-// ==========================================
+// ==========================================================
 
-function openReceivingOrders(){
+function openReceivingOrders() {
 
-    loadPage("pages/receiving-orders.html");
+    loadPage(
+        "pages/receiving-orders.html"
+    );
 
 }
 
-// ==========================================
+
+// ==========================================================
 // KITCHEN
-// ==========================================
+// ==========================================================
 
-function openKitchen(){
+function openKitchen() {
 
-    loadPage("pages/kitchen.html");
+    loadPage(
+        "pages/kitchen.html"
+    );
 
 }
 
-// ==========================================
+
+// ==========================================================
 // TABLES
-// ==========================================
+// ==========================================================
 
-function openTables(){
+function openTables() {
 
-    loadPage("pages/tables.html");
+    loadPage(
+        "pages/tables.html"
+    );
 
 }
 
-// ==========================================
+
+// ==========================================================
 // PRODUCTS
-// ==========================================
+// ==========================================================
 
-function openProducts(){
+function openProducts() {
 
-    loadPage("pages/products.html");
+    loadPage(
+        "pages/products.html"
+    );
 
 }
 
-// ==========================================
+
+// ==========================================================
 // CATEGORIES
-// ==========================================
+// ==========================================================
 
-function openCategory(){
+function openCategory() {
 
-    loadPage("pages/categories.html");
+    loadPage(
+        "pages/categories.html"
+    );
 
 }
 
-// ==========================================
+
+// ==========================================================
 // INVENTORY
-// ==========================================
+// ==========================================================
 
-function openInventory(){
+function openInventory() {
 
-    loadPage("pages/inventory.html");
+    loadPage(
+        "pages/inventory.html"
+    );
 
 }
 
-// ==========================================
+
+// ==========================================================
 // STOCK IN
-// ==========================================
+// ==========================================================
 
-function openStockIn(){
+function openStockIn() {
 
-    loadPage("pages/stock-in.html");
+    loadPage(
+        "pages/stock-in.html"
+    );
 
 }
 
-// ==========================================
+
+// ==========================================================
 // STOCK OUT
-// ==========================================
+// ==========================================================
 
-function openStockOut(){
+function openStockOut() {
 
-    loadPage("pages/stock-out.html");
+    loadPage(
+        "pages/stock-out.html"
+    );
 
 }
 
-// ==========================================
+
+// ==========================================================
 // PURCHASE ORDER
-// ==========================================
+// ==========================================================
 
-function openPurchaseOrders(){
+function openPurchaseOrders() {
 
-    loadPage("pages/purchase-orders.html");
+    loadPage(
+        "pages/purchase-orders.html"
+    );
 
 }
 
-// ==========================================
+
+// ==========================================================
 // SUPPLIERS
-// ==========================================
+// ==========================================================
 
-function openSuppliers(){
+function openSuppliers() {
 
-    loadPage("pages/suppliers.html");
+    loadPage(
+        "pages/suppliers.html"
+    );
 
 }
 
-// ==========================================
+
+// ==========================================================
 // CUSTOMERS
-// ==========================================
+// ==========================================================
 
-function openCustomers(){
+function openCustomers() {
 
-    loadPage("pages/customers.html");
+    loadPage(
+        "pages/customers.html"
+    );
 
 }
 
-// ==========================================
+
+// ==========================================================
 // SALES
-// ==========================================
+// ==========================================================
 
-function openSales(){
+function openSales() {
 
-    loadPage("pages/sales.html");
+    loadPage(
+        "pages/sales.html"
+    );
 
 }
 
-// ==========================================
+
+// ==========================================================
 // REPORTS
-// ==========================================
+// ==========================================================
 
-function openReports(){
+function openReports() {
 
-    loadPage("pages/reports.html");
+    loadPage(
+        "pages/reports.html"
+    );
 
 }
 
-// ==========================================
+
+// ==========================================================
 // EMPLOYEES
-// ==========================================
+// ==========================================================
 
-function openEmployees(){
+function openEmployees() {
 
-    loadPage("pages/employees.html");
+    loadPage(
+        "pages/employees.html"
+    );
 
 }
 
-// ==========================================
+
+// ==========================================================
 // ATTENDANCE
-// ==========================================
+// ==========================================================
 
-function openAttendance(){
+function openAttendance() {
 
-    loadPage("pages/attendance.html");
+    loadPage(
+        "pages/attendance.html"
+    );
 
 }
 
-// ==========================================
+
+// ==========================================================
 // PAYROLL
-// ==========================================
+// ==========================================================
 
-function openPayroll(){
+function openPayroll() {
 
-    loadPage("pages/payroll.html");
+    loadPage(
+        "pages/payroll.html"
+    );
 
 }
 
-// ==========================================
+
+// ==========================================================
 // SETTINGS
-// ==========================================
+// ==========================================================
 
-function openSettings(){
+function openSettings() {
 
-    loadPage("pages/settings.html");
+    loadPage(
+        "pages/settings.html"
+    );
 
 }
 
-// ==========================================
+
+// ==========================================================
 // COMPANY PROFILE
-// ==========================================
+// ==========================================================
 
-function openCompanyProfile(){
+function openCompanyProfile() {
 
-    loadPage("pages/company-profile.html");
+    loadPage(
+        "pages/company-profile.html"
+    );
 
 }
 
-// ==========================================
+
+// ==========================================================
 // LOGOUT
-// ==========================================
+// ==========================================================
 
-function logoutERP(){
+function logoutERP() {
 
-    if(confirm("Are you sure you want to logout?")){
+    if (
+        !confirm(
+            "Are you sure you want to logout?"
+        )
+    ) {
 
-        localStorage.clear();
-
-        location.reload();
+        return;
 
     }
+
+    localStorage.clear();
+
+    location.reload();
 
 }
 
-// ==========================================
-// RESTORE LAST PAGE
-// ==========================================
 
-document.addEventListener("DOMContentLoaded", async()=>{
+// ==========================================================
+// INITIALIZE ERP
+// ==========================================================
 
-    // Load Sidebar
+document.addEventListener(
+    "DOMContentLoaded",
+    async function () {
 
-    await loadComponent(
+        console.log(
+            "=== PAPPRITO ERP INITIALIZING ==="
+        );
 
-        "sidebar",
 
-        "components/sidebar.html"
+        // ==================================================
+        // LOAD SIDEBAR
+        // ==================================================
 
-    );
+        const sidebarLoaded =
+            await loadComponent(
+                "sidebar",
+                "components/sidebar.html"
+            );
 
-    // Load Navbar
 
-    await loadComponent(
+        // ==================================================
+        // INITIALIZE SIDEBAR
+        // ==================================================
 
-        "navbar",
+        if (
+            sidebarLoaded &&
+            typeof initializeSidebar ===
+            "function"
+        ) {
 
-        "components/navbar.html"
+            initializeSidebar();
 
-    );
+        }
 
-    // Restore last page
 
-    const page =
+        // ==================================================
+        // LOAD NAVBAR
+        // ==================================================
 
-        localStorage.getItem("currentPage");
+        await loadComponent(
+            "navbar",
+            "components/navbar.html"
+        );
 
-    if(page){
 
-        loadPage(page);
+        // ==================================================
+        // RESTORE LAST PAGE
+        // ==================================================
+
+        const savedPage =
+            localStorage.getItem(
+                "currentPage"
+            );
+
+
+        if (savedPage) {
+
+            await loadPage(
+                savedPage
+            );
+
+        }
+        else {
+
+            await loadPage(
+                "pages/dashboard.html"
+            );
+
+        }
+
+
+        console.log(
+            "=== PAPPRITO ERP READY ==="
+        );
 
     }
-
-    else{
-
-        loadPage("pages/dashboard.html");
-
-    }
-
-});
+);
