@@ -1,0 +1,1419 @@
+<!-- ==========================================================
+     PAPPRITO ERP
+     SETTINGS MASTER
+     File: pages/settings.html
+========================================================== -->
+
+<div class="container-fluid py-4">
+
+    <!-- ======================================================
+         HEADER
+    ======================================================= -->
+
+    <div class="row align-items-center mb-4">
+
+        <div class="col-lg-8">
+
+            <h2 class="fw-bold mb-1">
+
+                <i class="fa-solid fa-gear text-danger me-2"></i>
+
+                Settings
+
+            </h2>
+
+            <p class="text-muted mb-0">
+
+                Manage PAPPRITO ERP system configuration
+                from one central location.
+
+            </p>
+
+        </div>
+
+        <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+
+            <span
+                id="settingsSaveStatus"
+                class="badge bg-secondary">
+
+                Not saved
+
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <!-- ======================================================
+         SETTINGS LAYOUT
+    ======================================================= -->
+
+    <div class="row g-4">
+
+        <!-- ==================================================
+             LEFT NAVIGATION
+        =================================================== -->
+
+        <div class="col-lg-3">
+
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-body p-2">
+
+                    <div
+                        class="settings-nav"
+                        id="settingsNav">
+
+                        <button
+                            type="button"
+                            class="settings-nav-item active"
+                            data-section="general">
+
+                            <i class="fa-solid fa-building"></i>
+
+                            <span>General</span>
+
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="settings-nav-item"
+                            data-section="product">
+
+                            <i class="fa-solid fa-box"></i>
+
+                            <span>Product</span>
+
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="settings-nav-item"
+                            data-section="category">
+
+                            <i class="fa-solid fa-tags"></i>
+
+                            <span>Category</span>
+
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="settings-nav-item"
+                            data-section="pos">
+
+                            <i class="fa-solid fa-cash-register"></i>
+
+                            <span>POS</span>
+
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="settings-nav-item"
+                            data-section="onlineMenu">
+
+                            <i class="fa-solid fa-globe"></i>
+
+                            <span>Online Menu</span>
+
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="settings-nav-item"
+                            data-section="inventory">
+
+                            <i class="fa-solid fa-boxes-stacked"></i>
+
+                            <span>Inventory</span>
+
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="settings-nav-item"
+                            data-section="kitchen">
+
+                            <i class="fa-solid fa-kitchen-set"></i>
+
+                            <span>Kitchen</span>
+
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="settings-nav-item"
+                            data-section="receipt">
+
+                            <i class="fa-solid fa-receipt"></i>
+
+                            <span>Receipt & Printing</span>
+
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="settings-nav-item"
+                            data-section="permissions">
+
+                            <i class="fa-solid fa-user-shield"></i>
+
+                            <span>Users & Permissions</span>
+
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="settings-nav-item"
+                            data-section="system">
+
+                            <i class="fa-solid fa-server"></i>
+
+                            <span>System</span>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ==================================================
+             RIGHT CONTENT
+        =================================================== -->
+
+        <div class="col-lg-9">
+
+            <!-- ==============================================
+                 GENERAL
+            =============================================== -->
+
+            <section
+                class="settings-section active"
+                data-section-panel="general">
+
+                <div class="card border-0 shadow-sm">
+
+                    <div class="card-header bg-white">
+
+                        <h5 class="fw-bold mb-1">
+
+                            <i class="fa-solid fa-building text-danger me-2"></i>
+
+                            General Settings
+
+                        </h5>
+
+                        <small class="text-muted">
+
+                            Basic restaurant and business information.
+
+                        </small>
+
+                    </div>
+
+
+                    <div class="card-body">
+
+                        <div class="row g-3">
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+                                    Business Name
+                                </label>
+
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    id="settingBusinessName"
+                                    placeholder="PAPPRITO Restaurant">
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+                                    Branch Name
+                                </label>
+
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    id="settingBranchName"
+                                    placeholder="Main Branch">
+
+                            </div>
+
+
+                            <div class="col-12">
+
+                                <label class="form-label">
+                                    Business Address
+                                </label>
+
+                                <textarea
+                                    class="form-control"
+                                    id="settingBusinessAddress"
+                                    rows="2"></textarea>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+                                    Contact Number
+                                </label>
+
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    id="settingContactNumber">
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+                                    Email
+                                </label>
+
+                                <input
+                                    type="email"
+                                    class="form-control"
+                                    id="settingBusinessEmail">
+
+                            </div>
+
+
+                            <div class="col-md-4">
+
+                                <label class="form-label">
+                                    Currency
+                                </label>
+
+                                <select
+                                    class="form-select"
+                                    id="settingCurrency">
+
+                                    <option value="PHP">
+                                        PHP - Philippine Peso
+                                    </option>
+
+                                    <option value="QAR">
+                                        QAR - Qatari Riyal
+                                    </option>
+
+                                    <option value="USD">
+                                        USD - US Dollar
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                            <div class="col-md-4">
+
+                                <label class="form-label">
+                                    Tax Rate (%)
+                                </label>
+
+                                <input
+                                    type="number"
+                                    class="form-control"
+                                    id="settingTaxRate"
+                                    min="0"
+                                    step="0.01"
+                                    value="0">
+
+                            </div>
+
+
+                            <div class="col-md-4">
+
+                                <label class="form-label">
+                                    Time Zone
+                                </label>
+
+                                <select
+                                    class="form-select"
+                                    id="settingTimezone">
+
+                                    <option value="Asia/Manila">
+                                        Asia/Manila
+                                    </option>
+
+                                    <option value="Asia/Qatar">
+                                        Asia/Qatar
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ==============================================
+                 PRODUCT
+            =============================================== -->
+
+            <section
+                class="settings-section"
+                data-section-panel="product">
+
+                <div class="card border-0 shadow-sm">
+
+                    <div class="card-header bg-white">
+
+                        <h5 class="fw-bold">
+
+                            <i class="fa-solid fa-box text-danger me-2"></i>
+
+                            Product Settings
+
+                        </h5>
+
+                    </div>
+
+
+                    <div class="card-body">
+
+                        <div class="row g-3">
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+                                    Product Image Maximum Size
+                                </label>
+
+                                <select
+                                    class="form-select"
+                                    id="settingImageMaxSize">
+
+                                    <option value="2">
+                                        2 MB
+                                    </option>
+
+                                    <option value="5">
+                                        5 MB
+                                    </option>
+
+                                    <option value="10">
+                                        10 MB
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+                                    Default Reorder Level
+                                </label>
+
+                                <input
+                                    type="number"
+                                    class="form-control"
+                                    id="settingReorderLevel"
+                                    value="10"
+                                    min="0">
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+                                    Default Product Status
+                                </label>
+
+                                <select
+                                    class="form-select"
+                                    id="settingProductStatus">
+
+                                    <option value="Active">
+                                        Active
+                                    </option>
+
+                                    <option value="Inactive">
+                                        Inactive
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+                                    Product Code Prefix
+                                </label>
+
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    id="settingProductPrefix"
+                                    value="PROD">
+
+                            </div>
+
+
+                            <div class="col-12">
+
+                                <div class="form-check form-switch">
+
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="settingAutoProductCode"
+                                        checked>
+
+                                    <label
+                                        class="form-check-label"
+                                        for="settingAutoProductCode">
+
+                                        Automatically generate Product Code
+
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="col-12">
+
+                                <div class="form-check form-switch">
+
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="settingProductImages"
+                                        checked>
+
+                                    <label
+                                        class="form-check-label"
+                                        for="settingProductImages">
+
+                                        Enable Product Images
+
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ==============================================
+                 CATEGORY
+            =============================================== -->
+
+            <section
+                class="settings-section"
+                data-section-panel="category">
+
+                <div class="card border-0 shadow-sm">
+
+                    <div class="card-header bg-white">
+
+                        <h5 class="fw-bold">
+
+                            <i class="fa-solid fa-tags text-danger me-2"></i>
+
+                            Category Settings
+
+                        </h5>
+
+                    </div>
+
+
+                    <div class="card-body">
+
+                        <div class="row g-3">
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+                                    Category Code Prefix
+                                </label>
+
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    id="settingCategoryPrefix"
+                                    value="CAT">
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+                                    Default Display Order
+                                </label>
+
+                                <input
+                                    type="number"
+                                    class="form-control"
+                                    id="settingCategoryOrder"
+                                    value="1">
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+                                    Default Icon
+                                </label>
+
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    id="settingCategoryIcon"
+                                    value="fa-utensils">
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+                                    Default Theme Color
+                                </label>
+
+                                <input
+                                    type="color"
+                                    class="form-control form-control-color"
+                                    id="settingCategoryColor"
+                                    value="#C8102E">
+
+                            </div>
+
+
+                            <div class="col-12">
+
+                                <div class="form-check form-switch">
+
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="settingAutoCategoryCode"
+                                        checked>
+
+                                    <label
+                                        class="form-check-label"
+                                        for="settingAutoCategoryCode">
+
+                                        Automatically generate Category Code
+
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ==============================================
+                 POS
+            =============================================== -->
+
+            <section
+                class="settings-section"
+                data-section-panel="pos">
+
+                <div class="card border-0 shadow-sm">
+
+                    <div class="card-header bg-white">
+
+                        <h5 class="fw-bold">
+
+                            <i class="fa-solid fa-cash-register text-danger me-2"></i>
+
+                            POS Settings
+
+                        </h5>
+
+                    </div>
+
+
+                    <div class="card-body">
+
+                        <div class="row g-3">
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+                                    Default Payment Method
+                                </label>
+
+                                <select
+                                    class="form-select"
+                                    id="settingDefaultPayment">
+
+                                    <option value="Cash">
+                                        Cash
+                                    </option>
+
+                                    <option value="Card">
+                                        Card
+                                    </option>
+
+                                    <option value="GCash">
+                                        GCash
+                                    </option>
+
+                                    <option value="Maya">
+                                        Maya
+                                    </option>
+
+                                    <option value="Bank Transfer">
+                                        Bank Transfer
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+                                    Service Charge (%)
+                                </label>
+
+                                <input
+                                    type="number"
+                                    class="form-control"
+                                    id="settingServiceCharge"
+                                    value="0"
+                                    min="0"
+                                    step="0.01">
+
+                            </div>
+
+
+                            <div class="col-12">
+
+                                <label class="form-label">
+                                    Enabled Payment Methods
+                                </label>
+
+                                <div class="row g-2">
+
+                                    <div class="col-md-4">
+                                        <div class="form-check">
+                                            <input
+                                                class="form-check-input"
+                                                type="checkbox"
+                                                id="paymentCash"
+                                                checked>
+                                            <label
+                                                class="form-check-label"
+                                                for="paymentCash">
+                                                Cash
+                                            </label>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-md-4">
+                                        <div class="form-check">
+                                            <input
+                                                class="form-check-input"
+                                                type="checkbox"
+                                                id="paymentCard"
+                                                checked>
+                                            <label
+                                                class="form-check-label"
+                                                for="paymentCard">
+                                                Card
+                                            </label>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-md-4">
+                                        <div class="form-check">
+                                            <input
+                                                class="form-check-input"
+                                                type="checkbox"
+                                                id="paymentGCash"
+                                                checked>
+                                            <label
+                                                class="form-check-label"
+                                                for="paymentGCash">
+                                                GCash
+                                            </label>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-md-4">
+                                        <div class="form-check">
+                                            <input
+                                                class="form-check-input"
+                                                type="checkbox"
+                                                id="paymentMaya">
+                                            <label
+                                                class="form-check-label"
+                                                for="paymentMaya">
+                                                Maya
+                                            </label>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-md-4">
+                                        <div class="form-check">
+                                            <input
+                                                class="form-check-input"
+                                                type="checkbox"
+                                                id="paymentBank">
+                                            <label
+                                                class="form-check-label"
+                                                for="paymentBank">
+                                                Bank Transfer
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="col-12">
+
+                                <div class="form-check form-switch">
+
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="settingAllowDiscount"
+                                        checked>
+
+                                    <label
+                                        class="form-check-label"
+                                        for="settingAllowDiscount">
+
+                                        Allow Discounts
+
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ==============================================
+                 ONLINE MENU
+            =============================================== -->
+
+            <section
+                class="settings-section"
+                data-section-panel="onlineMenu">
+
+                <div class="card border-0 shadow-sm">
+
+                    <div class="card-header bg-white">
+
+                        <h5 class="fw-bold">
+
+                            <i class="fa-solid fa-globe text-danger me-2"></i>
+
+                            Online Menu Settings
+
+                        </h5>
+
+                    </div>
+
+
+                    <div class="card-body">
+
+                        <div class="form-check form-switch mb-3">
+
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                id="settingOnlineMenu"
+                                checked>
+
+                            <label
+                                class="form-check-label"
+                                for="settingOnlineMenu">
+
+                                Enable Online Menu
+
+                            </label>
+
+                        </div>
+
+
+                        <div class="form-check form-switch mb-3">
+
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                id="settingOnlineImages"
+                                checked>
+
+                            <label
+                                class="form-check-label"
+                                for="settingOnlineImages">
+
+                                Show Product Images
+
+                            </label>
+
+                        </div>
+
+
+                        <div class="form-check form-switch">
+
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                id="settingOnlineUnavailable">
+
+                            <label
+                                class="form-check-label"
+                                for="settingOnlineUnavailable">
+
+                                Show Unavailable Products
+
+                            </label>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ==============================================
+                 INVENTORY
+            =============================================== -->
+
+            <section
+                class="settings-section"
+                data-section-panel="inventory">
+
+                <div class="card border-0 shadow-sm">
+
+                    <div class="card-header bg-white">
+
+                        <h5 class="fw-bold">
+
+                            <i class="fa-solid fa-boxes-stacked text-danger me-2"></i>
+
+                            Inventory Settings
+
+                        </h5>
+
+                    </div>
+
+
+                    <div class="card-body">
+
+                        <div class="form-check form-switch mb-3">
+
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                id="settingInventoryTracking"
+                                checked>
+
+                            <label
+                                class="form-check-label">
+
+                                Enable Inventory Tracking
+
+                            </label>
+
+                        </div>
+
+
+                        <div class="form-check form-switch mb-3">
+
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                id="settingNegativeStock">
+
+                            <label
+                                class="form-check-label">
+
+                                Allow Negative Stock
+
+                            </label>
+
+                        </div>
+
+
+                        <div class="form-check form-switch">
+
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                id="settingLowStock"
+                                checked>
+
+                            <label
+                                class="form-check-label">
+
+                                Enable Low Stock Warning
+
+                            </label>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ==============================================
+                 KITCHEN
+            =============================================== -->
+
+            <section
+                class="settings-section"
+                data-section-panel="kitchen">
+
+                <div class="card border-0 shadow-sm">
+
+                    <div class="card-header bg-white">
+
+                        <h5 class="fw-bold">
+
+                            <i class="fa-solid fa-kitchen-set text-danger me-2"></i>
+
+                            Kitchen Settings
+
+                        </h5>
+
+                    </div>
+
+
+                    <div class="card-body">
+
+                        <div class="form-check form-switch mb-3">
+
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                id="settingKitchen"
+                                checked>
+
+                            <label
+                                class="form-check-label">
+
+                                Enable Kitchen Display
+
+                            </label>
+
+                        </div>
+
+
+                        <div class="form-check form-switch">
+
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                id="settingAutoKitchen"
+                                checked>
+
+                            <label
+                                class="form-check-label">
+
+                                Automatically Send POS Orders to Kitchen
+
+                            </label>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ==============================================
+                 RECEIPT
+            =============================================== -->
+
+            <section
+                class="settings-section"
+                data-section-panel="receipt">
+
+                <div class="card border-0 shadow-sm">
+
+                    <div class="card-header bg-white">
+
+                        <h5 class="fw-bold">
+
+                            <i class="fa-solid fa-receipt text-danger me-2"></i>
+
+                            Receipt & Printing
+
+                        </h5>
+
+                    </div>
+
+
+                    <div class="card-body">
+
+                        <div class="row g-3">
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+                                    Receipt Paper Size
+                                </label>
+
+                                <select
+                                    class="form-select"
+                                    id="settingReceiptSize">
+
+                                    <option value="58mm">
+                                        58mm
+                                    </option>
+
+                                    <option value="80mm" selected>
+                                        80mm
+                                    </option>
+
+                                    <option value="A4">
+                                        A4
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+                                    Receipt Footer
+                                </label>
+
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    id="settingReceiptFooter"
+                                    value="Thank you for dining with us!">
+
+                            </div>
+
+
+                            <div class="col-12">
+
+                                <div class="form-check form-switch">
+
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="settingAutoPrint">
+
+                                    <label
+                                        class="form-check-label">
+
+                                        Automatically Print Receipt
+
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ==============================================
+                 PERMISSIONS
+            =============================================== -->
+
+            <section
+                class="settings-section"
+                data-section-panel="permissions">
+
+                <div class="card border-0 shadow-sm">
+
+                    <div class="card-header bg-white">
+
+                        <h5 class="fw-bold">
+
+                            <i class="fa-solid fa-user-shield text-danger me-2"></i>
+
+                            Users & Permissions
+
+                        </h5>
+
+                    </div>
+
+
+                    <div class="card-body">
+
+                        <p class="text-muted">
+
+                            User roles and detailed permissions will be
+                            managed here.
+
+                        </p>
+
+
+                        <div class="alert alert-info mb-0">
+
+                            <i class="fa-solid fa-circle-info me-2"></i>
+
+                            Admin, Manager, Cashier, Kitchen,
+                            Inventory and Viewer roles will be connected
+                            to the permission system.
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ==============================================
+                 SYSTEM
+            =============================================== -->
+
+            <section
+                class="settings-section"
+                data-section-panel="system">
+
+                <div class="card border-0 shadow-sm">
+
+                    <div class="card-header bg-white">
+
+                        <h5 class="fw-bold">
+
+                            <i class="fa-solid fa-server text-danger me-2"></i>
+
+                            System
+
+                        </h5>
+
+                    </div>
+
+
+                    <div class="card-body">
+
+                        <div class="row g-3">
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+                                    System Version
+                                </label>
+
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    value="PAPPRITO ERP V3"
+                                    readonly>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+                                    Database
+                                </label>
+
+                                <div>
+
+                                    <span
+                                        id="settingsDatabaseStatus"
+                                        class="badge bg-secondary">
+
+                                        Checking...
+
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+                                    Firebase Storage
+                                </label>
+
+                                <div>
+
+                                    <span
+                                        id="settingsStorageStatus"
+                                        class="badge bg-secondary">
+
+                                        Checking...
+
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+                                    Last Saved
+                                </label>
+
+                                <div>
+
+                                    <span
+                                        id="settingsLastSaved"
+                                        class="text-muted">
+
+                                        Never
+
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ==================================================
+                 SAVE BAR
+            =================================================== -->
+
+            <div class="card border-0 shadow-sm mt-4">
+
+                <div class="card-body d-flex
+                            flex-column flex-md-row
+                            justify-content-between
+                            align-items-center gap-3">
+
+                    <div class="text-muted">
+
+                        <i class="fa-solid fa-circle-info me-1"></i>
+
+                        Changes will be saved to PAPPRITO ERP Settings.
+
+                    </div>
+
+
+                    <div>
+
+                        <button
+                            type="button"
+                            class="btn btn-outline-secondary me-2"
+                            id="btnResetSettings">
+
+                            <i class="fa-solid fa-rotate-left me-1"></i>
+
+                            Reset
+
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="btn btn-danger"
+                            id="btnSaveSettings">
+
+                            <i class="fa-solid fa-floppy-disk me-1"></i>
+
+                            <span id="btnSaveSettingsText">
+                                Save Settings
+                            </span>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
