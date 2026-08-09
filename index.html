@@ -22,7 +22,7 @@
 
     <link
         rel="manifest"
-        href="manifest.json">
+        href="./manifest.json">
 
     <meta
         name="theme-color"
@@ -30,16 +30,16 @@
 
     <link
         rel="apple-touch-icon"
-        href="assets/img/logo.png">
+        href="./assets/img/logo.png">
 
     <link
         rel="icon"
         type="image/png"
-        href="assets/img/logo.png">
+        href="./assets/img/logo.png">
 
 
     <!-- ==========================================================
-         BOOTSTRAP
+         BOOTSTRAP CSS
     ========================================================== -->
 
     <link
@@ -62,29 +62,28 @@
 
     <link
         rel="stylesheet"
-        href="assets/css/style.css">
+        href="./assets/css/style.css">
 
     <link
         rel="stylesheet"
-        href="assets/css/sidebar.css">
+        href="./assets/css/sidebar.css">
 
     <link
         rel="stylesheet"
-        href="assets/css/navbar.css">
+        href="./assets/css/navbar.css">
 
     <link
         rel="stylesheet"
-        href="assets/css/dashboard.css">
+        href="./assets/css/dashboard.css">
 
     <link
         rel="stylesheet"
-        href="assets/css/responsive.css">
+        href="./assets/css/responsive.css">
 
 </head>
 
 
 <body>
-
 
 <!-- ==========================================================
      SIDEBAR
@@ -163,7 +162,9 @@
 
 
 <!-- ==========================================================
-     FIREBASE CORE
+     FIREBASE
+     IMPORTANT:
+     Firebase App MUST load first.
 ========================================================== -->
 
 <script
@@ -172,7 +173,7 @@
 
 
 <!-- ==========================================================
-     FIREBASE DATABASE
+     FIREBASE REALTIME DATABASE
 ========================================================== -->
 
 <script
@@ -194,12 +195,12 @@
 ========================================================== -->
 
 <script
-    src="firebase/firebase-config.js">
+    src="./firebase/firebase-config.js">
 </script>
 
 
 <!-- ==========================================================
-     BOOTSTRAP JAVASCRIPT
+     BOOTSTRAP JS
 ========================================================== -->
 
 <script
@@ -208,83 +209,16 @@
 
 
 <!-- ==========================================================
-     PAPPRITO ERP APP CONTROLLER
+     PAPPRITO ERP APP
 ========================================================== -->
 
 <script
-    src="assets/js/app.js">
+    src="./assets/js/app.js">
 </script>
 
 
 <!-- ==========================================================
-     SIDEBAR
-========================================================== -->
-
-<script
-    src="assets/js/sidebar.js">
-</script>
-
-
-<!-- ==========================================================
-     PRODUCT MODULES
-     
-     IMPORTANT ORDER:
-     LOAD
-     IMAGE
-     SEARCH
-     SAVE
-     EDIT
-     DELETE
-========================================================== -->
-
-<script
-    src="assets/js/products/product-load.js">
-</script>
-
-<script
-    src="assets/js/products/product-image.js">
-</script>
-
-<script
-    src="assets/js/products/product-search.js">
-</script>
-
-<script
-    src="assets/js/products/product-save.js">
-</script>
-
-<script
-    src="assets/js/products/product-edit.js">
-</script>
-
-<script
-    src="assets/js/products/product-delete.js">
-</script>
-
-
-<!-- ==========================================================
-     CATEGORY MODULES
-========================================================== -->
-
-<script
-    src="assets/js/category/category-load.js">
-</script>
-
-<script
-    src="assets/js/category/category-save.js">
-</script>
-
-<script
-    src="assets/js/category/category-edit.js">
-</script>
-
-<script
-    src="assets/js/category/category-delete.js">
-</script>
-
-
-<!-- ==========================================================
-     PWA SERVICE WORKER
+     SERVICE WORKER
 ========================================================== -->
 
 <script>
@@ -296,7 +230,7 @@ if ("serviceWorker" in navigator) {
         function () {
 
             navigator.serviceWorker
-                .register("sw.js")
+                .register("./sw.js")
                 .then(
                     function (registration) {
 
@@ -310,7 +244,7 @@ if ("serviceWorker" in navigator) {
                 .catch(
                     function (error) {
 
-                        console.error(
+                        console.warn(
                             "Service Worker registration failed:",
                             error
                         );
@@ -327,39 +261,48 @@ if ("serviceWorker" in navigator) {
 
 
 <!-- ==========================================================
-     GLOBAL ERROR MONITOR
+     FIREBASE / STORAGE CHECK
 ========================================================== -->
 
 <script>
 
 window.addEventListener(
-    "error",
-    function (event) {
+    "load",
+    function () {
 
-        console.error(
-            "PAPPRITO ERP Error:",
-            event.error ||
-            event.message
+        console.log(
+            "=========================================="
         );
 
-    }
-);
+        console.log(
+            "PAPPRITO ERP READY"
+        );
 
+        console.log(
+            "Firebase:",
+            typeof firebase !== "undefined"
+        );
 
-window.addEventListener(
-    "unhandledrejection",
-    function (event) {
+        console.log(
+            "Firebase Database:",
+            typeof firebase !== "undefined" &&
+            typeof firebase.database === "function"
+        );
 
-        console.error(
-            "PAPPRITO ERP Promise Error:",
-            event.reason
+        console.log(
+            "Firebase Storage:",
+            typeof firebase !== "undefined" &&
+            typeof firebase.storage === "function"
+        );
+
+        console.log(
+            "=========================================="
         );
 
     }
 );
 
 </script>
-
 
 </body>
 
