@@ -85,6 +85,7 @@
 
 <body>
 
+
 <!-- ==========================================================
      SIDEBAR
 ========================================================== -->
@@ -162,16 +163,26 @@
 
 
 <!-- ==========================================================
-     FIREBASE
+     FIREBASE CORE
 ========================================================== -->
 
 <script
     src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js">
 </script>
 
+
+<!-- ==========================================================
+     FIREBASE DATABASE
+========================================================== -->
+
 <script
     src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js">
 </script>
+
+
+<!-- ==========================================================
+     FIREBASE STORAGE
+========================================================== -->
 
 <script
     src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js">
@@ -188,7 +199,7 @@
 
 
 <!-- ==========================================================
-     BOOTSTRAP JS
+     BOOTSTRAP JAVASCRIPT
 ========================================================== -->
 
 <script
@@ -197,12 +208,17 @@
 
 
 <!-- ==========================================================
-     PAPPRITO ERP CORE
+     PAPPRITO ERP APP CONTROLLER
 ========================================================== -->
 
 <script
     src="assets/js/app.js">
 </script>
+
+
+<!-- ==========================================================
+     SIDEBAR
+========================================================== -->
 
 <script
     src="assets/js/sidebar.js">
@@ -211,6 +227,14 @@
 
 <!-- ==========================================================
      PRODUCT MODULES
+     
+     IMPORTANT ORDER:
+     LOAD
+     IMAGE
+     SEARCH
+     SAVE
+     EDIT
+     DELETE
 ========================================================== -->
 
 <script
@@ -273,22 +297,26 @@ if ("serviceWorker" in navigator) {
 
             navigator.serviceWorker
                 .register("sw.js")
-                .then(function (registration) {
+                .then(
+                    function (registration) {
 
-                    console.log(
-                        "PAPPRITO Service Worker registered:",
-                        registration.scope
-                    );
+                        console.log(
+                            "PAPPRITO Service Worker registered:",
+                            registration.scope
+                        );
 
-                })
-                .catch(function (error) {
+                    }
+                )
+                .catch(
+                    function (error) {
 
-                    console.error(
-                        "Service Worker registration failed:",
-                        error
-                    );
+                        console.error(
+                            "Service Worker registration failed:",
+                            error
+                        );
 
-                });
+                    }
+                );
 
         }
     );
@@ -299,7 +327,7 @@ if ("serviceWorker" in navigator) {
 
 
 <!-- ==========================================================
-     PAPPRITO ERP ERROR HANDLER
+     GLOBAL ERROR MONITOR
 ========================================================== -->
 
 <script>
@@ -310,11 +338,13 @@ window.addEventListener(
 
         console.error(
             "PAPPRITO ERP Error:",
-            event.error || event.message
+            event.error ||
+            event.message
         );
 
     }
 );
+
 
 window.addEventListener(
     "unhandledrejection",
