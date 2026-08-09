@@ -1,6 +1,6 @@
 // ==========================================
 // PAPPRITO ERP
-// PRODUCT EDIT ENGINE V4
+// PRODUCT EDIT ENGINE V5
 // Description : Load Product For Editing
 // ==========================================
 
@@ -15,6 +15,10 @@ async function editProduct(productId) {
 
     try {
 
+        // ======================================
+        // VALIDATE PRODUCT ID
+        // ======================================
+
         if (!productId) {
 
             alert("Invalid Product ID.");
@@ -25,14 +29,42 @@ async function editProduct(productId) {
 
 
         // ======================================
-        // SAVE EDITING ID
+        // CHECK FIREBASE
         // ======================================
 
-        editingProductId = productId;
+        if (
+            typeof db === "undefined" ||
+            !db
+        ) {
+
+            throw new Error(
+                "Firebase Database is not initialized."
+            );
+
+        }
 
 
         // ======================================
-        // GET PRODUCT
+        // CHECK PRODUCT MODAL
+        // ======================================
+
+        const modalElement =
+            document.getElementById(
+                "productModal"
+            );
+
+
+        if (!modalElement) {
+
+            throw new Error(
+                "Product modal not found."
+            );
+
+        }
+
+
+        // ======================================
+        // GET PRODUCT FROM FIREBASE
         // ======================================
 
         const snapshot =
@@ -50,8 +82,6 @@ async function editProduct(productId) {
                 "Product not found."
             );
 
-            editingProductId = null;
-
             return;
 
         }
@@ -59,6 +89,26 @@ async function editProduct(productId) {
 
         const product =
             snapshot.val() || {};
+
+
+        // ======================================
+        // SET EDITING ID
+        // ======================================
+
+        if (
+            typeof editingProductId ===
+            "undefined"
+        ) {
+
+            throw new Error(
+                "Product save module is not initialized."
+            );
+
+        }
+
+
+        editingProductId =
+            productId;
 
 
         // ======================================
@@ -96,23 +146,6 @@ async function editProduct(productId) {
 
 
         // ======================================
-        // CATEGORY
-        // ======================================
-
-        const productCategory =
-            document.getElementById(
-                "productCategory"
-            );
-
-        if (productCategory) {
-
-            productCategory.value =
-                product.categoryId || "";
-
-        }
-
-
-        // ======================================
         // DESCRIPTION
         // ======================================
 
@@ -141,7 +174,9 @@ async function editProduct(productId) {
         if (costPrice) {
 
             costPrice.value =
-                product.costPrice || 0;
+                Number(
+                    product.costPrice || 0
+                );
 
         }
 
@@ -158,7 +193,9 @@ async function editProduct(productId) {
         if (sellingPrice) {
 
             sellingPrice.value =
-                product.sellingPrice || 0;
+                Number(
+                    product.sellingPrice || 0
+                );
 
         }
 
@@ -175,7 +212,9 @@ async function editProduct(productId) {
         if (openingStock) {
 
             openingStock.value =
-                product.openingStock || 0;
+                Number(
+                    product.openingStock || 0
+                );
 
         }
 
@@ -192,7 +231,9 @@ async function editProduct(productId) {
         if (currentStock) {
 
             currentStock.value =
-                product.currentStock || 0;
+                Number(
+                    product.currentStock || 0
+                );
 
         }
 
@@ -209,7 +250,9 @@ async function editProduct(productId) {
         if (reorderLevel) {
 
             reorderLevel.value =
-                product.reorderLevel || 10;
+                Number(
+                    product.reorderLevel || 10
+                );
 
         }
 
@@ -266,42 +309,112 @@ async function editProduct(productId) {
 
 
         // ======================================
+        // CATEGORY
+        // ======================================
+
+        const productCategory =
+            document.getElementById(
+                "productCategory"
+            );
+
+
+        if (productCategory) {
+
+            // ----------------------------------
+            // Try immediately
+            // ----------------------------------
+
+            productCategory.value =
+                product.categoryId || "";
+
+
+            // ----------------------------------
+            // If category option isn't loaded,
+            // wait briefly and try again.
+            // ----------------------------------
+
+            if (
+                product.categoryId &&
+                productCategory.value !==
+                    product.categoryId
+            ) {
+
+                if (
+                    typeof loadProductCategories ===
+                    "function"
+                ) {
+
+                    await loadProductCategories();
+
+                }
+
+
+                productCategory.value =
+                    product.categoryId || "";
+
+            }
+
+        }
+
+
+        // ======================================
         // IMAGE
         // ======================================
 
-        selectedProductImage =
-            product.image || "";
+        if (
+            typeof selectedProductImage !==
+            "undefined"
+        ) {
 
+            selectedProductImage =
+                product.image || "";
+
+        }
+
+
+        // ======================================
+        // IMAGE URL
+        // ======================================
 
         const imageURL =
             document.getElementById(
                 "productImageURL"
             );
 
+
         if (imageURL) {
 
             imageURL.value =
-                selectedProductImage;
+                product.image || "";
 
         }
 
+
+        // ======================================
+        // IMAGE PREVIEW
+        // ======================================
 
         const imagePreview =
             document.getElementById(
                 "productImagePreview"
             );
 
+
         if (imagePreview) {
 
             imagePreview.src =
-                selectedProductImage ||
-                "assets/img/no-product.png";
+                product.image &&
+                product.image.trim() !== ""
+
+                    ? product.image
+
+                    : "assets/img/no-product.png";
 
         }
 
 
         // ======================================
-        // CLEAR NEW FILE SELECTION
+        // CLEAR NEW IMAGE FILE
         // ======================================
 
         if (
@@ -319,6 +432,7 @@ async function editProduct(productId) {
                 "productImageFile"
             );
 
+
         if (imageFile) {
 
             imageFile.value = "";
@@ -335,6 +449,7 @@ async function editProduct(productId) {
                 "btnSaveProductText"
             );
 
+
         if (saveText) {
 
             saveText.textContent =
@@ -344,31 +459,35 @@ async function editProduct(productId) {
 
 
         // ======================================
-        // OPEN MODAL
+        // SHOW MODAL
         // ======================================
 
-        const modalElement =
-            document.getElementById(
-                "productModal"
-            );
-
-
-        if (!modalElement) {
+        if (
+            typeof bootstrap ===
+            "undefined"
+        ) {
 
             throw new Error(
-                "Product modal not found."
+                "Bootstrap JavaScript is not loaded."
             );
 
         }
 
 
         const modal =
-            bootstrap.Modal.getOrCreateInstance(
-                modalElement
-            );
+            bootstrap.Modal
+                .getOrCreateInstance(
+                    modalElement
+                );
 
 
         modal.show();
+
+
+        console.log(
+            "Editing product:",
+            productId
+        );
 
     }
 
@@ -380,7 +499,14 @@ async function editProduct(productId) {
         );
 
 
-        editingProductId = null;
+        if (
+            typeof editingProductId !==
+            "undefined"
+        ) {
+
+            editingProductId = null;
+
+        }
 
 
         alert(
