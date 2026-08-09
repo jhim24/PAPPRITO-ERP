@@ -1,36 +1,39 @@
-// ==========================================
+// ==========================================================
 // PAPPRITO ERP
-// PRODUCT EDIT ENGINE V5
-// Description : Load Product For Editing
-// ==========================================
+// PRODUCT EDIT ENGINE
+// File : assets/js/products/product-edit.js
+// Description : Load Existing Product For Editing
+// ==========================================================
 
 "use strict";
 
 
-// ==========================================
+// ==========================================================
 // EDIT PRODUCT
-// ==========================================
+// ==========================================================
 
 async function editProduct(productId) {
 
     try {
 
-        // ======================================
+        // ==================================================
         // VALIDATE PRODUCT ID
-        // ======================================
+        // ==================================================
 
         if (!productId) {
 
-            alert("Invalid Product ID.");
+            alert(
+                "Invalid Product ID."
+            );
 
             return;
 
         }
 
 
-        // ======================================
+        // ==================================================
         // CHECK FIREBASE
-        // ======================================
+        // ==================================================
 
         if (
             typeof db === "undefined" ||
@@ -44,28 +47,23 @@ async function editProduct(productId) {
         }
 
 
-        // ======================================
-        // CHECK PRODUCT MODAL
-        // ======================================
-
-        const modalElement =
-            document.getElementById(
-                "productModal"
-            );
+        console.log(
+            "Loading product for edit:",
+            productId
+        );
 
 
-        if (!modalElement) {
+        // ==================================================
+        // SAVE EDITING ID
+        // ==================================================
 
-            throw new Error(
-                "Product modal not found."
-            );
-
-        }
+        editingProductId =
+            productId;
 
 
-        // ======================================
-        // GET PRODUCT FROM FIREBASE
-        // ======================================
+        // ==================================================
+        // GET PRODUCT
+        // ==================================================
 
         const snapshot =
             await db
@@ -76,7 +74,14 @@ async function editProduct(productId) {
                 .once("value");
 
 
+        // ==================================================
+        // PRODUCT NOT FOUND
+        // ==================================================
+
         if (!snapshot.exists()) {
+
+            editingProductId =
+                null;
 
             alert(
                 "Product not found."
@@ -91,252 +96,60 @@ async function editProduct(productId) {
             snapshot.val() || {};
 
 
-        // ======================================
-        // SET EDITING ID
-        // ======================================
-
-        if (
-            typeof editingProductId ===
-            "undefined"
-        ) {
-
-            throw new Error(
-                "Product save module is not initialized."
-            );
-
-        }
+        console.log(
+            "Product loaded:",
+            product
+        );
 
 
-        editingProductId =
-            productId;
-
-
-        // ======================================
+        // ==================================================
         // PRODUCT CODE
-        // ======================================
+        // ==================================================
 
-        const productCode =
-            document.getElementById(
-                "productCode"
-            );
-
-        if (productCode) {
-
-            productCode.value =
-                product.code || "";
-
-        }
+        setProductField(
+            "productCode",
+            product.code || ""
+        );
 
 
-        // ======================================
+        // ==================================================
         // PRODUCT NAME
-        // ======================================
+        // ==================================================
 
-        const productName =
-            document.getElementById(
-                "productName"
-            );
-
-        if (productName) {
-
-            productName.value =
-                product.name || "";
-
-        }
+        setProductField(
+            "productName",
+            product.name || ""
+        );
 
 
-        // ======================================
-        // DESCRIPTION
-        // ======================================
-
-        const description =
-            document.getElementById(
-                "productDescription"
-            );
-
-        if (description) {
-
-            description.value =
-                product.description || "";
-
-        }
-
-
-        // ======================================
-        // COST PRICE
-        // ======================================
-
-        const costPrice =
-            document.getElementById(
-                "costPrice"
-            );
-
-        if (costPrice) {
-
-            costPrice.value =
-                Number(
-                    product.costPrice || 0
-                );
-
-        }
-
-
-        // ======================================
-        // SELLING PRICE
-        // ======================================
-
-        const sellingPrice =
-            document.getElementById(
-                "sellingPrice"
-            );
-
-        if (sellingPrice) {
-
-            sellingPrice.value =
-                Number(
-                    product.sellingPrice || 0
-                );
-
-        }
-
-
-        // ======================================
-        // OPENING STOCK
-        // ======================================
-
-        const openingStock =
-            document.getElementById(
-                "openingStock"
-            );
-
-        if (openingStock) {
-
-            openingStock.value =
-                Number(
-                    product.openingStock || 0
-                );
-
-        }
-
-
-        // ======================================
-        // CURRENT STOCK
-        // ======================================
-
-        const currentStock =
-            document.getElementById(
-                "currentStock"
-            );
-
-        if (currentStock) {
-
-            currentStock.value =
-                Number(
-                    product.currentStock || 0
-                );
-
-        }
-
-
-        // ======================================
-        // REORDER LEVEL
-        // ======================================
-
-        const reorderLevel =
-            document.getElementById(
-                "reorderLevel"
-            );
-
-        if (reorderLevel) {
-
-            reorderLevel.value =
-                Number(
-                    product.reorderLevel || 10
-                );
-
-        }
-
-
-        // ======================================
-        // STATUS
-        // ======================================
-
-        const status =
-            document.getElementById(
-                "productStatus"
-            );
-
-        if (status) {
-
-            status.value =
-                product.status || "Active";
-
-        }
-
-
-        // ======================================
-        // SHOW MENU
-        // ======================================
-
-        const showMenu =
-            document.getElementById(
-                "showMenu"
-            );
-
-        if (showMenu) {
-
-            showMenu.checked =
-                product.showMenu !== false;
-
-        }
-
-
-        // ======================================
-        // SHOW POS
-        // ======================================
-
-        const showPOS =
-            document.getElementById(
-                "showPOS"
-            );
-
-        if (showPOS) {
-
-            showPOS.checked =
-                product.showPOS !== false;
-
-        }
-
-
-        // ======================================
+        // ==================================================
         // CATEGORY
-        // ======================================
+        // ==================================================
 
-        const productCategory =
+        const category =
             document.getElementById(
                 "productCategory"
             );
 
 
-        if (productCategory) {
+        if (category) {
 
-            // ----------------------------------
-            // Try immediately
-            // ----------------------------------
-
-            productCategory.value =
+            const categoryId =
                 product.categoryId || "";
 
 
-            // ----------------------------------
-            // If category option isn't loaded,
-            // wait briefly and try again.
-            // ----------------------------------
+            category.value =
+                categoryId;
+
+
+            // ----------------------------------------------
+            // If category doesn't exist in dropdown,
+            // load categories again and select it.
+            // ----------------------------------------------
 
             if (
-                product.categoryId &&
-                productCategory.value !==
-                    product.categoryId
+                category.value !==
+                categoryId
             ) {
 
                 if (
@@ -346,86 +159,233 @@ async function editProduct(productId) {
 
                     await loadProductCategories();
 
+                    category.value =
+                        categoryId;
+
                 }
-
-
-                productCategory.value =
-                    product.categoryId || "";
 
             }
 
         }
 
 
-        // ======================================
-        // IMAGE
-        // ======================================
+        // ==================================================
+        // DESCRIPTION
+        // ==================================================
 
-        if (
-            typeof selectedProductImage !==
-            "undefined"
-        ) {
-
-            selectedProductImage =
-                product.image || "";
-
-        }
+        setProductField(
+            "productDescription",
+            product.description || ""
+        );
 
 
-        // ======================================
-        // IMAGE URL
-        // ======================================
+        // ==================================================
+        // COST PRICE
+        // ==================================================
 
-        const imageURL =
+        setProductField(
+            "costPrice",
+            Number(
+                product.costPrice || 0
+            )
+        );
+
+
+        // ==================================================
+        // SELLING PRICE
+        // ==================================================
+
+        setProductField(
+            "sellingPrice",
+            Number(
+                product.sellingPrice || 0
+            )
+        );
+
+
+        // ==================================================
+        // OPENING STOCK
+        // ==================================================
+
+        setProductField(
+            "openingStock",
+            Number(
+                product.openingStock || 0
+            )
+        );
+
+
+        // ==================================================
+        // CURRENT STOCK
+        // ==================================================
+
+        setProductField(
+            "currentStock",
+            Number(
+                product.currentStock || 0
+            )
+        );
+
+
+        // ==================================================
+        // REORDER LEVEL
+        // ==================================================
+
+        setProductField(
+            "reorderLevel",
+            Number(
+                product.reorderLevel || 0
+            )
+        );
+
+
+        // ==================================================
+        // UNIT
+        // ==================================================
+
+        const unit =
             document.getElementById(
-                "productImageURL"
+                "productUnit"
             );
 
 
-        if (imageURL) {
+        if (unit) {
 
-            imageURL.value =
-                product.image || "";
+            unit.value =
+                product.unit ||
+                "Piece";
 
         }
 
 
-        // ======================================
-        // IMAGE PREVIEW
-        // ======================================
+        // ==================================================
+        // STATUS
+        // ==================================================
 
-        const imagePreview =
+        const status =
             document.getElementById(
-                "productImagePreview"
+                "productStatus"
             );
 
 
-        if (imagePreview) {
+        if (status) {
 
-            imagePreview.src =
-                product.image &&
-                product.image.trim() !== ""
-
-                    ? product.image
-
-                    : "assets/img/no-product.png";
+            status.value =
+                product.status ||
+                "Active";
 
         }
 
 
-        // ======================================
-        // CLEAR NEW IMAGE FILE
-        // ======================================
+        // ==================================================
+        // SHOW IN POS
+        // ==================================================
+
+        setProductCheckbox(
+            "showPOS",
+            product.showPOS !== false
+        );
+
+
+        // ==================================================
+        // SHOW IN KITCHEN
+        // ==================================================
+
+        setProductCheckbox(
+            "showKitchen",
+            product.showKitchen !== false
+        );
+
+
+        // ==================================================
+        // SHOW IN QR MENU
+        // ==================================================
+
+        setProductCheckbox(
+            "showMenu",
+            product.showMenu !== false
+        );
+
+
+        // ==================================================
+        // INVENTORY TRACKING
+        // ==================================================
+
+        setProductCheckbox(
+            "inventoryTracking",
+            product.inventoryTracking !== false
+        );
+
+
+        // ==================================================
+        // FEATURED PRODUCT
+        // ==================================================
+
+        setProductCheckbox(
+            "featuredProduct",
+            product.featuredProduct === true
+        );
+
+
+        // ==================================================
+        // BEST SELLER
+        // ==================================================
+
+        setProductCheckbox(
+            "bestSeller",
+            product.bestSeller === true
+        );
+
+
+        // ==================================================
+        // PRODUCT IMAGE
+        // ==================================================
+
+        const image =
+            product.image || "";
+
 
         if (
-            typeof selectedProductFile !==
-            "undefined"
+            typeof loadProductImage ===
+            "function"
         ) {
 
-            selectedProductFile = null;
+            loadProductImage(
+                image
+            );
+
+        }
+        else {
+
+            // Fallback if image module
+            // is not available.
+
+            setProductField(
+                "productImageURL",
+                image
+            );
+
+
+            const preview =
+                document.getElementById(
+                    "productImagePreview"
+                );
+
+
+            if (preview) {
+
+                preview.src =
+                    image ||
+                    "assets/img/no-product.png";
+
+            }
 
         }
 
+
+        // ==================================================
+        // CLEAR FILE INPUT
+        // ==================================================
 
         const imageFile =
             document.getElementById(
@@ -435,14 +395,38 @@ async function editProduct(productId) {
 
         if (imageFile) {
 
-            imageFile.value = "";
+            imageFile.value =
+                "";
 
         }
 
 
-        // ======================================
-        // CHANGE BUTTON TEXT
-        // ======================================
+        // ==================================================
+        // UPDATE MODAL TITLE
+        // ==================================================
+
+        const modalTitle =
+            document.getElementById(
+                "productModalTitle"
+            );
+
+
+        if (modalTitle) {
+
+            modalTitle.innerHTML = `
+
+                <i class="fa-solid fa-pen-to-square"></i>
+
+                Edit Product
+
+            `;
+
+        }
+
+
+        // ==================================================
+        // UPDATE SAVE BUTTON TEXT
+        // ==================================================
 
         const saveText =
             document.getElementById(
@@ -458,9 +442,24 @@ async function editProduct(productId) {
         }
 
 
-        // ======================================
-        // SHOW MODAL
-        // ======================================
+        // ==================================================
+        // OPEN MODAL
+        // ==================================================
+
+        const modalElement =
+            document.getElementById(
+                "productModal"
+            );
+
+
+        if (!modalElement) {
+
+            throw new Error(
+                "Product modal not found."
+            );
+
+        }
+
 
         if (
             typeof bootstrap ===
@@ -485,8 +484,7 @@ async function editProduct(productId) {
 
 
         console.log(
-            "Editing product:",
-            productId
+            "Product edit modal opened."
         );
 
     }
@@ -499,14 +497,8 @@ async function editProduct(productId) {
         );
 
 
-        if (
-            typeof editingProductId !==
-            "undefined"
-        ) {
-
-            editingProductId = null;
-
-        }
+        editingProductId =
+            null;
 
 
         alert(
@@ -517,3 +509,211 @@ async function editProduct(productId) {
     }
 
 }
+
+
+// ==========================================================
+// SET PRODUCT FIELD
+// ==========================================================
+
+function setProductField(
+    id,
+    value
+) {
+
+    const element =
+        document.getElementById(id);
+
+
+    if (!element) {
+
+        console.warn(
+            "Product field not found:",
+            id
+        );
+
+        return;
+
+    }
+
+
+    element.value =
+        value;
+
+}
+
+
+// ==========================================================
+// SET PRODUCT CHECKBOX
+// ==========================================================
+
+function setProductCheckbox(
+    id,
+    value
+) {
+
+    const element =
+        document.getElementById(id);
+
+
+    if (!element) {
+
+        console.warn(
+            "Product checkbox not found:",
+            id
+        );
+
+        return;
+
+    }
+
+
+    element.checked =
+        Boolean(value);
+
+}
+
+
+// ==========================================================
+// PREPARE ADD PRODUCT MODAL
+// ==========================================================
+
+function prepareAddProduct() {
+
+    console.log(
+        "Preparing Add Product..."
+    );
+
+
+    // ==================================================
+    // RESET FORM
+    // ==================================================
+
+    if (
+        typeof resetProductForm ===
+        "function"
+    ) {
+
+        resetProductForm();
+
+    }
+    else {
+
+        editingProductId =
+            null;
+
+    }
+
+
+    // ==================================================
+    // MODAL TITLE
+    // ==================================================
+
+    const modalTitle =
+        document.getElementById(
+            "productModalTitle"
+        );
+
+
+    if (modalTitle) {
+
+        modalTitle.innerHTML = `
+
+            <i class="fa-solid fa-box-open"></i>
+
+            Add Product
+
+        `;
+
+    }
+
+
+    // ==================================================
+    // SAVE BUTTON
+    // ==================================================
+
+    const saveText =
+        document.getElementById(
+            "btnSaveProductText"
+        );
+
+
+    if (saveText) {
+
+        saveText.textContent =
+            "Save Product";
+
+    }
+
+
+    // ==================================================
+    // OPEN MODAL
+    // ==================================================
+
+    const modalElement =
+        document.getElementById(
+            "productModal"
+        );
+
+
+    if (!modalElement) {
+
+        console.error(
+            "Product modal not found."
+        );
+
+        return;
+
+    }
+
+
+    if (
+        typeof bootstrap ===
+        "undefined"
+    ) {
+
+        console.error(
+            "Bootstrap JavaScript is not loaded."
+        );
+
+        return;
+
+    }
+
+
+    const modal =
+        bootstrap.Modal
+            .getOrCreateInstance(
+                modalElement
+            );
+
+
+    modal.show();
+
+}
+
+
+// ==========================================================
+// ADD PRODUCT BUTTON
+// ==========================================================
+
+document.addEventListener(
+    "click",
+    function (event) {
+
+        const button =
+            event.target.closest(
+                "#btnAddProduct"
+            );
+
+
+        if (!button) {
+
+            return;
+
+        }
+
+
+        prepareAddProduct();
+
+    }
+);
