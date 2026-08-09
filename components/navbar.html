@@ -1,82 +1,138 @@
-<!-- ==========================================
-     PAPPRITO ERP NAVBAR
-========================================== -->
+<!-- ==========================================================
+     PAPPRITO ERP
+     NAVBAR
+     File : components/navbar.html
+     Description : Responsive ERP Top Navigation
+========================================================== -->
 
-<nav class="top-navbar">
+<nav
+    class="erp-navbar"
+    id="erpNavbar">
 
-    <!-- LEFT -->
+    <!-- ======================================================
+         LEFT SIDE
+    ======================================================= -->
 
-    <div class="nav-left">
+    <div class="navbar-left">
+
+        <!-- MOBILE HAMBURGER -->
 
         <button
-            id="menuToggle"
-            class="menu-toggle">
+            type="button"
+            id="sidebarToggle"
+            class="sidebar-toggle"
+            aria-label="Open navigation"
+            aria-controls="sidebar"
+            aria-expanded="false">
 
             <i class="fa-solid fa-bars"></i>
 
         </button>
 
-        <div class="page-title">
 
-            <h3>PAPPRITO ERP</h3>
+        <!-- BRAND -->
 
-            <small>Restaurant Management System</small>
+        <div class="navbar-brand">
+
+            <img
+                src="assets/img/logo.png"
+                alt="PAPPRITO"
+                class="navbar-logo">
+
+            <div class="navbar-brand-text">
+
+                <strong>
+                    PAPPRITO ERP
+                </strong>
+
+                <small>
+                    Restaurant Management System
+                </small>
+
+            </div>
 
         </div>
 
     </div>
 
-    <!-- CENTER -->
 
-    <div class="nav-search">
+    <!-- ======================================================
+         CENTER
+    ======================================================= -->
 
-        <i class="fa-solid fa-search"></i>
+    <div class="navbar-center">
 
-        <input
-            type="text"
-            placeholder="Search products, orders, customers...">
+        <div class="navbar-page-title">
+
+            <i class="fa-solid fa-house"></i>
+
+            <span id="currentPageTitle">
+                Dashboard
+            </span>
+
+        </div>
 
     </div>
 
-    <!-- RIGHT -->
 
-    <div class="nav-right">
+    <!-- ======================================================
+         RIGHT SIDE
+    ======================================================= -->
 
-        <div class="nav-date">
+    <div class="navbar-right">
 
-            <i class="fa-solid fa-calendar-days"></i>
+        <!-- SEARCH -->
 
-            <span id="currentDate">--</span>
+        <div class="navbar-search">
+
+            <i class="fa-solid fa-magnifying-glass"></i>
+
+            <input
+                type="search"
+                id="globalSearch"
+                placeholder="Search...">
 
         </div>
 
-        <div class="nav-time">
 
-            <i class="fa-solid fa-clock"></i>
+        <!-- NOTIFICATION -->
 
-            <span id="currentTime">--</span>
-
-        </div>
-
-        <button class="nav-icon">
+        <button
+            type="button"
+            class="navbar-icon-btn"
+            id="notificationButton"
+            aria-label="Notifications">
 
             <i class="fa-solid fa-bell"></i>
 
-            <span class="badge-dot"></span>
+            <span
+                class="notification-badge"
+                id="notificationCount">
+                0
+            </span>
 
         </button>
 
-        <div class="nav-user">
 
-            <img
-                src="assets/img/avatar.png"
-                alt="User">
+        <!-- USER -->
 
-            <div>
+        <div class="navbar-user">
 
-                <strong>Administrator</strong>
+            <div class="navbar-user-avatar">
 
-                <small>PAPPRITO ERP</small>
+                <i class="fa-solid fa-user"></i>
+
+            </div>
+
+            <div class="navbar-user-info">
+
+                <strong>
+                    Administrator
+                </strong>
+
+                <small>
+                    Admin
+                </small>
 
             </div>
 
@@ -85,3 +141,762 @@
     </div>
 
 </nav>
+
+
+<!-- ==========================================================
+     NAVBAR SCRIPT
+========================================================== -->
+
+<script>
+
+(function () {
+
+    "use strict";
+
+
+    // ======================================================
+    // NAVBAR INITIALIZATION
+    // ======================================================
+
+    window.initializeNavbar = function () {
+
+        console.log(
+            "PAPPRITO Navbar initialized."
+        );
+
+
+        updateCurrentPageTitle();
+
+    };
+
+
+    // ======================================================
+    // UPDATE PAGE TITLE
+    // ======================================================
+
+    function updateCurrentPageTitle() {
+
+        const titleElement =
+            document.getElementById(
+                "currentPageTitle"
+            );
+
+
+        if (!titleElement) {
+
+            return;
+
+        }
+
+
+        const page =
+            localStorage.getItem(
+                "currentPage"
+            ) || "pages/dashboard.html";
+
+
+        const titles = {
+
+            "pages/dashboard.html":
+                "Dashboard",
+
+            "pages/products.html":
+                "Products",
+
+            "pages/categories.html":
+                "Categories",
+
+            "pages/inventory.html":
+                "Inventory",
+
+            "pages/stock-in.html":
+                "Stock In",
+
+            "pages/stock-out.html":
+                "Stock Out",
+
+            "pages/purchase-orders.html":
+                "Purchase Orders",
+
+            "pages/suppliers.html":
+                "Suppliers",
+
+            "pages/customers.html":
+                "Customers",
+
+            "pages/sales.html":
+                "Sales",
+
+            "pages/reports.html":
+                "Reports",
+
+            "pages/employees.html":
+                "Employees",
+
+            "pages/attendance.html":
+                "Attendance",
+
+            "pages/payroll.html":
+                "Payroll",
+
+            "pages/settings.html":
+                "Settings",
+
+            "pages/company-profile.html":
+                "Company Profile",
+
+            "pages/receiving-orders.html":
+                "Receiving Orders",
+
+            "pages/kitchen.html":
+                "Kitchen",
+
+            "pages/tables.html":
+                "Tables"
+
+        };
+
+
+        titleElement.textContent =
+            titles[page] ||
+            "PAPPRITO ERP";
+
+    }
+
+
+    // ======================================================
+    // GLOBAL SEARCH
+    // ======================================================
+
+    const searchInput =
+        document.getElementById(
+            "globalSearch"
+        );
+
+
+    if (searchInput) {
+
+        searchInput.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (
+                    event.key !==
+                    "Enter"
+                ) {
+
+                    return;
+
+                }
+
+
+                const keyword =
+                    searchInput.value.trim();
+
+
+                if (!keyword) {
+
+                    return;
+
+                }
+
+
+                console.log(
+                    "Global search:",
+                    keyword
+                );
+
+            }
+        );
+
+    }
+
+
+    // ======================================================
+    // NOTIFICATION BUTTON
+    // ======================================================
+
+    const notificationButton =
+        document.getElementById(
+            "notificationButton"
+        );
+
+
+    if (notificationButton) {
+
+        notificationButton.addEventListener(
+            "click",
+            function () {
+
+                console.log(
+                    "Notifications clicked."
+                );
+
+            }
+        );
+
+    }
+
+
+})();
+
+</script>
+
+
+<!-- ==========================================================
+     NAVBAR CSS
+========================================================== -->
+
+<style>
+
+    /* ======================================================
+       NAVBAR
+    ====================================================== */
+
+    .erp-navbar {
+
+        height: 70px;
+
+        width: 100%;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: space-between;
+
+        gap: 20px;
+
+        padding: 0 20px;
+
+        background: #ffffff;
+
+        border-bottom: 1px solid #e5e7eb;
+
+        box-shadow:
+            0 2px 8px
+            rgba(0,0,0,0.06);
+
+        position: relative;
+
+        z-index: 2500;
+
+    }
+
+
+    /* ======================================================
+       LEFT
+    ====================================================== */
+
+    .navbar-left {
+
+        display: flex;
+
+        align-items: center;
+
+        gap: 14px;
+
+        min-width: 240px;
+
+    }
+
+
+    /* ======================================================
+       HAMBURGER
+    ====================================================== */
+
+    #sidebarToggle {
+
+        width: 44px;
+
+        height: 44px;
+
+        display: none;
+
+        align-items: center;
+
+        justify-content: center;
+
+        border: none;
+
+        border-radius: 9px;
+
+        background: #C8102E;
+
+        color: #ffffff;
+
+        font-size: 19px;
+
+        cursor: pointer;
+
+        touch-action: manipulation;
+
+        -webkit-tap-highlight-color:
+            transparent;
+
+    }
+
+
+    #sidebarToggle:active {
+
+        transform:
+            scale(0.96);
+
+    }
+
+
+    /* ======================================================
+       BRAND
+    ====================================================== */
+
+    .navbar-brand {
+
+        display: flex;
+
+        align-items: center;
+
+        gap: 10px;
+
+        min-width: 0;
+
+    }
+
+
+    .navbar-logo {
+
+        width: 42px;
+
+        height: 42px;
+
+        object-fit: contain;
+
+        border-radius: 50%;
+
+        flex-shrink: 0;
+
+    }
+
+
+    .navbar-brand-text {
+
+        display: flex;
+
+        flex-direction: column;
+
+        line-height: 1.15;
+
+    }
+
+
+    .navbar-brand-text strong {
+
+        font-size: 15px;
+
+        color: #1f2937;
+
+    }
+
+
+    .navbar-brand-text small {
+
+        margin-top: 3px;
+
+        font-size: 11px;
+
+        color: #6b7280;
+
+    }
+
+
+    /* ======================================================
+       CENTER
+    ====================================================== */
+
+    .navbar-center {
+
+        flex: 1;
+
+        display: flex;
+
+        justify-content: center;
+
+        min-width: 0;
+
+    }
+
+
+    .navbar-page-title {
+
+        display: flex;
+
+        align-items: center;
+
+        gap: 8px;
+
+        color: #374151;
+
+        font-size: 15px;
+
+        font-weight: 600;
+
+    }
+
+
+    .navbar-page-title i {
+
+        color: #C8102E;
+
+    }
+
+
+    /* ======================================================
+       RIGHT
+    ====================================================== */
+
+    .navbar-right {
+
+        display: flex;
+
+        align-items: center;
+
+        gap: 12px;
+
+        min-width: 240px;
+
+        justify-content: flex-end;
+
+    }
+
+
+    /* ======================================================
+       SEARCH
+    ====================================================== */
+
+    .navbar-search {
+
+        width: 190px;
+
+        height: 40px;
+
+        display: flex;
+
+        align-items: center;
+
+        gap: 8px;
+
+        padding: 0 12px;
+
+        background: #f5f6f8;
+
+        border: 1px solid #e5e7eb;
+
+        border-radius: 8px;
+
+    }
+
+
+    .navbar-search i {
+
+        color: #9ca3af;
+
+        font-size: 14px;
+
+    }
+
+
+    .navbar-search input {
+
+        width: 100%;
+
+        border: none;
+
+        outline: none;
+
+        background: transparent;
+
+        font-size: 13px;
+
+    }
+
+
+    /* ======================================================
+       ICON BUTTON
+    ====================================================== */
+
+    .navbar-icon-btn {
+
+        position: relative;
+
+        width: 40px;
+
+        height: 40px;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        border: 1px solid #e5e7eb;
+
+        border-radius: 8px;
+
+        background: #ffffff;
+
+        color: #374151;
+
+        cursor: pointer;
+
+    }
+
+
+    .navbar-icon-btn:hover {
+
+        color: #C8102E;
+
+        background: #f9fafb;
+
+    }
+
+
+    .notification-badge {
+
+        position: absolute;
+
+        top: 4px;
+
+        right: 4px;
+
+        min-width: 15px;
+
+        height: 15px;
+
+        padding: 0 3px;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        border-radius: 50%;
+
+        background: #C8102E;
+
+        color: #ffffff;
+
+        font-size: 9px;
+
+        font-weight: 700;
+
+    }
+
+
+    /* ======================================================
+       USER
+    ====================================================== */
+
+    .navbar-user {
+
+        display: flex;
+
+        align-items: center;
+
+        gap: 9px;
+
+    }
+
+
+    .navbar-user-avatar {
+
+        width: 40px;
+
+        height: 40px;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        border-radius: 50%;
+
+        background: #C8102E;
+
+        color: #ffffff;
+
+    }
+
+
+    .navbar-user-info {
+
+        display: flex;
+
+        flex-direction: column;
+
+        line-height: 1.15;
+
+    }
+
+
+    .navbar-user-info strong {
+
+        font-size: 13px;
+
+        color: #1f2937;
+
+    }
+
+
+    .navbar-user-info small {
+
+        margin-top: 3px;
+
+        font-size: 10px;
+
+        color: #6b7280;
+
+    }
+
+
+    /* ======================================================
+       MOBILE
+    ====================================================== */
+
+    @media (max-width: 992px) {
+
+        .erp-navbar {
+
+            height: 62px;
+
+            padding: 0 12px;
+
+            gap: 8px;
+
+        }
+
+
+        #sidebarToggle {
+
+            display: flex;
+
+            flex-shrink: 0;
+
+        }
+
+
+        .navbar-left {
+
+            min-width: auto;
+
+            flex: 1;
+
+            gap: 9px;
+
+        }
+
+
+        .navbar-logo {
+
+            width: 36px;
+
+            height: 36px;
+
+        }
+
+
+        .navbar-brand-text strong {
+
+            font-size: 13px;
+
+        }
+
+
+        .navbar-brand-text small {
+
+            display: none;
+
+        }
+
+
+        .navbar-center {
+
+            display: none;
+
+        }
+
+
+        .navbar-right {
+
+            min-width: auto;
+
+            gap: 6px;
+
+        }
+
+
+        .navbar-search {
+
+            display: none;
+
+        }
+
+
+        .navbar-user-info {
+
+            display: none;
+
+        }
+
+
+        .navbar-user-avatar {
+
+            width: 38px;
+
+            height: 38px;
+
+        }
+
+
+        .navbar-icon-btn {
+
+            width: 38px;
+
+            height: 38px;
+
+        }
+
+    }
+
+
+    /* ======================================================
+       SMALL MOBILE
+    ====================================================== */
+
+    @media (max-width: 480px) {
+
+        .erp-navbar {
+
+            padding: 0 8px;
+
+        }
+
+
+        .navbar-brand-text strong {
+
+            font-size: 12px;
+
+        }
+
+
+        #sidebarToggle {
+
+            width: 42px;
+
+            height: 42px;
+
+        }
+
+    }
+
+</style>
