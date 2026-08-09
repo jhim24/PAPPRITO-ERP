@@ -1,9 +1,19 @@
 // ==========================================================
 // PAPPRITO ERP
-// APP / NAVIGATION ENGINE V2
+// APP / NAVIGATION ENGINE V3
 // File : assets/js/app.js
-// Description : Main ERP Navigation + Component Loader
-// Mobile Hamburger Fixed
+//
+// MAIN FUNCTIONS:
+// - Component Loader
+// - Page Loader
+// - Product Engine Loader
+// - Category Engine Loader
+// - Mobile Sidebar
+// - Page Navigation
+//
+// IMPORTANT:
+// Product and Category modules are loaded dynamically
+// before their pages are initialized.
 // ==========================================================
 
 "use strict";
@@ -14,10 +24,11 @@
 // ==========================================================
 
 let productScriptsLoaded = false;
+let categoryScriptsLoaded = false;
 
 
 // ==========================================================
-// PRODUCT SCRIPT LIST
+// PRODUCT SCRIPTS
 // ==========================================================
 
 const productScripts = [
@@ -38,10 +49,36 @@ const productScripts = [
 
 
 // ==========================================================
+// CATEGORY SCRIPTS
+// ==========================================================
+
+const categoryScripts = [
+
+    "assets/js/category/category-load.js",
+
+    "assets/js/category/category-dropdown.js",
+
+    "assets/js/category/category-search.js",
+
+    "assets/js/category/category-save.js",
+
+    "assets/js/category/category-edit.js",
+
+    "assets/js/category/category-delete.js",
+
+    "assets/js/category/category-export.js"
+
+];
+
+
+// ==========================================================
 // LOAD HTML COMPONENT
 // ==========================================================
 
-async function loadComponent(id, file) {
+async function loadComponent(
+    id,
+    file
+) {
 
     try {
 
@@ -51,7 +88,8 @@ async function loadComponent(id, file) {
         if (!response.ok) {
 
             throw new Error(
-                "Unable to load: " + file
+                "Unable to load: " +
+                file
             );
 
         }
@@ -73,7 +111,8 @@ async function loadComponent(id, file) {
 
         }
 
-        element.innerHTML = html;
+        element.innerHTML =
+            html;
 
         return true;
 
@@ -100,12 +139,16 @@ async function loadComponent(id, file) {
 function loadScript(src) {
 
     return new Promise(
-        function(resolve, reject) {
+        function(
+            resolve,
+            reject
+        ) {
 
             const existing =
                 document.querySelector(
                     `script[data-papprito-script="${src}"]`
                 );
+
 
             if (existing) {
 
@@ -115,40 +158,54 @@ function loadScript(src) {
 
             }
 
+
             const script =
-                document.createElement("script");
-
-            script.src = src;
-
-            script.dataset.pappritoScript = src;
-
-            script.onload = function() {
-
-                console.log(
-                    "Loaded:",
-                    src
+                document.createElement(
+                    "script"
                 );
 
-                resolve();
 
-            };
+            script.src =
+                src;
 
-            script.onerror = function() {
+            script.dataset.pappritoScript =
+                src;
 
-                console.error(
-                    "Failed to load:",
-                    src
-                );
 
-                reject(
-                    new Error(
-                        "Unable to load " + src
-                    )
-                );
+            script.onload =
+                function() {
 
-            };
+                    console.log(
+                        "Loaded:",
+                        src
+                    );
 
-            document.body.appendChild(script);
+                    resolve();
+
+                };
+
+
+            script.onerror =
+                function() {
+
+                    console.error(
+                        "Failed to load:",
+                        src
+                    );
+
+                    reject(
+                        new Error(
+                            "Unable to load " +
+                            src
+                        )
+                    );
+
+                };
+
+
+            document.body.appendChild(
+                script
+            );
 
         }
     );
@@ -157,44 +214,74 @@ function loadScript(src) {
 
 
 // ==========================================================
-// LOAD ALL PRODUCT JAVASCRIPT
+// LOAD SCRIPT GROUP
+// ==========================================================
+
+async function loadScriptGroup(
+    scripts,
+    groupName
+) {
+
+    console.log(
+        "=========================================="
+    );
+
+    console.log(
+        "LOADING " +
+        groupName +
+        " ENGINES..."
+    );
+
+    console.log(
+        "=========================================="
+    );
+
+
+    for (
+        const script of scripts
+    ) {
+
+        await loadScript(
+            script
+        );
+
+    }
+
+
+    console.log(
+        "ALL " +
+        groupName +
+        " ENGINES LOADED."
+    );
+
+}
+
+
+// ==========================================================
+// LOAD PRODUCT SCRIPTS
 // ==========================================================
 
 async function loadProductScripts() {
 
-    if (productScriptsLoaded) {
+    if (
+        productScriptsLoaded
+    ) {
 
         return;
 
     }
 
-    console.log(
-        "=========================================="
-    );
-
-    console.log(
-        "LOADING PAPPRITO PRODUCT ENGINES..."
-    );
-
-    console.log(
-        "=========================================="
-    );
 
     try {
 
-        for (
-            const script of productScripts
-        ) {
-
-            await loadScript(script);
-
-        }
-
-        productScriptsLoaded = true;
-
-        console.log(
-            "ALL PRODUCT ENGINES LOADED."
+        await loadScriptGroup(
+            productScripts,
+            "PRODUCT"
         );
+
+
+        productScriptsLoaded =
+            true;
 
     }
 
@@ -213,10 +300,54 @@ async function loadProductScripts() {
 
 
 // ==========================================================
+// LOAD CATEGORY SCRIPTS
+// ==========================================================
+
+async function loadCategoryScripts() {
+
+    if (
+        categoryScriptsLoaded
+    ) {
+
+        return;
+
+    }
+
+
+    try {
+
+        await loadScriptGroup(
+            categoryScripts,
+            "CATEGORY"
+        );
+
+
+        categoryScriptsLoaded =
+            true;
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Category Script Loading Error:",
+            error
+        );
+
+        throw error;
+
+    }
+
+}
+
+
+// ==========================================================
 // LOAD PAGE
 // ==========================================================
 
-async function loadPage(page) {
+async function loadPage(
+    page
+) {
 
     try {
 
@@ -225,22 +356,30 @@ async function loadPage(page) {
             page
         );
 
+
         const response =
             await fetch(page);
+
 
         if (!response.ok) {
 
             throw new Error(
-                "Unable to load page: " + page
+                "Unable to load page: " +
+                page
             );
 
         }
 
+
         const html =
             await response.text();
 
+
         const content =
-            document.getElementById("content");
+            document.getElementById(
+                "content"
+            );
+
 
         if (!content) {
 
@@ -250,7 +389,18 @@ async function loadPage(page) {
 
         }
 
-        content.innerHTML = html;
+
+        // ==================================================
+        // LOAD HTML
+        // ==================================================
+
+        content.innerHTML =
+            html;
+
+
+        // ==================================================
+        // SAVE CURRENT PAGE
+        // ==================================================
 
         localStorage.setItem(
             "currentPage",
@@ -293,6 +443,7 @@ async function loadPage(page) {
                     "=== PRODUCTS PAGE ==="
                 );
 
+
                 try {
 
                     await loadProductScripts();
@@ -307,14 +458,6 @@ async function loadPage(page) {
 
                     }
 
-                    else {
-
-                        console.error(
-                            "initializeProductPage() not found."
-                        );
-
-                    }
-
 
                     if (
                         typeof startProductListener ===
@@ -325,36 +468,26 @@ async function loadPage(page) {
 
                     }
 
+
                     console.log(
                         "Product Master initialized successfully."
                     );
 
                 }
 
-                catch (productError) {
+                catch (error) {
 
                     console.error(
                         "Product Page Initialization Error:",
-                        productError
+                        error
                     );
 
-                    content.innerHTML += `
 
-                        <div class="alert alert-danger m-3">
-
-                            <strong>
-                                Product Module Error
-                            </strong>
-
-                            <br><br>
-
-                            ${escapeAppHTML(
-                                productError.message
-                            )}
-
-                        </div>
-
-                    `;
+                    showModuleError(
+                        content,
+                        "Product Module",
+                        error
+                    );
 
                 }
 
@@ -367,21 +500,131 @@ async function loadPage(page) {
 
             case "pages/categories.html":
 
-                if (
-                    typeof loadCategories ===
-                    "function"
-                ) {
+                console.log(
+                    "=== CATEGORY MASTER PAGE ==="
+                );
 
-                    loadCategories();
+
+                try {
+
+                    // ------------------------------------------
+                    // LOAD ALL CATEGORY ENGINES FIRST
+                    // ------------------------------------------
+
+                    await loadCategoryScripts();
+
+
+                    // ------------------------------------------
+                    // LOAD CATEGORY TABLE
+                    // ------------------------------------------
+
+                    if (
+                        typeof loadCategories ===
+                        "function"
+                    ) {
+
+                        loadCategories();
+
+                    }
+
+                    else {
+
+                        console.error(
+                            "loadCategories() not found."
+                        );
+
+                    }
+
+
+                    // ------------------------------------------
+                    // CATEGORY PAGE INITIALIZER
+                    // ------------------------------------------
+
+                    if (
+                        typeof initializeCategoryPage ===
+                        "function"
+                    ) {
+
+                        initializeCategoryPage();
+
+                    }
+
+
+                    // ------------------------------------------
+                    // CATEGORY SAVE
+                    // ------------------------------------------
+
+                    if (
+                        typeof initializeCategorySave ===
+                        "function"
+                    ) {
+
+                        initializeCategorySave();
+
+                    }
+
+
+                    // ------------------------------------------
+                    // ICON PREVIEW
+                    // ------------------------------------------
+
+                    if (
+                        typeof initializeCategoryPreview ===
+                        "function"
+                    ) {
+
+                        initializeCategoryPreview();
+
+                    }
+
+
+                    // ------------------------------------------
+                    // CATEGORY CODE
+                    // ------------------------------------------
+
+                    if (
+                        typeof generateCategoryCode ===
+                        "function"
+                    ) {
+
+                        generateCategoryCode();
+
+                    }
+
+
+                    // ------------------------------------------
+                    // CATEGORY DROPDOWN
+                    // ------------------------------------------
+
+                    if (
+                        typeof loadAllCategoryDropdowns ===
+                        "function"
+                    ) {
+
+                        loadAllCategoryDropdowns();
+
+                    }
+
+
+                    console.log(
+                        "Category Master initialized successfully."
+                    );
 
                 }
 
-                if (
-                    typeof initializeCategoryPage ===
-                    "function"
-                ) {
+                catch (error) {
 
-                    initializeCategoryPage();
+                    console.error(
+                        "Category Page Initialization Error:",
+                        error
+                    );
+
+
+                    showModuleError(
+                        content,
+                        "Category Module",
+                        error
+                    );
 
                 }
 
@@ -676,6 +919,10 @@ async function loadPage(page) {
                 break;
 
 
+            // ==================================================
+            // DEFAULT
+            // ==================================================
+
             default:
 
                 console.log(
@@ -702,8 +949,12 @@ async function loadPage(page) {
             error
         );
 
+
         const content =
-            document.getElementById("content");
+            document.getElementById(
+                "content"
+            );
+
 
         if (content) {
 
@@ -743,7 +994,83 @@ async function loadPage(page) {
 
 
 // ==========================================================
-// NAVIGATION FUNCTIONS
+// MODULE ERROR DISPLAY
+// ==========================================================
+
+function showModuleError(
+    container,
+    moduleName,
+    error
+) {
+
+    if (!container) {
+
+        return;
+
+    }
+
+
+    container.innerHTML += `
+
+        <div class="alert alert-danger m-3">
+
+            <strong>
+                ${escapeAppHTML(
+                    moduleName
+                )} Error
+            </strong>
+
+            <br><br>
+
+            ${escapeAppHTML(
+                error.message ||
+                error
+            )}
+
+        </div>
+
+    `;
+
+}
+
+
+// ==========================================================
+// HTML ESCAPE
+// ==========================================================
+
+function escapeAppHTML(
+    value
+) {
+
+    return String(
+        value ?? ""
+    )
+    .replace(
+        /&/g,
+        "&amp;"
+    )
+    .replace(
+        /</g,
+        "&lt;"
+    )
+    .replace(
+        />/g,
+        "&gt;"
+    )
+    .replace(
+        /"/g,
+        "&quot;"
+    )
+    .replace(
+        /'/g,
+        "&#039;"
+    );
+
+}
+
+
+// ==========================================================
+// NAVIGATION
 // ==========================================================
 
 function openDashboard() {
@@ -979,6 +1306,7 @@ function logoutERP() {
 
     }
 
+
     localStorage.clear();
 
     location.reload();
@@ -993,7 +1321,10 @@ function logoutERP() {
 function toggleSidebar() {
 
     const sidebar =
-        document.getElementById("sidebar");
+        document.getElementById(
+            "sidebar"
+        );
+
 
     if (!sidebar) {
 
@@ -1007,12 +1338,16 @@ function toggleSidebar() {
 
 
     const isOpen =
-        sidebar.classList.contains("show");
+        sidebar.classList.contains(
+            "show"
+        );
 
 
     if (isOpen) {
 
-        sidebar.classList.remove("show");
+        sidebar.classList.remove(
+            "show"
+        );
 
         document.body.classList.remove(
             "sidebar-open"
@@ -1022,7 +1357,9 @@ function toggleSidebar() {
 
     else {
 
-        sidebar.classList.add("show");
+        sidebar.classList.add(
+            "show"
+        );
 
         document.body.classList.add(
             "sidebar-open"
@@ -1031,12 +1368,22 @@ function toggleSidebar() {
     }
 
 
-    console.log(
-        "Sidebar:",
-        isOpen
-            ? "CLOSED"
-            : "OPEN"
-    );
+    const button =
+        document.getElementById(
+            "sidebarToggle"
+        );
+
+
+    if (button) {
+
+        button.setAttribute(
+            "aria-expanded",
+            isOpen
+                ? "false"
+                : "true"
+        );
+
+    }
 
 }
 
@@ -1048,7 +1395,10 @@ function toggleSidebar() {
 function closeSidebarMobile() {
 
     const sidebar =
-        document.getElementById("sidebar");
+        document.getElementById(
+            "sidebar"
+        );
+
 
     if (sidebar) {
 
@@ -1058,137 +1408,119 @@ function closeSidebarMobile() {
 
     }
 
+
     document.body.classList.remove(
         "sidebar-open"
     );
 
-}
 
-
-// ==========================================================
-// ESCAPE HTML
-// ==========================================================
-
-function escapeAppHTML(value) {
-
-    return String(
-        value ?? ""
-    )
-
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-
-        .replace(
-            /</g,
-            "&lt;"
-        )
-
-        .replace(
-            />/g,
-            "&gt;"
-        )
-
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-
-        .replace(
-            /'/g,
-            "&#039;"
+    const button =
+        document.getElementById(
+            "sidebarToggle"
         );
 
+
+    if (button) {
+
+        button.setAttribute(
+            "aria-expanded",
+            "false"
+        );
+
+    }
+
 }
 
 
 // ==========================================================
-// UNIVERSAL MOBILE HAMBURGER HANDLER
-// ==========================================================
-//
-// Supports:
-//
-// #sidebarToggle
-// .sidebar-toggle
-// [data-sidebar-toggle]
-// .navbar-toggler
-// buttons containing fa-bars
-//
-// This uses EVENT DELEGATION so it still works
-// even when navbar.html is loaded dynamically.
+// MOBILE HAMBURGER
 // ==========================================================
 
 document.addEventListener(
     "click",
     function(event) {
 
-        const target =
+        const button =
             event.target.closest(
-                "#sidebarToggle, " +
-                ".sidebar-toggle, " +
-                "[data-sidebar-toggle], " +
-                ".navbar-toggler"
+                "#sidebarToggle, .sidebar-toggle"
             );
 
 
-        // ==================================================
-        // HAMBURGER FOUND
-        // ==================================================
-
-        if (target) {
-
-            event.preventDefault();
-
-            event.stopPropagation();
-
-            toggleSidebar();
+        if (!button) {
 
             return;
 
         }
 
 
-        // ==================================================
-        // ALSO DETECT BUTTON WITH FA-BARS
-        // ==================================================
+        event.preventDefault();
 
-        const bars =
+        event.stopPropagation();
+
+        toggleSidebar();
+
+    },
+    true
+);
+
+
+// ==========================================================
+// MOBILE TOUCH
+// ==========================================================
+
+document.addEventListener(
+    "touchend",
+    function(event) {
+
+        const button =
             event.target.closest(
-                "button"
+                "#sidebarToggle, .sidebar-toggle"
             );
 
 
-        if (
-            bars &&
-            bars.querySelector(
-                ".fa-bars"
-            )
-        ) {
-
-            event.preventDefault();
-
-            event.stopPropagation();
-
-            toggleSidebar();
+        if (!button) {
 
             return;
 
         }
 
 
-        // ==================================================
-        // CLICK SIDEBAR LINK ON MOBILE
-        // ==================================================
+        event.preventDefault();
 
-        const navLink =
+        event.stopPropagation();
+
+        toggleSidebar();
+
+    },
+    {
+        capture: true,
+        passive: false
+    }
+);
+
+
+// ==========================================================
+// CLOSE SIDEBAR AFTER MENU CLICK
+// ==========================================================
+
+document.addEventListener(
+    "click",
+    function(event) {
+
+        const link =
             event.target.closest(
                 "#sidebar a"
             );
 
 
+        if (!link) {
+
+            return;
+
+        }
+
+
         if (
-            navLink &&
             window.innerWidth <= 992
         ) {
 
@@ -1203,42 +1535,12 @@ document.addEventListener(
 
         }
 
-
-        // ==================================================
-        // CLICK OVERLAY
-        // ==================================================
-
-        const sidebar =
-            document.getElementById(
-                "sidebar"
-            );
-
-
-        if (
-            sidebar &&
-            sidebar.classList.contains("show") &&
-            window.innerWidth <= 992
-        ) {
-
-            if (
-                !event.target.closest(
-                    "#sidebar"
-                )
-            ) {
-
-                closeSidebarMobile();
-
-            }
-
-        }
-
-    },
-    true
+    }
 );
 
 
 // ==========================================================
-// ESC KEY CLOSE
+// CLOSE WITH ESC
 // ==========================================================
 
 document.addEventListener(
@@ -1246,7 +1548,8 @@ document.addEventListener(
     function(event) {
 
         if (
-            event.key === "Escape"
+            event.key ===
+            "Escape"
         ) {
 
             closeSidebarMobile();
@@ -1258,7 +1561,7 @@ document.addEventListener(
 
 
 // ==========================================================
-// WINDOW RESIZE
+// CLOSE ON DESKTOP RESIZE
 // ==========================================================
 
 window.addEventListener(
@@ -1278,7 +1581,7 @@ window.addEventListener(
 
 
 // ==========================================================
-// RESTORE LAST PAGE
+// INITIALIZE ERP
 // ==========================================================
 
 document.addEventListener(
@@ -1295,6 +1598,8 @@ document.addEventListener(
 
         console.log(
             "=========================================="
+
+
         );
 
 
@@ -1319,21 +1624,7 @@ document.addEventListener(
 
 
         // ==================================================
-        // IMPORTANT
-        //
-        // DO NOT CALL initializeSidebar()
-        //
-        // Hamburger is handled by delegated
-        // event listener above.
-        // ==================================================
-
-        console.log(
-            "Sidebar component loaded."
-        );
-
-
-        // ==================================================
-        // NAVBAR INITIALIZATION
+        // INITIALIZE NAVBAR
         // ==================================================
 
         if (
@@ -1347,7 +1638,7 @@ document.addEventListener(
 
 
         // ==================================================
-        // RESTORE CURRENT PAGE
+        // RESTORE LAST PAGE
         // ==================================================
 
         const savedPage =
@@ -1356,41 +1647,130 @@ document.addEventListener(
             );
 
 
-        const page =
-            savedPage &&
-            savedPage.trim() !== ""
+        if (
+            savedPage
+        ) {
 
-                ? savedPage
+            await loadPage(
+                savedPage
+            );
 
-                : "pages/dashboard.html";
+        }
 
+        else {
 
-        console.log(
-            "Opening page:",
-            page
-        );
+            await loadPage(
+                "pages/dashboard.html"
+            );
 
+        }
 
-        await loadPage(
-            page
-        );
-
-
-        // ==================================================
-        // ERP READY
-        // ==================================================
 
         console.log(
             "=========================================="
         );
 
         console.log(
-            "PAPPRITO ERP READY"
+            "PAPPRITO ERP READY."
         );
 
         console.log(
             "=========================================="
+
         );
 
     }
+);
+
+
+// ==========================================================
+// GLOBAL EXPORTS
+// ==========================================================
+
+window.loadComponent =
+    loadComponent;
+
+window.loadScript =
+    loadScript;
+
+window.loadProductScripts =
+    loadProductScripts;
+
+window.loadCategoryScripts =
+    loadCategoryScripts;
+
+window.loadPage =
+    loadPage;
+
+window.toggleSidebar =
+    toggleSidebar;
+
+window.closeSidebarMobile =
+    closeSidebarMobile;
+
+window.openDashboard =
+    openDashboard;
+
+window.openPOS =
+    openPOS;
+
+window.openReceivingOrders =
+    openReceivingOrders;
+
+window.openKitchen =
+    openKitchen;
+
+window.openTables =
+    openTables;
+
+window.openProducts =
+    openProducts;
+
+window.openCategory =
+    openCategory;
+
+window.openInventory =
+    openInventory;
+
+window.openStockIn =
+    openStockIn;
+
+window.openStockOut =
+    openStockOut;
+
+window.openPurchaseOrders =
+    openPurchaseOrders;
+
+window.openSuppliers =
+    openSuppliers;
+
+window.openCustomers =
+    openCustomers;
+
+window.openSales =
+    openSales;
+
+window.openReports =
+    openReports;
+
+window.openEmployees =
+    openEmployees;
+
+window.openAttendance =
+    openAttendance;
+
+window.openPayroll =
+    openPayroll;
+
+window.openSettings =
+    openSettings;
+
+window.openCompanyProfile =
+    openCompanyProfile;
+
+window.logoutERP =
+    logoutERP;
+
+console.log(
+    "PAPPRITO ERP app.js V3 loaded."
 );
