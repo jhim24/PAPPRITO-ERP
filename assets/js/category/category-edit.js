@@ -1,140 +1,393 @@
-// ==========================================
+// ==========================================================
 // PAPPRITO ERP
-// CATEGORY EDIT / UPDATE
-// ==========================================
+// CATEGORY EDIT ENGINE V2
+// File : assets/js/category/category-edit.js
+//
+// FUNCTIONS:
+// - Edit Category
+// - Load Category Data
+// - Populate Modal
+// - Preserve Category ID
+// - Update Category
+// ==========================================================
 
-let editingCategoryId = null;
+"use strict";
 
-// ==========================================
-// OPEN EDIT
-// ==========================================
+
+// ==========================================================
+// EDIT CATEGORY
+// ==========================================================
 
 async function editCategory(categoryId) {
 
+    if (!categoryId) {
+
+        console.error(
+            "Category ID is missing."
+        );
+
+        return;
+
+    }
+
+
+    if (
+        typeof db === "undefined" ||
+        !db
+    ) {
+
+        alert(
+            "Firebase Database is not initialized."
+        );
+
+        return;
+
+    }
+
+
     try {
 
-        editingCategoryId = categoryId;
+        console.log(
+            "Editing category:",
+            categoryId
+        );
 
-        const snapshot = await db.ref("categories/" + categoryId).once("value");
 
-        if (!snapshot.exists()) {
+        const snapshot =
+            await db
+                .ref(
+                    "categories/" +
+                    categoryId
+                )
+                .once("value");
 
-            alert("Category not found.");
+
+        if (
+            !snapshot.exists()
+        ) {
+
+            alert(
+                "Category not found."
+            );
 
             return;
 
         }
 
-        const category = snapshot.val();
 
-        document.getElementById("categoryCode").value = category.code || "";
+        const category =
+            snapshot.val() || {};
 
-        document.getElementById("categoryName").value = category.name || "";
 
-        document.getElementById("categoryDescription").value = category.description || "";
+        // ==================================================
+        // SAVE EDIT ID
+        // ==================================================
 
-        document.getElementById("categoryIcon").value = category.icon || "fa-utensils";
+        editingCategoryId =
+            categoryId;
 
-        document.getElementById("categoryColor").value = category.color || "#C8102E";
 
-        document.getElementById("displayOrder").value = category.displayOrder || 1;
+        // ==================================================
+        // CATEGORY CODE
+        // ==================================================
 
-        document.getElementById("categoryStatus").value = category.status || "Active";
+        const code =
+            document.getElementById(
+                "categoryCode"
+            );
 
-        document.getElementById("categoryModalTitle").innerHTML =
-            '<i class="fa-solid fa-pen"></i> Edit Category';
 
-        document.getElementById("btnSaveText").textContent =
-            "Update Category";
+        if (code) {
 
-        const modal = new bootstrap.Modal(
-            document.getElementById("categoryModal")
+            code.value =
+                category.code || "";
+
+        }
+
+
+        // ==================================================
+        // CATEGORY NAME
+        // ==================================================
+
+        const name =
+            document.getElementById(
+                "categoryName"
+            );
+
+
+        if (name) {
+
+            name.value =
+                category.name || "";
+
+        }
+
+
+        // ==================================================
+        // DESCRIPTION
+        // ==================================================
+
+        const description =
+            document.getElementById(
+                "categoryDescription"
+            );
+
+
+        if (description) {
+
+            description.value =
+                category.description || "";
+
+        }
+
+
+        // ==================================================
+        // ICON
+        // ==================================================
+
+        const icon =
+            document.getElementById(
+                "categoryIcon"
+            );
+
+
+        if (icon) {
+
+            icon.value =
+                category.icon ||
+                "fa-utensils";
+
+        }
+
+
+        // ==================================================
+        // COLOR
+        // ==================================================
+
+        const color =
+            document.getElementById(
+                "categoryColor"
+            );
+
+
+        if (color) {
+
+            color.value =
+                category.color ||
+                "#C8102E";
+
+        }
+
+
+        // ==================================================
+        // DISPLAY ORDER
+        // ==================================================
+
+        const displayOrder =
+            document.getElementById(
+                "displayOrder"
+            );
+
+
+        if (displayOrder) {
+
+            displayOrder.value =
+                Number(
+                    category.displayOrder ||
+                    1
+                );
+
+        }
+
+
+        // ==================================================
+        // STATUS
+        // ==================================================
+
+        const status =
+            document.getElementById(
+                "categoryStatus"
+            );
+
+
+        if (status) {
+
+            status.value =
+                category.status ||
+                "Active";
+
+        }
+
+
+        // ==================================================
+        // UPDATE ICON PREVIEW
+        // ==================================================
+
+        if (
+            typeof updateCategoryIconPreview ===
+            "function"
+        ) {
+
+            updateCategoryIconPreview();
+
+        }
+
+
+        // ==================================================
+        // MODAL TITLE
+        // ==================================================
+
+        const title =
+            document.getElementById(
+                "categoryModalTitle"
+            );
+
+
+        if (title) {
+
+            title.innerHTML = `
+
+                <i class="fa-solid fa-pen-to-square"></i>
+
+                Edit Category
+
+            `;
+
+        }
+
+
+        // ==================================================
+        // SAVE BUTTON
+        // ==================================================
+
+        const buttonText =
+            document.getElementById(
+                "btnSaveText"
+            );
+
+
+        if (buttonText) {
+
+            buttonText.textContent =
+                "Update Category";
+
+        }
+
+
+        // ==================================================
+        // OPEN MODAL
+        // ==================================================
+
+        const modalElement =
+            document.getElementById(
+                "categoryModal"
+            );
+
+
+        if (
+            modalElement &&
+            typeof bootstrap !==
+            "undefined"
+        ) {
+
+            const modal =
+                bootstrap.Modal
+                    .getOrCreateInstance(
+                        modalElement
+                    );
+
+
+            modal.show();
+
+        }
+
+
+        console.log(
+            "Category loaded for editing."
         );
 
-        modal.show();
+    }
 
-    } catch (error) {
+    catch (error) {
 
-        console.error("Edit Error:", error);
+        console.error(
+            "Edit Category Error:",
+            error
+        );
 
-        alert("Unable to load category.");
+
+        alert(
+            "Unable to load category.\n\n" +
+            (
+                error.message ||
+                error
+            )
+        );
 
     }
 
 }
 
-// ==========================================
-// UPDATE CATEGORY
-// ==========================================
 
-async function updateCategory() {
+// ==========================================================
+// CANCEL EDIT
+// ==========================================================
 
-    try {
+function cancelCategoryEdit() {
 
-        if (!editingCategoryId) {
+    editingCategoryId =
+        null;
 
-            return;
 
-        }
+    if (
+        typeof resetCategoryForm ===
+        "function"
+    ) {
 
-        const name = document.getElementById("categoryName").value.trim();
-
-        if (name === "") {
-
-            alert("Category Name is required.");
-
-            return;
-
-        }
-
-        await db.ref("categories/" + editingCategoryId).update({
-
-            name: name,
-
-            description: document.getElementById("categoryDescription").value.trim(),
-
-            icon: document.getElementById("categoryIcon").value.trim() || "fa-utensils",
-
-            color: document.getElementById("categoryColor").value,
-
-            displayOrder: Number(document.getElementById("displayOrder").value),
-
-            status: document.getElementById("categoryStatus").value,
-
-            updatedDate: new Date().toISOString()
-
-        });
-
-        const modal = bootstrap.Modal.getInstance(
-            document.getElementById("categoryModal")
-        );
-
-        if (modal) {
-
-            modal.hide();
-
-        }
-
-        editingCategoryId = null;
-
-        document.getElementById("categoryModalTitle").innerHTML =
-            '<i class="fa-solid fa-tags"></i> Add Category';
-
-        document.getElementById("btnSaveText").textContent =
-            "Save Category";
-
-        clearCategoryForm();
-
-        alert("Category updated successfully.");
+        resetCategoryForm();
 
     }
 
-    catch(error){
 
-        console.error("Update Error:", error);
+    if (
+        typeof closeCategoryModal ===
+        "function"
+    ) {
 
-        alert("Unable to update category.");
+        closeCategoryModal();
 
     }
 
 }
+
+
+// ==========================================================
+// CHECK EDIT MODE
+// ==========================================================
+
+function isCategoryEditMode() {
+
+    return Boolean(
+        editingCategoryId
+    );
+
+}
+
+
+// ==========================================================
+// GLOBAL EXPORT
+// ==========================================================
+
+window.editCategory =
+    editCategory;
+
+window.cancelCategoryEdit =
+    cancelCategoryEdit;
+
+window.isCategoryEditMode =
+    isCategoryEditMode;
+
+
+console.log(
+    "PAPPRITO Category Edit Engine V2 loaded."
+);
