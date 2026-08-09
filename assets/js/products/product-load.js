@@ -28,9 +28,9 @@ function initializeProductPage() {
     );
 
 
-    // ----------------------------------------------
-    // Product Code
-    // ----------------------------------------------
+    // ------------------------------------------------------
+    // PRODUCT CODE
+    // ------------------------------------------------------
 
     if (
         typeof generateProductCode ===
@@ -42,9 +42,9 @@ function initializeProductPage() {
     }
 
 
-    // ----------------------------------------------
-    // Categories
-    // ----------------------------------------------
+    // ------------------------------------------------------
+    // PRODUCT CATEGORIES
+    // ------------------------------------------------------
 
     if (
         typeof loadProductCategories ===
@@ -56,9 +56,9 @@ function initializeProductPage() {
     }
 
 
-    // ----------------------------------------------
-    // Search / Filters
-    // ----------------------------------------------
+    // ------------------------------------------------------
+    // SEARCH
+    // ------------------------------------------------------
 
     if (
         typeof initializeProductSearch ===
@@ -70,9 +70,9 @@ function initializeProductPage() {
     }
 
 
-    // ----------------------------------------------
-    // Save / Update
-    // ----------------------------------------------
+    // ------------------------------------------------------
+    // SAVE / UPDATE
+    // ------------------------------------------------------
 
     if (
         typeof initializeProductSave ===
@@ -84,9 +84,9 @@ function initializeProductPage() {
     }
 
 
-    // ----------------------------------------------
-    // Image
-    // ----------------------------------------------
+    // ------------------------------------------------------
+    // IMAGE
+    // ------------------------------------------------------
 
     if (
         typeof initializeProductImage ===
@@ -98,9 +98,9 @@ function initializeProductPage() {
     }
 
 
-    // ----------------------------------------------
-    // Firebase Listener
-    // ----------------------------------------------
+    // ------------------------------------------------------
+    // FIREBASE LISTENER
+    // ------------------------------------------------------
 
     startProductListener();
 
@@ -113,13 +113,8 @@ function initializeProductPage() {
 
 function startProductListener() {
 
-    // ----------------------------------------------
-    // Check Firebase
-    // ----------------------------------------------
-
     if (
-        typeof db ===
-        "undefined" ||
+        typeof db === "undefined" ||
         !db
     ) {
 
@@ -132,9 +127,9 @@ function startProductListener() {
     }
 
 
-    // ----------------------------------------------
-    // Remove Previous Listener
-    // ----------------------------------------------
+    // ------------------------------------------------------
+    // REMOVE PREVIOUS LISTENER
+    // ------------------------------------------------------
 
     if (productListener) {
 
@@ -156,17 +151,17 @@ function startProductListener() {
     }
 
 
-    // ----------------------------------------------
-    // Create New Listener
-    // ----------------------------------------------
+    // ------------------------------------------------------
+    // CREATE LISTENER
+    // ------------------------------------------------------
 
     productListener =
         db.ref("products");
 
 
-    // ----------------------------------------------
-    // Listen For Product Changes
-    // ----------------------------------------------
+    // ------------------------------------------------------
+    // LISTEN
+    // ------------------------------------------------------
 
     productListener.on(
         "value",
@@ -200,23 +195,23 @@ function startProductListener() {
             );
 
 
-            // ------------------------------------------
-            // Render Table
-            // ------------------------------------------
+            // ------------------------------------------------
+            // RENDER TABLE
+            // ------------------------------------------------
 
             renderProductTable();
 
 
-            // ------------------------------------------
-            // Update Counters
-            // ------------------------------------------
+            // ------------------------------------------------
+            // COUNTER
+            // ------------------------------------------------
 
             updateProductCounter();
 
 
-            // ------------------------------------------
-            // Update Filters
-            // ------------------------------------------
+            // ------------------------------------------------
+            // CATEGORY FILTER
+            // ------------------------------------------------
 
             if (
                 typeof refreshProductFilters ===
@@ -264,26 +259,28 @@ function renderProductTable() {
     }
 
 
-    // ----------------------------------------------
-    // Clear Table
-    // ----------------------------------------------
+    // ------------------------------------------------------
+    // CLEAR TABLE
+    // ------------------------------------------------------
 
     table.innerHTML = "";
 
 
-    // ----------------------------------------------
-    // Get Filtered Products
-    // ----------------------------------------------
+    // ------------------------------------------------------
+    // FILTER PRODUCTS
+    // ------------------------------------------------------
 
     const products =
         getFilteredProducts();
 
 
-    // ----------------------------------------------
-    // No Products
-    // ----------------------------------------------
+    // ------------------------------------------------------
+    // EMPTY
+    // ------------------------------------------------------
 
-    if (products.length === 0) {
+    if (
+        products.length === 0
+    ) {
 
         table.innerHTML = `
 
@@ -308,10 +305,8 @@ function renderProductTable() {
                     <br>
 
                     <small class="text-muted">
-
                         Click "Add Product" to create
                         your first product.
-
                     </small>
 
                 </td>
@@ -325,21 +320,31 @@ function renderProductTable() {
     }
 
 
-    // ----------------------------------------------
-    // Render Products
-    // ----------------------------------------------
+    // ------------------------------------------------------
+    // RENDER PRODUCTS
+    // ------------------------------------------------------
 
     products.forEach(
         function (product) {
 
+            // ----------------------------------------------
+            // IMAGE
+            // ----------------------------------------------
+
             const image =
                 product.image &&
-                String(product.image).trim() !== ""
+                String(
+                    product.image
+                ).trim() !== ""
 
                     ? product.image
 
-                    : "assets/img/no-product.png";
+                    : "assets/img/logo.png";
 
+
+            // ----------------------------------------------
+            // STATUS
+            // ----------------------------------------------
 
             const status =
                 product.status ||
@@ -362,17 +367,25 @@ function renderProductTable() {
                     `;
 
 
+            // ----------------------------------------------
+            // STOCK
+            // ----------------------------------------------
+
             const stock =
                 Number(
                     product.currentStock || 0
                 );
 
 
+            // ----------------------------------------------
+            // TABLE ROW
+            // ----------------------------------------------
+
             table.innerHTML += `
 
                 <tr>
 
-                    <!-- CODE -->
+                    <!-- PRODUCT CODE -->
 
                     <td>
 
@@ -394,7 +407,8 @@ function renderProductTable() {
                             )}"
 
                             alt="${escapeProductAttribute(
-                                product.name || "Product"
+                                product.name ||
+                                "Product"
                             )}"
 
                             width="60"
@@ -410,7 +424,7 @@ function renderProductTable() {
 
                             onerror="
                                 this.onerror=null;
-                                this.src='assets/img/no-product.png';
+                                this.src='assets/img/logo.png';
                             "
 
                         >
@@ -418,7 +432,7 @@ function renderProductTable() {
                     </td>
 
 
-                    <!-- PRODUCT -->
+                    <!-- PRODUCT NAME -->
 
                     <td>
 
@@ -444,7 +458,7 @@ function renderProductTable() {
                     </td>
 
 
-                    <!-- PRICE -->
+                    <!-- SELLING PRICE -->
 
                     <td>
 
@@ -455,7 +469,7 @@ function renderProductTable() {
                     </td>
 
 
-                    <!-- STOCK -->
+                    <!-- CURRENT STOCK -->
 
                     <td>
 
@@ -481,7 +495,12 @@ function renderProductTable() {
 
                             type="button"
 
-                            class="btn btn-warning btn-sm me-1"
+                            class="
+                                btn
+                                btn-warning
+                                btn-sm
+                                me-1
+                            "
 
                             onclick="
                                 editProduct(
@@ -504,7 +523,11 @@ function renderProductTable() {
 
                             type="button"
 
-                            class="btn btn-danger btn-sm"
+                            class="
+                                btn
+                                btn-danger
+                                btn-sm
+                            "
 
                             onclick="
                                 deleteProduct(
@@ -564,7 +587,9 @@ function getFilteredProducts() {
             : "";
 
 
-    if (keyword !== "") {
+    if (
+        keyword !== ""
+    ) {
 
         products =
             products.filter(
@@ -589,9 +614,23 @@ function getFilteredProducts() {
 
 
                     return (
-                        name.includes(keyword) ||
-                        code.includes(keyword) ||
-                        category.includes(keyword)
+
+                        name.includes(
+                            keyword
+                        )
+
+                        ||
+
+                        code.includes(
+                            keyword
+                        )
+
+                        ||
+
+                        category.includes(
+                            keyword
+                        )
+
                     );
 
                 }
@@ -625,8 +664,10 @@ function getFilteredProducts() {
                 function (product) {
 
                     return (
+
                         product.categoryId ===
                         selectedCategory
+
                     );
 
                 }
@@ -660,8 +701,10 @@ function getFilteredProducts() {
                 function (product) {
 
                     return (
+
                         product.status ===
                         selectedStatus
+
                     );
 
                 }
@@ -676,7 +719,7 @@ function getFilteredProducts() {
 
 
 // ==========================================================
-// UPDATE PRODUCT COUNTERS
+// UPDATE PRODUCT COUNTER
 // ==========================================================
 
 function updateProductCounter() {
@@ -718,7 +761,7 @@ function updateProductCounter() {
 
 
 // ==========================================================
-// LOAD PRODUCT CATEGORY DROPDOWN
+// LOAD PRODUCT CATEGORIES
 // ==========================================================
 
 async function loadProductCategories() {
@@ -741,8 +784,7 @@ async function loadProductCategories() {
 
 
     if (
-        typeof db ===
-        "undefined" ||
+        typeof db === "undefined" ||
         !db
     ) {
 
@@ -805,21 +847,24 @@ async function loadProductCategories() {
         );
 
 
-        // ----------------------------------------------
-        // Sort Categories
-        // ----------------------------------------------
+        // --------------------------------------------------
+        // SORT
+        // --------------------------------------------------
 
         categories.sort(
             function (a, b) {
 
-                return a.name
-                    .localeCompare(
-                        b.name
-                    );
+                return a.name.localeCompare(
+                    b.name
+                );
 
             }
         );
 
+
+        // --------------------------------------------------
+        // ADD OPTIONS
+        // --------------------------------------------------
 
         categories.forEach(
             function (category) {
@@ -974,9 +1019,11 @@ function refreshProductFilters() {
     );
 
 
-    // Restore previous selection
+    // ------------------------------------------------------
+    // RESTORE FILTER
+    // ------------------------------------------------------
 
-    if (
+    const optionExists =
         Array.from(
             filter.options
         ).some(
@@ -988,8 +1035,10 @@ function refreshProductFilters() {
                 );
 
             }
-        )
-    ) {
+        );
+
+
+    if (optionExists) {
 
         filter.value =
             currentValue;
@@ -1018,8 +1067,7 @@ function generateProductCode() {
     }
 
 
-    // Do not replace existing code
-    // during Edit.
+    // Do not replace code during edit
 
     if (
         typeof editingProductId !==
@@ -1050,7 +1098,9 @@ function generateProductCode() {
 
     const code =
         "PAP-" +
-        String(count).padStart(
+        String(
+            count
+        ).padStart(
             5,
             "0"
         );
@@ -1066,27 +1116,34 @@ function generateProductCode() {
 // ESCAPE HTML
 // ==========================================================
 
-function escapeProductHTML(value) {
+function escapeProductHTML(
+    value
+) {
 
     return String(
         value ?? ""
     )
+
         .replace(
             /&/g,
             "&amp;"
         )
+
         .replace(
             /</g,
             "&lt;"
         )
+
         .replace(
             />/g,
             "&gt;"
         )
+
         .replace(
             /"/g,
             "&quot;"
         )
+
         .replace(
             /'/g,
             "&#039;"
@@ -1099,27 +1156,34 @@ function escapeProductHTML(value) {
 // ESCAPE HTML ATTRIBUTE
 // ==========================================================
 
-function escapeProductAttribute(value) {
+function escapeProductAttribute(
+    value
+) {
 
     return String(
         value ?? ""
     )
+
         .replace(
             /&/g,
             "&amp;"
         )
+
         .replace(
             /"/g,
             "&quot;"
         )
+
         .replace(
             /'/g,
             "&#039;"
         )
+
         .replace(
             /</g,
             "&lt;"
         )
+
         .replace(
             />/g,
             "&gt;"
