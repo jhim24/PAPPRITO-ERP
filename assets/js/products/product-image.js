@@ -1,159 +1,215 @@
-// ==========================================
+// ==========================================================
 // PAPPRITO ERP
-// PRODUCT IMAGE ENGINE V4
-// ==========================================
+// PRODUCT IMAGE ENGINE
+// File : assets/js/products/product-image.js
+// Description : Product Image Upload, URL, Preview & Remove
+// ==========================================================
 
 "use strict";
 
 
-// ==========================================
-// GLOBAL IMAGE VARIABLES
-// ==========================================
+// ==========================================================
+// GLOBAL IMAGE STATE
+// ==========================================================
 
 let selectedProductImage = "";
 
 let selectedProductFile = null;
 
 
-// ==========================================
+// ==========================================================
 // DEFAULT IMAGE
-// ==========================================
+// ==========================================================
 
-const DEFAULT_PRODUCT_IMAGE =
+const PRODUCT_DEFAULT_IMAGE =
     "assets/img/no-product.png";
 
 
-// ==========================================
-// INITIALIZE IMAGE ENGINE
-// ==========================================
+// ==========================================================
+// INITIALIZE PRODUCT IMAGE
+// ==========================================================
 
 function initializeProductImage() {
 
-    const preview =
-        document.getElementById(
-            "productImagePreview"
-        );
+    console.log(
+        "Product Image Engine initialized."
+    );
 
-    const fileInput =
+
+    // ----------------------------------------------
+    // File Upload
+    // ----------------------------------------------
+
+    const imageFile =
         document.getElementById(
             "productImageFile"
         );
 
-    const urlInput =
+
+    if (imageFile) {
+
+        if (
+            imageFile.dataset.imageInitialized !==
+            "true"
+        ) {
+
+            imageFile.dataset.imageInitialized =
+                "true";
+
+
+            imageFile.addEventListener(
+                "change",
+                handleProductImageFile
+            );
+
+        }
+
+    }
+
+
+    // ----------------------------------------------
+    // Image URL
+    // ----------------------------------------------
+
+    const imageURL =
         document.getElementById(
             "productImageURL"
         );
 
 
-    selectedProductImage = "";
+    if (imageURL) {
 
-    selectedProductFile = null;
+        if (
+            imageURL.dataset.imageInitialized !==
+            "true"
+        ) {
+
+            imageURL.dataset.imageInitialized =
+                "true";
 
 
-    if (preview) {
+            imageURL.addEventListener(
+                "input",
+                handleProductImageURL
+            );
 
-        preview.src =
-            DEFAULT_PRODUCT_IMAGE;
+
+            imageURL.addEventListener(
+                "change",
+                handleProductImageURL
+            );
+
+        }
 
     }
 
 
-    if (fileInput) {
+    // ----------------------------------------------
+    // Default Image
+    // ----------------------------------------------
 
-        fileInput.value = "";
+    const btnDefault =
+        document.getElementById(
+            "btnDefaultImage"
+        );
+
+
+    if (btnDefault) {
+
+        if (
+            btnDefault.dataset.imageInitialized !==
+            "true"
+        ) {
+
+            btnDefault.dataset.imageInitialized =
+                "true";
+
+
+            btnDefault.addEventListener(
+                "click",
+                setDefaultProductImage
+            );
+
+        }
 
     }
 
 
-    if (urlInput) {
+    // ----------------------------------------------
+    // Remove Image
+    // ----------------------------------------------
 
-        urlInput.value = "";
+    const btnRemove =
+        document.getElementById(
+            "btnRemoveImage"
+        );
+
+
+    if (btnRemove) {
+
+        if (
+            btnRemove.dataset.imageInitialized !==
+            "true"
+        ) {
+
+            btnRemove.dataset.imageInitialized =
+                "true";
+
+
+            btnRemove.addEventListener(
+                "click",
+                removeProductImage
+            );
+
+        }
 
     }
+
+
+    // ----------------------------------------------
+    // Initial Preview
+    // ----------------------------------------------
+
+    updateProductImagePreview(
+        selectedProductImage
+    );
 
 }
 
 
-// ==========================================
-// RESET PRODUCT IMAGE
-// ==========================================
+// ==========================================================
+// HANDLE IMAGE FILE
+// ==========================================================
 
-function resetProductImage() {
-
-    selectedProductImage = "";
-
-    selectedProductFile = null;
-
-
-    const preview =
-        document.getElementById(
-            "productImagePreview"
-        );
-
-    const fileInput =
-        document.getElementById(
-            "productImageFile"
-        );
-
-    const urlInput =
-        document.getElementById(
-            "productImageURL"
-        );
-
-
-    if (preview) {
-
-        preview.src =
-            DEFAULT_PRODUCT_IMAGE;
-
-    }
-
-
-    if (fileInput) {
-
-        fileInput.value = "";
-
-    }
-
-
-    if (urlInput) {
-
-        urlInput.value = "";
-
-    }
-
-}
-
-
-// ==========================================
-// IMAGE UPLOAD PREVIEW
-// ==========================================
-
-function previewUploadedImage(event) {
+function handleProductImageFile(event) {
 
     const file =
-        event.target.files[0];
+        event.target.files &&
+        event.target.files.length > 0
+
+            ? event.target.files[0]
+
+            : null;
 
 
     if (!file) {
 
-        selectedProductFile = null;
+        selectedProductFile =
+            null;
 
         return;
 
     }
 
 
-    // ======================================
-    // ALLOWED FILE TYPES
-    // ======================================
+    // ----------------------------------------------
+    // Validate File Type
+    // ----------------------------------------------
 
     const allowedTypes = [
 
         "image/jpeg",
-
         "image/png",
-
         "image/webp"
 
     ];
@@ -166,269 +222,427 @@ function previewUploadedImage(event) {
     ) {
 
         alert(
-            "Only JPG, PNG and WEBP images are allowed."
+            "Invalid image format.\n\n" +
+            "Please use JPG, PNG or WEBP."
         );
 
-        resetProductImage();
+
+        event.target.value = "";
+
+        selectedProductFile =
+            null;
 
         return;
 
     }
 
 
-    // ======================================
-    // MAX SIZE
-    // ======================================
+    // ----------------------------------------------
+    // Validate File Size
+    // ----------------------------------------------
 
     const maxSize =
         2 * 1024 * 1024;
 
 
-    if (file.size > maxSize) {
+    if (
+        file.size > maxSize
+    ) {
 
         alert(
-            "Image size must not exceed 2MB."
+            "Image is too large.\n\n" +
+            "Maximum allowed size is 2MB."
         );
 
-        resetProductImage();
+
+        event.target.value = "";
+
+        selectedProductFile =
+            null;
 
         return;
 
     }
 
 
-    // ======================================
-    // STORE FILE
-    // ======================================
+    // ----------------------------------------------
+    // Save File
+    // ----------------------------------------------
 
-    selectedProductFile = file;
-
-
-    // ======================================
-    // CLEAR URL
-    // ======================================
-
-    const urlInput =
-        document.getElementById(
-            "productImageURL"
-        );
+    selectedProductFile =
+        file;
 
 
-    if (urlInput) {
-
-        urlInput.value = "";
-
-    }
-
-
-    selectedProductImage = "";
-
-
-    // ======================================
-    // PREVIEW
-    // ======================================
+    // ----------------------------------------------
+    // Preview Using FileReader
+    // ----------------------------------------------
 
     const reader =
         new FileReader();
 
 
-    reader.onload = function (e) {
+    reader.onload =
+        function (loadEvent) {
 
-        const preview =
-            document.getElementById(
-                "productImagePreview"
+            const imageData =
+                loadEvent.target.result;
+
+
+            selectedProductImage =
+                imageData;
+
+
+            updateProductImagePreview(
+                imageData
             );
 
-
-        if (preview) {
-
-            preview.src =
-                e.target.result;
-
-        }
-
-    };
+        };
 
 
-    reader.readAsDataURL(file);
+    reader.onerror =
+        function () {
+
+            console.error(
+                "Unable to preview product image."
+            );
+
+            alert(
+                "Unable to preview the selected image."
+            );
+
+        };
+
+
+    reader.readAsDataURL(
+        file
+    );
 
 }
 
 
-// ==========================================
-// FILE EVENT
-// ==========================================
+// ==========================================================
+// HANDLE IMAGE URL
+// ==========================================================
 
-document.addEventListener(
-    "change",
-    function (event) {
+function handleProductImageURL() {
 
-        if (
-            event.target.id ===
-            "productImageFile"
-        ) {
-
-            previewUploadedImage(event);
-
-        }
-
-    }
-);
-
-
-// ==========================================
-// IMAGE URL
-// ==========================================
-
-document.addEventListener(
-    "input",
-    function (event) {
-
-        if (
-            event.target.id !==
+    const input =
+        document.getElementById(
             "productImageURL"
-        ) {
-
-            return;
-
-        }
+        );
 
 
-        const url =
-            event.target.value.trim();
+    if (!input) {
 
-
-        // URL takes priority
-
-        if (url !== "") {
-
-            selectedProductFile = null;
-
-            selectedProductImage =
-                url;
-
-
-            const fileInput =
-                document.getElementById(
-                    "productImageFile"
-                );
-
-
-            if (fileInput) {
-
-                fileInput.value = "";
-
-            }
-
-
-            const preview =
-                document.getElementById(
-                    "productImagePreview"
-                );
-
-
-            if (preview) {
-
-                preview.src = url;
-
-            }
-
-        }
-
-        else {
-
-            selectedProductImage = "";
-
-        }
+        return;
 
     }
-);
 
 
-// ==========================================
-// DEFAULT IMAGE BUTTON
-// ==========================================
-
-document.addEventListener(
-    "click",
-    function (event) {
-
-        const button =
-            event.target.closest(
-                "#btnDefaultImage"
-            );
+    const url =
+        input.value.trim();
 
 
-        if (!button) return;
+    // ----------------------------------------------
+    // Empty URL
+    // ----------------------------------------------
 
-
-        selectedProductFile = null;
+    if (url === "") {
 
         selectedProductImage =
-            DEFAULT_PRODUCT_IMAGE;
+            "";
 
+        updateProductImagePreview(
+            PRODUCT_DEFAULT_IMAGE
+        );
 
-        const preview =
-            document.getElementById(
-                "productImagePreview"
-            );
-
-
-        if (preview) {
-
-            preview.src =
-                DEFAULT_PRODUCT_IMAGE;
-
-        }
-
-
-        const fileInput =
-            document.getElementById(
-                "productImageFile"
-            );
-
-
-        if (fileInput) {
-
-            fileInput.value = "";
-
-        }
-
-
-        const urlInput =
-            document.getElementById(
-                "productImageURL"
-            );
-
-
-        if (urlInput) {
-
-            urlInput.value = "";
-
-        }
+        return;
 
     }
-);
 
 
-// ==========================================
-// REMOVE IMAGE BUTTON
-// ==========================================
+    // ----------------------------------------------
+    // Save URL
+    // ----------------------------------------------
 
-document.addEventListener(
-    "click",
-    function (event) {
-
-        const button =
-            event.target.closest(
-                "#btnRemoveImage"
-            );
+    selectedProductImage =
+        url;
 
 
-        if (!button) return;
+    // ----------------------------------------------
+    // Preview
+    // ----------------------------------------------
+
+    updateProductImagePreview(
+        url
+    );
+
+}
 
 
-        resetProductImage();
+// ==========================================================
+// UPDATE IMAGE PREVIEW
+// ==========================================================
+
+function updateProductImagePreview(
+    image
+) {
+
+    const preview =
+        document.getElementById(
+            "productImagePreview"
+        );
+
+
+    if (!preview) {
+
+        return;
 
     }
-);
+
+
+    const source =
+        image &&
+        String(image).trim() !== ""
+
+            ? image
+
+            : PRODUCT_DEFAULT_IMAGE;
+
+
+    preview.src =
+        source;
+
+
+    preview.onerror =
+        function () {
+
+            this.onerror =
+                null;
+
+            this.src =
+                PRODUCT_DEFAULT_IMAGE;
+
+        };
+
+}
+
+
+// ==========================================================
+// SET DEFAULT IMAGE
+// ==========================================================
+
+function setDefaultProductImage() {
+
+    selectedProductImage =
+        PRODUCT_DEFAULT_IMAGE;
+
+
+    selectedProductFile =
+        null;
+
+
+    // ----------------------------------------------
+    // Clear File
+    // ----------------------------------------------
+
+    const imageFile =
+        document.getElementById(
+            "productImageFile"
+        );
+
+
+    if (imageFile) {
+
+        imageFile.value = "";
+
+    }
+
+
+    // ----------------------------------------------
+    // Set URL
+    // ----------------------------------------------
+
+    const imageURL =
+        document.getElementById(
+            "productImageURL"
+        );
+
+
+    if (imageURL) {
+
+        imageURL.value =
+            "";
+
+    }
+
+
+    // ----------------------------------------------
+    // Preview
+    // ----------------------------------------------
+
+    updateProductImagePreview(
+        PRODUCT_DEFAULT_IMAGE
+    );
+
+}
+
+
+// ==========================================================
+// REMOVE IMAGE
+// ==========================================================
+
+function removeProductImage() {
+
+    selectedProductImage =
+        "";
+
+
+    selectedProductFile =
+        null;
+
+
+    // ----------------------------------------------
+    // Clear File
+    // ----------------------------------------------
+
+    const imageFile =
+        document.getElementById(
+            "productImageFile"
+        );
+
+
+    if (imageFile) {
+
+        imageFile.value =
+            "";
+
+    }
+
+
+    // ----------------------------------------------
+    // Clear URL
+    // ----------------------------------------------
+
+    const imageURL =
+        document.getElementById(
+            "productImageURL"
+        );
+
+
+    if (imageURL) {
+
+        imageURL.value =
+            "";
+
+    }
+
+
+    // ----------------------------------------------
+    // Preview
+    // ----------------------------------------------
+
+    updateProductImagePreview(
+        PRODUCT_DEFAULT_IMAGE
+    );
+
+}
+
+
+// ==========================================================
+// LOAD EXISTING PRODUCT IMAGE
+// ==========================================================
+
+function loadProductImage(
+    image
+) {
+
+    selectedProductFile =
+        null;
+
+
+    selectedProductImage =
+        image || "";
+
+
+    const imageFile =
+        document.getElementById(
+            "productImageFile"
+        );
+
+
+    if (imageFile) {
+
+        imageFile.value =
+            "";
+
+    }
+
+
+    const imageURL =
+        document.getElementById(
+            "productImageURL"
+        );
+
+
+    if (imageURL) {
+
+        imageURL.value =
+            image || "";
+
+    }
+
+
+    updateProductImagePreview(
+        image
+    );
+
+}
+
+
+// ==========================================================
+// CLEAR IMAGE STATE
+// ==========================================================
+
+function clearProductImageState() {
+
+    selectedProductImage =
+        "";
+
+    selectedProductFile =
+        null;
+
+
+    const imageFile =
+        document.getElementById(
+            "productImageFile"
+        );
+
+
+    if (imageFile) {
+
+        imageFile.value =
+            "";
+
+    }
+
+
+    const imageURL =
+        document.getElementById(
+            "productImageURL"
+        );
+
+
+    if (imageURL) {
+
+        imageURL.value =
+            "";
+
+    }
+
+
+    updateProductImagePreview(
+        PRODUCT_DEFAULT_IMAGE
+    );
+
+}
