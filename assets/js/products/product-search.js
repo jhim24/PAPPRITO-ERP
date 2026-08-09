@@ -1,224 +1,688 @@
-// ==========================================
+// ==========================================================
 // PAPPRITO ERP
-// PRODUCT SEARCH ENGINE V2
-// ==========================================
+// PRODUCT SEARCH & FILTER ENGINE
+// File : assets/js/products/product-search.js
+// Description : Product Search, Category Filter & Status Filter
+// ==========================================================
 
-// ==========================================
-// SEARCH PRODUCTS
-// ==========================================
+"use strict";
 
-function searchProducts(){
 
-    const keyword =
-        document.getElementById("searchProduct")
-        ?.value
-        .trim()
-        .toLowerCase() || "";
+// ==========================================================
+// INITIALIZE PRODUCT SEARCH
+// ==========================================================
 
-    const category =
-        document.getElementById("filterCategory")
-        ?.value || "";
+function initializeProductSearch() {
 
-    const status =
-        document.getElementById("filterStatus")
-        ?.value || "";
+    console.log(
+        "Product Search Engine initialized."
+    );
 
-    const filtered = productList.filter(product=>{
 
-        const name =
-            (product.name || "").toLowerCase();
+    // ======================================================
+    // SEARCH PRODUCT
+    // ======================================================
 
-        const code =
-            (product.code || "").toLowerCase();
-
-        const cat =
-            product.categoryId || "";
-
-        const stat =
-            product.status || "";
-
-        const matchKeyword =
-            keyword === "" ||
-            name.includes(keyword) ||
-            code.includes(keyword);
-
-        const matchCategory =
-            category === "" ||
-            cat === category;
-
-        const matchStatus =
-            status === "" ||
-            stat === status;
-
-        return (
-            matchKeyword &&
-            matchCategory &&
-            matchStatus
+    const searchInput =
+        document.getElementById(
+            "searchProduct"
         );
 
-    });
 
-    renderFilteredProducts(filtered);
+    if (searchInput) {
+
+        if (
+            searchInput.dataset.searchInitialized !==
+            "true"
+        ) {
+
+            searchInput.dataset.searchInitialized =
+                "true";
+
+
+            searchInput.addEventListener(
+                "input",
+                function () {
+
+                    renderProductTable();
+
+                }
+            );
+
+        }
+
+    }
+
+
+    // ======================================================
+    // CATEGORY FILTER
+    // ======================================================
+
+    const categoryFilter =
+        document.getElementById(
+            "filterCategory"
+        );
+
+
+    if (categoryFilter) {
+
+        if (
+            categoryFilter.dataset.searchInitialized !==
+            "true"
+        ) {
+
+            categoryFilter.dataset.searchInitialized =
+                "true";
+
+
+            categoryFilter.addEventListener(
+                "change",
+                function () {
+
+                    renderProductTable();
+
+                }
+            );
+
+        }
+
+    }
+
+
+    // ======================================================
+    // STATUS FILTER
+    // ======================================================
+
+    const statusFilter =
+        document.getElementById(
+            "filterStatus"
+        );
+
+
+    if (statusFilter) {
+
+        if (
+            statusFilter.dataset.searchInitialized !==
+            "true"
+        ) {
+
+            statusFilter.dataset.searchInitialized =
+                "true";
+
+
+            statusFilter.addEventListener(
+                "change",
+                function () {
+
+                    renderProductTable();
+
+                }
+            );
+
+        }
+
+    }
+
+
+    // ======================================================
+    // REFRESH BUTTON
+    // ======================================================
+
+    const refreshButton =
+        document.getElementById(
+            "btnRefreshProducts"
+        );
+
+
+    if (refreshButton) {
+
+        if (
+            refreshButton.dataset.searchInitialized !==
+            "true"
+        ) {
+
+            refreshButton.dataset.searchInitialized =
+                "true";
+
+
+            refreshButton.addEventListener(
+                "click",
+                function () {
+
+                    refreshProductList();
+
+                }
+            );
+
+        }
+
+    }
+
+
+    // ======================================================
+    // INITIAL RENDER
+    // ======================================================
+
+    if (
+        typeof renderProductTable ===
+        "function"
+    ) {
+
+        renderProductTable();
+
+    }
 
 }
-// ==========================================
-// RENDER FILTERED PRODUCTS
-// ==========================================
 
-function renderFilteredProducts(products){
 
-    const table =
-        document.getElementById("productTable");
+// ==========================================================
+// FILTER PRODUCTS
+// ==========================================================
 
-    if(!table) return;
+function filterProductList() {
 
-    table.innerHTML = "";
+    if (
+        typeof getFilteredProducts !==
+        "function"
+    ) {
 
-    if(products.length === 0){
+        return [];
 
-        table.innerHTML = `
+    }
 
-            <tr>
 
-                <td colspan="8" class="text-center py-5">
+    return getFilteredProducts();
 
-                    <i class="fa-solid fa-box-open fa-3x text-secondary mb-3"></i>
+}
 
-                    <br>
 
-                    <strong>No Products Found</strong>
+// ==========================================================
+// REFRESH PRODUCT LIST
+// ==========================================================
 
-                </td>
+function refreshProductList() {
 
-            </tr>
+    console.log(
+        "Refreshing Product Master..."
+    );
 
-        `;
+
+    // ------------------------------------------------------
+    // Clear Search
+    // ------------------------------------------------------
+
+    const searchInput =
+        document.getElementById(
+            "searchProduct"
+        );
+
+
+    if (searchInput) {
+
+        searchInput.value =
+            "";
+
+    }
+
+
+    // ------------------------------------------------------
+    // Reset Category Filter
+    // ------------------------------------------------------
+
+    const categoryFilter =
+        document.getElementById(
+            "filterCategory"
+        );
+
+
+    if (categoryFilter) {
+
+        categoryFilter.value =
+            "";
+
+    }
+
+
+    // ------------------------------------------------------
+    // Reset Status Filter
+    // ------------------------------------------------------
+
+    const statusFilter =
+        document.getElementById(
+            "filterStatus"
+        );
+
+
+    if (statusFilter) {
+
+        statusFilter.value =
+            "";
+
+    }
+
+
+    // ------------------------------------------------------
+    // Re-render
+    // ------------------------------------------------------
+
+    if (
+        typeof renderProductTable ===
+        "function"
+    ) {
+
+        renderProductTable();
+
+    }
+
+
+    if (
+        typeof updateProductCounter ===
+        "function"
+    ) {
+
+        updateProductCounter();
+
+    }
+
+}
+
+
+// ==========================================================
+// CLEAR PRODUCT SEARCH
+// ==========================================================
+
+function clearProductSearch() {
+
+    const searchInput =
+        document.getElementById(
+            "searchProduct"
+        );
+
+
+    if (searchInput) {
+
+        searchInput.value =
+            "";
+
+    }
+
+
+    if (
+        typeof renderProductTable ===
+        "function"
+    ) {
+
+        renderProductTable();
+
+    }
+
+}
+
+
+// ==========================================================
+// SET CATEGORY FILTER
+// ==========================================================
+
+function setProductCategoryFilter(
+    categoryId
+) {
+
+    const categoryFilter =
+        document.getElementById(
+            "filterCategory"
+        );
+
+
+    if (!categoryFilter) {
 
         return;
 
     }
 
-    products.forEach(product=>{
 
-        const image =
-            product.image && product.image !== ""
-                ? product.image
-                : "assets/img/no-product.png";
+    categoryFilter.value =
+        categoryId || "";
 
-        const badge =
-            product.status === "Active"
 
-            ? `<span class="badge bg-success">Active</span>`
+    if (
+        typeof renderProductTable ===
+        "function"
+    ) {
 
-            : `<span class="badge bg-secondary">Inactive</span>`;
-
-        table.innerHTML += `
-
-            <tr>
-
-                <td>${product.code || ""}</td>
-
-                <td>
-
-                    <img
-
-                        src="${image}"
-
-                        style="width:60px;
-                               height:60px;
-                               object-fit:cover;
-                               border-radius:10px;">
-
-                </td>
-
-                <td>
-
-                    <strong>${product.name || ""}</strong>
-
-                </td>
-
-                <td>
-
-                    ${product.categoryName || ""}
-
-                </td>
-
-                <td>
-
-                    ₱${Number(product.sellingPrice || 0).toFixed(2)}
-
-                </td>
-
-                <td>
-
-                    ${product.currentStock || 0}
-
-                </td>
-
-                <td>
-
-                    ${badge}
-
-                </td>
-
-                <td>
-
-                    <button
-                        class="btn btn-warning btn-sm me-1"
-                        onclick="editProduct('${product.productId}')">
-
-                        <i class="fa-solid fa-pen"></i>
-
-                    </button>
-
-                    <button
-                        class="btn btn-danger btn-sm"
-                        onclick="deleteProduct('${product.productId}')">
-
-                        <i class="fa-solid fa-trash"></i>
-
-                    </button>
-
-                </td>
-
-            </tr>
-
-        `;
-
-    });
-
-}
-// ==========================================
-// INITIALIZE SEARCH EVENTS
-// ==========================================
-
-function initializeProductSearch(){
-
-    const search =
-        document.getElementById("searchProduct");
-
-    const category =
-        document.getElementById("filterCategory");
-
-    const status =
-        document.getElementById("filterStatus");
-
-    if(search){
-
-        search.addEventListener("input", searchProducts);
-
-    }
-
-    if(category){
-
-        category.addEventListener("change", searchProducts);
-
-    }
-
-    if(status){
-
-        status.addEventListener("change", searchProducts);
+        renderProductTable();
 
     }
 
 }
+
+
+// ==========================================================
+// SET STATUS FILTER
+// ==========================================================
+
+function setProductStatusFilter(
+    status
+) {
+
+    const statusFilter =
+        document.getElementById(
+            "filterStatus"
+        );
+
+
+    if (!statusFilter) {
+
+        return;
+
+    }
+
+
+    statusFilter.value =
+        status || "";
+
+
+    if (
+        typeof renderProductTable ===
+        "function"
+    ) {
+
+        renderProductTable();
+
+    }
+
+}
+
+
+// ==========================================================
+// SEARCH BY KEYWORD
+// ==========================================================
+
+function searchProducts(
+    keyword
+) {
+
+    const searchInput =
+        document.getElementById(
+            "searchProduct"
+        );
+
+
+    if (!searchInput) {
+
+        return;
+
+    }
+
+
+    searchInput.value =
+        keyword || "";
+
+
+    if (
+        typeof renderProductTable ===
+        "function"
+    ) {
+
+        renderProductTable();
+
+    }
+
+}
+
+
+// ==========================================================
+// EXPORT PRODUCTS
+// ==========================================================
+
+function exportProducts() {
+
+    if (
+        typeof productList ===
+        "undefined" ||
+        !Array.isArray(productList)
+    ) {
+
+        alert(
+            "No product data available."
+        );
+
+        return;
+
+    }
+
+
+    const products =
+        typeof getFilteredProducts ===
+        "function"
+
+            ? getFilteredProducts()
+
+            : productList;
+
+
+    if (
+        products.length ===
+        0
+    ) {
+
+        alert(
+            "No products available to export."
+        );
+
+        return;
+
+    }
+
+
+    const headers = [
+
+        "Code",
+        "Product",
+        "Category",
+        "Description",
+        "Cost Price",
+        "Selling Price",
+        "Opening Stock",
+        "Current Stock",
+        "Reorder Level",
+        "Unit",
+        "Status"
+
+    ];
+
+
+    const rows =
+        products.map(
+            function (product) {
+
+                return [
+
+                    product.code || "",
+
+                    product.name || "",
+
+                    product.categoryName || "",
+
+                    product.description || "",
+
+                    Number(
+                        product.costPrice || 0
+                    ).toFixed(2),
+
+                    Number(
+                        product.sellingPrice || 0
+                    ).toFixed(2),
+
+                    Number(
+                        product.openingStock || 0
+                    ),
+
+                    Number(
+                        product.currentStock || 0
+                    ),
+
+                    Number(
+                        product.reorderLevel || 0
+                    ),
+
+                    product.unit || "",
+
+                    product.status || ""
+
+                ];
+
+            }
+        );
+
+
+    // ======================================================
+    // CSV
+    // ======================================================
+
+    let csv =
+        headers.join(",") +
+        "\n";
+
+
+    rows.forEach(
+        function (row) {
+
+            csv +=
+                row
+                    .map(
+                        function (value) {
+
+                            return csvEscape(
+                                value
+                            );
+
+                        }
+                    )
+                    .join(",") +
+                "\n";
+
+        }
+    );
+
+
+    // ======================================================
+    // DOWNLOAD
+    // ======================================================
+
+    const blob =
+        new Blob(
+            [csv],
+            {
+                type:
+                    "text/csv;charset=utf-8;"
+            }
+        );
+
+
+    const url =
+        URL.createObjectURL(
+            blob
+        );
+
+
+    const link =
+        document.createElement(
+            "a"
+        );
+
+
+    link.href =
+        url;
+
+
+    link.download =
+        "PAPPRITO-Products-" +
+        new Date()
+            .toISOString()
+            .slice(
+                0,
+                10
+            ) +
+        ".csv";
+
+
+    document.body.appendChild(
+        link
+    );
+
+
+    link.click();
+
+
+    document.body.removeChild(
+        link
+    );
+
+
+    URL.revokeObjectURL(
+        url
+    );
+
+}
+
+
+// ==========================================================
+// CSV ESCAPE
+// ==========================================================
+
+function csvEscape(
+    value
+) {
+
+    const text =
+        String(
+            value ?? ""
+        );
+
+
+    if (
+        text.includes(",") ||
+        text.includes('"') ||
+        text.includes("\n")
+    ) {
+
+        return '"' +
+            text.replace(
+                /"/g,
+                '""'
+            ) +
+            '"';
+
+    }
+
+
+    return text;
+
+}
+
+
+// ==========================================================
+// EXPORT BUTTON
+// ==========================================================
+
+document.addEventListener(
+    "click",
+    function (event) {
+
+        const button =
+            event.target.closest(
+                "#btnExportProducts"
+            );
+
+
+        if (!button) {
+
+            return;
+
+        }
+
+
+        exportProducts();
+
+    }
+);
