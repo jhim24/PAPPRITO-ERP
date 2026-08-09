@@ -1,8 +1,8 @@
 // ==========================================================
 // PAPPRITO ERP
-// PRODUCT SAVE / UPDATE ENGINE
+// PRODUCT SAVE / UPDATE ENGINE V5
 // File : assets/js/products/product-save.js
-// Description : Create and Update Product Master
+// Description : Create / Update Product + Firebase Storage
 // ==========================================================
 
 "use strict";
@@ -16,13 +16,16 @@ let editingProductId = null;
 
 
 // ==========================================================
-// INITIALIZE
+// INITIALIZE PRODUCT SAVE
 // ==========================================================
 
 function initializeProductSave() {
 
     const btnSave =
-        document.getElementById("btnSaveProduct");
+        document.getElementById(
+            "btnSaveProduct"
+        );
+
 
     if (!btnSave) {
 
@@ -34,21 +37,26 @@ function initializeProductSave() {
 
     }
 
+
     if (
-        btnSave.dataset.saveInitialized === "true"
+        btnSave.dataset.saveInitialized ===
+        "true"
     ) {
 
         return;
 
     }
 
+
     btnSave.dataset.saveInitialized =
         "true";
+
 
     btnSave.addEventListener(
         "click",
         saveProduct
     );
+
 
     console.log(
         "Product Save Engine initialized."
@@ -68,16 +76,21 @@ async function saveProduct() {
             "btnSaveProduct"
         );
 
+
     const btnText =
         document.getElementById(
             "btnSaveProductText"
         );
 
 
+    let imageUploadFailed =
+        false;
+
+
     try {
 
         // ==================================================
-        // FIREBASE CHECK
+        // FIREBASE DATABASE CHECK
         // ==================================================
 
         if (
@@ -93,14 +106,16 @@ async function saveProduct() {
 
 
         // ==================================================
-        // DISABLE BUTTON
+        // DISABLE SAVE BUTTON
         // ==================================================
 
         if (btnSave) {
 
-            btnSave.disabled = true;
+            btnSave.disabled =
+                true;
 
         }
+
 
         if (btnText) {
 
@@ -113,7 +128,7 @@ async function saveProduct() {
 
 
         // ==================================================
-        // FIELDS
+        // GET FORM ELEMENTS
         // ==================================================
 
         const codeInput =
@@ -121,50 +136,60 @@ async function saveProduct() {
                 "productCode"
             );
 
+
         const nameInput =
             document.getElementById(
                 "productName"
             );
+
 
         const categoryInput =
             document.getElementById(
                 "productCategory"
             );
 
+
         const descriptionInput =
             document.getElementById(
                 "productDescription"
             );
+
 
         const costPriceInput =
             document.getElementById(
                 "costPrice"
             );
 
+
         const sellingPriceInput =
             document.getElementById(
                 "sellingPrice"
             );
+
 
         const openingStockInput =
             document.getElementById(
                 "openingStock"
             );
 
+
         const currentStockInput =
             document.getElementById(
                 "currentStock"
             );
+
 
         const reorderLevelInput =
             document.getElementById(
                 "reorderLevel"
             );
 
+
         const unitInput =
             document.getElementById(
                 "productUnit"
             );
+
 
         const statusInput =
             document.getElementById(
@@ -173,7 +198,7 @@ async function saveProduct() {
 
 
         // ==================================================
-        // REQUIRED
+        // REQUIRED FIELDS
         // ==================================================
 
         if (!nameInput) {
@@ -183,6 +208,7 @@ async function saveProduct() {
             );
 
         }
+
 
         if (!categoryInput) {
 
@@ -194,7 +220,7 @@ async function saveProduct() {
 
 
         // ==================================================
-        // VALUES
+        // READ VALUES
         // ==================================================
 
         const code =
@@ -202,16 +228,20 @@ async function saveProduct() {
                 ? codeInput.value.trim()
                 : "";
 
+
         const name =
             nameInput.value.trim();
 
+
         const categoryId =
             categoryInput.value.trim();
+
 
         const description =
             descriptionInput
                 ? descriptionInput.value.trim()
                 : "";
+
 
         const costPrice =
             Number(
@@ -220,12 +250,14 @@ async function saveProduct() {
                     : 0
             ) || 0;
 
+
         const sellingPrice =
             Number(
                 sellingPriceInput
                     ? sellingPriceInput.value
                     : 0
             ) || 0;
+
 
         const openingStock =
             Number(
@@ -234,6 +266,7 @@ async function saveProduct() {
                     : 0
             ) || 0;
 
+
         const currentStock =
             Number(
                 currentStockInput
@@ -241,17 +274,20 @@ async function saveProduct() {
                     : 0
             ) || 0;
 
+
         const reorderLevel =
             Number(
                 reorderLevelInput
                     ? reorderLevelInput.value
-                    : 0
-            ) || 0;
+                    : 10
+            ) || 10;
+
 
         const unit =
             unitInput
                 ? unitInput.value
                 : "Piece";
+
 
         const status =
             statusInput
@@ -326,16 +362,20 @@ async function saveProduct() {
         // CATEGORY NAME
         // ==================================================
 
-        let categoryName = "";
+        let categoryName =
+            "";
+
 
         if (
-            categoryInput.selectedIndex >= 0
+            categoryInput.selectedIndex >=
+            0
         ) {
 
             const option =
                 categoryInput.options[
                     categoryInput.selectedIndex
                 ];
+
 
             if (option) {
 
@@ -348,7 +388,7 @@ async function saveProduct() {
 
 
         // ==================================================
-        // PRODUCT SETTINGS
+        // PRODUCT OPTIONS
         // ==================================================
 
         const showPOS =
@@ -356,25 +396,30 @@ async function saveProduct() {
                 "showPOS"
             )?.checked ?? true;
 
+
         const showKitchen =
             document.getElementById(
                 "showKitchen"
             )?.checked ?? true;
+
 
         const showMenu =
             document.getElementById(
                 "showMenu"
             )?.checked ?? true;
 
+
         const inventoryTracking =
             document.getElementById(
                 "inventoryTracking"
             )?.checked ?? true;
 
+
         const featuredProduct =
             document.getElementById(
                 "featuredProduct"
             )?.checked ?? false;
+
 
         const bestSeller =
             document.getElementById(
@@ -383,26 +428,16 @@ async function saveProduct() {
 
 
         // ==================================================
-        // IMAGE
-        // ==================================================
-        //
-        // IMPORTANT:
-        // We DO NOT upload to Firebase Storage here.
-        //
-        // This prevents:
-        //
-        // storage/retry-limit-exceeded
-        //
-        // from blocking Product Update.
-        //
+        // EXISTING IMAGE
         // ==================================================
 
-        let imageURL = "";
+        let imageURL =
+            "";
 
 
-        // --------------------------------------------------
+        // ==================================================
         // IMAGE URL FIELD
-        // --------------------------------------------------
+        // ==================================================
 
         const imageURLInput =
             document.getElementById(
@@ -421,44 +456,8 @@ async function saveProduct() {
         }
 
 
-        // --------------------------------------------------
-        // EXISTING IMAGE
-        // --------------------------------------------------
-
-        if (
-            !imageURL &&
-            typeof selectedProductImage !==
-            "undefined"
-        ) {
-
-            // Only keep a real URL.
-            // Do NOT save local blob/data
-            // generated from file preview.
-
-            if (
-                selectedProductImage &&
-                (
-                    selectedProductImage.startsWith(
-                        "http://"
-                    )
-                    ||
-                    selectedProductImage.startsWith(
-                        "https://"
-                    )
-                )
-            ) {
-
-                imageURL =
-                    selectedProductImage;
-
-            }
-
-        }
-
-
         // ==================================================
-        // IF EDITING
-        // PRESERVE EXISTING IMAGE
+        // EXISTING PRODUCT IMAGE
         // ==================================================
 
         if (
@@ -480,12 +479,136 @@ async function saveProduct() {
             ) {
 
                 const existingProduct =
-                    existingSnapshot.val() || {};
+                    existingSnapshot.val() ||
+                    {};
 
 
                 imageURL =
                     existingProduct.image ||
                     "";
+
+            }
+
+        }
+
+
+        // ==================================================
+        // PRODUCT ID
+        // ==================================================
+
+        let productId =
+            editingProductId;
+
+
+        // ==================================================
+        // CREATE NEW PRODUCT ID FIRST
+        // ==================================================
+
+        if (!productId) {
+
+            const newProductRef =
+                db.ref(
+                    "products"
+                ).push();
+
+
+            productId =
+                newProductRef.key;
+
+        }
+
+
+        // ==================================================
+        // IMAGE UPLOAD
+        // ==================================================
+
+        if (
+            typeof selectedProductFile !==
+            "undefined" &&
+            selectedProductFile
+        ) {
+
+            console.log(
+                "New product image selected."
+            );
+
+
+            try {
+
+                imageURL =
+                    await uploadProductImage(
+                        selectedProductFile,
+                        productId
+                    );
+
+
+                console.log(
+                    "Product image uploaded successfully."
+                );
+
+            }
+
+            catch (imageError) {
+
+                console.error(
+                    "Product Image Upload Error:",
+                    imageError
+                );
+
+
+                imageUploadFailed =
+                    true;
+
+
+                /*
+                 * IMPORTANT:
+                 *
+                 * We do NOT cancel the product save.
+                 *
+                 * The product information will still
+                 * be saved/updated.
+                 *
+                 * Existing image will be preserved
+                 * during UPDATE.
+                 */
+
+
+                if (
+                    editingProductId
+                ) {
+
+                    const existingSnapshot =
+                        await db
+                            .ref(
+                                "products/" +
+                                productId
+                            )
+                            .once("value");
+
+
+                    if (
+                        existingSnapshot.exists()
+                    ) {
+
+                        const existingProduct =
+                            existingSnapshot.val() ||
+                            {};
+
+
+                        imageURL =
+                            existingProduct.image ||
+                            "";
+
+                    }
+
+                }
+
+                else {
+
+                    imageURL =
+                        "";
+
+                }
 
             }
 
@@ -564,21 +687,58 @@ async function saveProduct() {
 
 
         // ==================================================
-        // UPDATE EXISTING
+        // CREATE
         // ==================================================
 
-        if (editingProductId) {
+        if (
+            !editingProductId
+        ) {
+
+            productData.createdAt =
+                firebase.database
+                    .ServerValue
+                    .TIMESTAMP;
+
 
             console.log(
-                "Updating product:",
-                editingProductId
+                "Creating new product:",
+                productId
             );
 
 
             await db
                 .ref(
                     "products/" +
-                    editingProductId
+                    productId
+                )
+                .set(
+                    productData
+                );
+
+
+            console.log(
+                "Product created successfully."
+            );
+
+        }
+
+
+        // ==================================================
+        // UPDATE
+        // ==================================================
+
+        else {
+
+            console.log(
+                "Updating product:",
+                productId
+            );
+
+
+            await db
+                .ref(
+                    "products/" +
+                    productId
                 )
                 .update(
                     productData
@@ -589,63 +749,53 @@ async function saveProduct() {
                 "Product updated successfully."
             );
 
-
-            alert(
-                "Product updated successfully."
-            );
-
         }
 
 
         // ==================================================
-        // CREATE NEW
-        // ==================================================
-
-        else {
-
-            productData.createdAt =
-                firebase.database
-                    .ServerValue
-                    .TIMESTAMP;
-
-
-            console.log(
-                "Creating new product..."
-            );
-
-
-            await db
-                .ref("products")
-                .push(
-                    productData
-                );
-
-
-            console.log(
-                "Product created successfully."
-            );
-
-
-            alert(
-                "Product saved successfully."
-            );
-
-        }
-
-
-        // ==================================================
-        // REFRESH PRODUCT TABLE
+        // SUCCESS MESSAGE
         // ==================================================
 
         if (
-            typeof startProductListener ===
+            imageUploadFailed
+        ) {
+
+            alert(
+                "Product saved successfully.\n\n" +
+                "However, the image could not be uploaded."
+            );
+
+        }
+
+        else {
+
+            alert(
+                editingProductId
+                    ? "Product updated successfully."
+                    : "Product saved successfully."
+            );
+
+        }
+
+
+        // ==================================================
+        // REFRESH TABLE
+        // ==================================================
+
+        if (
+            typeof renderProductTable ===
             "function"
         ) {
 
-            // Listener already exists.
-            // No need to create another listener.
-
             renderProductTable();
+
+        }
+
+
+        if (
+            typeof updateProductCounter ===
+            "function"
+        ) {
 
             updateProductCounter();
 
@@ -663,32 +813,7 @@ async function saveProduct() {
         // CLOSE MODAL
         // ==================================================
 
-        const modalElement =
-            document.getElementById(
-                "productModal"
-            );
-
-
-        if (
-            modalElement &&
-            typeof bootstrap !==
-            "undefined"
-        ) {
-
-            const modal =
-                bootstrap.Modal
-                    .getInstance(
-                        modalElement
-                    );
-
-
-            if (modal) {
-
-                modal.hide();
-
-            }
-
-        }
+        closeProductModal();
 
     }
 
@@ -732,6 +857,267 @@ async function saveProduct() {
 
 
 // ==========================================================
+// UPLOAD PRODUCT IMAGE
+// ==========================================================
+
+async function uploadProductImage(
+    file,
+    productId
+) {
+
+    // ======================================================
+    // CHECK FIREBASE STORAGE
+    // ======================================================
+
+    if (
+        typeof firebase ===
+        "undefined"
+    ) {
+
+        throw new Error(
+            "Firebase is not available."
+        );
+
+    }
+
+
+    if (
+        typeof firebase.storage !==
+        "function"
+    ) {
+
+        throw new Error(
+            "Firebase Storage SDK is not loaded."
+        );
+
+    }
+
+
+    if (!file) {
+
+        throw new Error(
+            "No image file selected."
+        );
+
+    }
+
+
+    if (!productId) {
+
+        throw new Error(
+            "Product ID is required for image upload."
+        );
+
+    }
+
+
+    // ======================================================
+    // FILE TYPE
+    // ======================================================
+
+    const allowedTypes = [
+
+        "image/jpeg",
+
+        "image/png",
+
+        "image/webp"
+
+    ];
+
+
+    if (
+        !allowedTypes.includes(
+            file.type
+        )
+    ) {
+
+        throw new Error(
+            "Invalid image format. Please use JPG, PNG or WEBP."
+        );
+
+    }
+
+
+    // ======================================================
+    // FILE SIZE
+    // ======================================================
+
+    const maxSize =
+        2 * 1024 * 1024;
+
+
+    if (
+        file.size >
+        maxSize
+    ) {
+
+        throw new Error(
+            "Image is too large. Maximum size is 2MB."
+        );
+
+    }
+
+
+    // ======================================================
+    // STORAGE
+    // ======================================================
+
+    const storage =
+        firebase.storage();
+
+
+    // ======================================================
+    // FILE NAME
+    // ======================================================
+
+    const extension =
+        getImageExtension(
+            file
+        );
+
+
+    const fileName =
+        "product-" +
+        productId +
+        "-" +
+        Date.now() +
+        "." +
+        extension;
+
+
+    // ======================================================
+    // STORAGE PATH
+    // ======================================================
+
+    const storageRef =
+        storage
+            .ref()
+            .child(
+                "products/" +
+                productId +
+                "/" +
+                fileName
+            );
+
+
+    console.log(
+        "Uploading image:",
+        storageRef.fullPath
+    );
+
+
+    // ======================================================
+    // UPLOAD
+    // ======================================================
+
+    await storageRef.put(
+        file,
+        {
+            contentType:
+                file.type,
+
+            cacheControl:
+                "public,max-age=31536000"
+        }
+    );
+
+
+    // ======================================================
+    // DOWNLOAD URL
+    // ======================================================
+
+    const downloadURL =
+        await storageRef.getDownloadURL();
+
+
+    if (!downloadURL) {
+
+        throw new Error(
+            "Firebase Storage did not return an image URL."
+        );
+
+    }
+
+
+    return downloadURL;
+
+}
+
+
+// ==========================================================
+// GET IMAGE EXTENSION
+// ==========================================================
+
+function getImageExtension(
+    file
+) {
+
+    if (
+        file.type ===
+        "image/png"
+    ) {
+
+        return "png";
+
+    }
+
+
+    if (
+        file.type ===
+        "image/webp"
+    ) {
+
+        return "webp";
+
+    }
+
+
+    return "jpg";
+
+}
+
+
+// ==========================================================
+// CLOSE PRODUCT MODAL
+// ==========================================================
+
+function closeProductModal() {
+
+    const modalElement =
+        document.getElementById(
+            "productModal"
+        );
+
+
+    if (
+        !modalElement ||
+        typeof bootstrap ===
+        "undefined"
+    ) {
+
+        return;
+
+    }
+
+
+    const modal =
+        bootstrap.Modal
+            .getInstance(
+                modalElement
+            );
+
+
+    if (modal) {
+
+        modal.hide();
+
+    }
+
+}
+
+
+// ==========================================================
 // RESET PRODUCT FORM
 // ==========================================================
 
@@ -753,6 +1139,7 @@ function resetProductForm() {
         clearProductImageState();
 
     }
+
     else {
 
         if (
@@ -764,6 +1151,7 @@ function resetProductForm() {
                 "";
 
         }
+
 
         if (
             typeof selectedProductFile !==
@@ -787,6 +1175,7 @@ function resetProductForm() {
             "productName"
         );
 
+
     if (productName) {
 
         productName.value =
@@ -800,6 +1189,7 @@ function resetProductForm() {
             "productDescription"
         );
 
+
     if (description) {
 
         description.value =
@@ -808,14 +1198,11 @@ function resetProductForm() {
     }
 
 
-    // ======================================================
-    // CODE
-    // ======================================================
-
     const code =
         document.getElementById(
             "productCode"
         );
+
 
     if (code) {
 
@@ -834,6 +1221,7 @@ function resetProductForm() {
             "productCategory"
         );
 
+
     if (category) {
 
         category.value =
@@ -843,7 +1231,7 @@ function resetProductForm() {
 
 
     // ======================================================
-    // NUMERIC
+    // NUMERIC FIELDS
     // ======================================================
 
     const fields = {
@@ -866,25 +1254,26 @@ function resetProductForm() {
     };
 
 
-    Object.keys(fields)
-        .forEach(
-            function (id) {
+    Object.keys(
+        fields
+    ).forEach(
+        function (id) {
 
-                const element =
-                    document.getElementById(
-                        id
-                    );
+            const element =
+                document.getElementById(
+                    id
+                );
 
 
-                if (element) {
+            if (element) {
 
-                    element.value =
-                        fields[id];
-
-                }
+                element.value =
+                    fields[id];
 
             }
-        );
+
+        }
+    );
 
 
     // ======================================================
@@ -895,6 +1284,7 @@ function resetProductForm() {
         document.getElementById(
             "productUnit"
         );
+
 
     if (unit) {
 
@@ -913,6 +1303,7 @@ function resetProductForm() {
             "productStatus"
         );
 
+
     if (status) {
 
         status.value =
@@ -925,7 +1316,7 @@ function resetProductForm() {
     // CHECKBOXES
     // ======================================================
 
-    const checkboxDefaults = {
+    const defaults = {
 
         showPOS:
             true,
@@ -949,30 +1340,47 @@ function resetProductForm() {
 
 
     Object.keys(
-        checkboxDefaults
-    )
-        .forEach(
-            function (id) {
+        defaults
+    ).forEach(
+        function (id) {
 
-                const element =
-                    document.getElementById(
-                        id
-                    );
+            const element =
+                document.getElementById(
+                    id
+                );
 
 
-                if (element) {
+            if (element) {
 
-                    element.checked =
-                        checkboxDefaults[id];
-
-                }
+                element.checked =
+                    defaults[id];
 
             }
-        );
+
+        }
+    );
 
 
     // ======================================================
-    // BUTTON TEXT
+    // IMAGE URL
+    // ======================================================
+
+    const imageURL =
+        document.getElementById(
+            "productImageURL"
+        );
+
+
+    if (imageURL) {
+
+        imageURL.value =
+            "";
+
+    }
+
+
+    // ======================================================
+    // SAVE BUTTON TEXT
     // ======================================================
 
     const btnText =
@@ -1013,7 +1421,7 @@ function resetProductForm() {
 
 
     // ======================================================
-    // GENERATE NEW CODE
+    // GENERATE CODE
     // ======================================================
 
     if (
