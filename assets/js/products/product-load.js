@@ -1,50 +1,36 @@
-// ==========================================
+// ==========================================================
 // PAPPRITO ERP
-// PRODUCT LOAD ENGINE V3
+// PRODUCT MASTER - LOAD ENGINE
 // File : assets/js/products/product-load.js
-// Description : Integrated Product Loading,
-// Category Loading, Firebase Listener,
-// Product Table & Counters
-// ==========================================
+// Description : Product Loading, Firebase Listener & Table
+// ==========================================================
 
 "use strict";
 
 
-// ==========================================
-// GLOBAL VARIABLES
-// ==========================================
+// ==========================================================
+// GLOBAL PRODUCT DATA
+// ==========================================================
 
 let productList = [];
 
 let productListener = null;
 
-let productPageInitialized = false;
 
-
-// ==========================================
+// ==========================================================
 // INITIALIZE PRODUCT PAGE
-// ==========================================
+// ==========================================================
 
 function initializeProductPage() {
 
-    // Prevent duplicate initialization
-
-    if (productPageInitialized) {
-
-        console.log(
-            "Product page already initialized."
-        );
-
-        return;
-
-    }
-
-    productPageInitialized = true;
+    console.log(
+        "PAPPRITO PRODUCT MASTER INITIALIZING..."
+    );
 
 
-    // ==========================================
-    // PRODUCT CODE
-    // ==========================================
+    // ----------------------------------------------
+    // Product Code
+    // ----------------------------------------------
 
     if (
         typeof generateProductCode ===
@@ -56,16 +42,23 @@ function initializeProductPage() {
     }
 
 
-    // ==========================================
-    // LOAD CATEGORIES
-    // ==========================================
+    // ----------------------------------------------
+    // Categories
+    // ----------------------------------------------
 
-    loadProductCategories();
+    if (
+        typeof loadProductCategories ===
+        "function"
+    ) {
+
+        loadProductCategories();
+
+    }
 
 
-    // ==========================================
-    // PRODUCT SEARCH
-    // ==========================================
+    // ----------------------------------------------
+    // Search / Filters
+    // ----------------------------------------------
 
     if (
         typeof initializeProductSearch ===
@@ -77,9 +70,9 @@ function initializeProductPage() {
     }
 
 
-    // ==========================================
-    // PRODUCT SAVE
-    // ==========================================
+    // ----------------------------------------------
+    // Save / Update
+    // ----------------------------------------------
 
     if (
         typeof initializeProductSave ===
@@ -91,92 +84,154 @@ function initializeProductPage() {
     }
 
 
-    // ==========================================
-    // START FIREBASE LISTENER
-    // ==========================================
+    // ----------------------------------------------
+    // Image
+    // ----------------------------------------------
+
+    if (
+        typeof initializeProductImage ===
+        "function"
+    ) {
+
+        initializeProductImage();
+
+    }
+
+
+    // ----------------------------------------------
+    // Firebase Listener
+    // ----------------------------------------------
 
     startProductListener();
 
 }
 
 
-// ==========================================
+// ==========================================================
 // FIREBASE PRODUCT LISTENER
-// ==========================================
+// ==========================================================
 
 function startProductListener() {
 
-    // ==========================================
-    // REMOVE OLD LISTENER
-    // ==========================================
+    // ----------------------------------------------
+    // Check Firebase
+    // ----------------------------------------------
 
-    if (productListener) {
+    if (
+        typeof db ===
+        "undefined" ||
+        !db
+    ) {
 
-        productListener.off();
+        console.error(
+            "Firebase Database is not initialized."
+        );
 
-        productListener = null;
+        return;
 
     }
 
 
-    // ==========================================
-    // CREATE NEW LISTENER
-    // ==========================================
+    // ----------------------------------------------
+    // Remove Previous Listener
+    // ----------------------------------------------
+
+    if (productListener) {
+
+        try {
+
+            productListener.off();
+
+        }
+
+        catch (error) {
+
+            console.warn(
+                "Unable to remove previous product listener:",
+                error
+            );
+
+        }
+
+    }
+
+
+    // ----------------------------------------------
+    // Create New Listener
+    // ----------------------------------------------
 
     productListener =
         db.ref("products");
 
 
+    // ----------------------------------------------
+    // Listen For Product Changes
+    // ----------------------------------------------
+
     productListener.on(
         "value",
-        (snapshot) => {
-
-
-            // ======================================
-            // RESET PRODUCT LIST
-            // ======================================
+        function (snapshot) {
 
             productList = [];
 
 
-            // ======================================
-            // READ PRODUCTS
-            // ======================================
+            snapshot.forEach(
+                function (child) {
 
-            snapshot.forEach((child) => {
-
-                const product =
-                    child.val() || {};
+                    const product =
+                        child.val() || {};
 
 
-                product.productId =
-                    child.key;
+                    product.productId =
+                        child.key;
 
 
-                productList.push(product);
+                    productList.push(
+                        product
+                    );
 
-            });
+                }
+            );
 
 
-            // ======================================
-            // RENDER TABLE
-            // ======================================
+            console.log(
+                "Products loaded:",
+                productList.length
+            );
+
+
+            // ------------------------------------------
+            // Render Table
+            // ------------------------------------------
 
             renderProductTable();
 
 
-            // ======================================
-            // UPDATE COUNTERS
-            // ======================================
+            // ------------------------------------------
+            // Update Counters
+            // ------------------------------------------
 
             updateProductCounter();
 
 
+            // ------------------------------------------
+            // Update Filters
+            // ------------------------------------------
+
+            if (
+                typeof refreshProductFilters ===
+                "function"
+            ) {
+
+                refreshProductFilters();
+
+            }
+
         },
-        (error) => {
+        function (error) {
 
             console.error(
-                "Product Listener Error:",
+                "Product Firebase Listener Error:",
                 error
             );
 
@@ -186,25 +241,9 @@ function startProductListener() {
 }
 
 
-// ==========================================
-// ESCAPE HTML
-// ==========================================
-
-function escapeProductHTML(value) {
-
-    return String(value ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-
-}
-
-
-// ==========================================
+// ==========================================================
 // RENDER PRODUCT TABLE
-// ==========================================
+// ==========================================================
 
 function renderProductTable() {
 
@@ -216,23 +255,35 @@ function renderProductTable() {
 
     if (!table) {
 
+        console.warn(
+            "#productTable not found."
+        );
+
         return;
 
     }
 
 
-    // ==========================================
-    // CLEAR TABLE
-    // ==========================================
+    // ----------------------------------------------
+    // Clear Table
+    // ----------------------------------------------
 
     table.innerHTML = "";
 
 
-    // ==========================================
-    // NO PRODUCTS
-    // ==========================================
+    // ----------------------------------------------
+    // Get Filtered Products
+    // ----------------------------------------------
 
-    if (productList.length === 0) {
+    const products =
+        getFilteredProducts();
+
+
+    // ----------------------------------------------
+    // No Products
+    // ----------------------------------------------
+
+    if (products.length === 0) {
 
         table.innerHTML = `
 
@@ -240,18 +291,28 @@ function renderProductTable() {
 
                 <td
                     colspan="8"
-                    class="text-center py-5"
-                >
+                    class="text-center py-5">
 
-                    <i
-                        class="fa-solid fa-box-open fa-3x text-secondary mb-3"
-                    ></i>
+                    <div>
 
-                    <br>
+                        <i
+                            class="fa-solid fa-box-open fa-3x text-secondary mb-3">
+                        </i>
+
+                    </div>
 
                     <strong>
                         No Products Found
                     </strong>
+
+                    <br>
+
+                    <small class="text-muted">
+
+                        Click "Add Product" to create
+                        your first product.
+
+                    </small>
 
                 </td>
 
@@ -264,239 +325,359 @@ function renderProductTable() {
     }
 
 
-    // ==========================================
-    // RENDER PRODUCTS
-    // ==========================================
+    // ----------------------------------------------
+    // Render Products
+    // ----------------------------------------------
 
-    productList.forEach((product) => {
+    products.forEach(
+        function (product) {
 
+            const image =
+                product.image &&
+                String(product.image).trim() !== ""
 
-        // ======================================
-        // IMAGE
-        // ======================================
+                    ? product.image
 
-        const image =
-            product.image &&
-            String(product.image).trim() !== ""
+                    : "assets/img/no-product.png";
 
-                ? product.image
 
-                : "../assets/img/no-product.png";
+            const status =
+                product.status ||
+                "Inactive";
 
 
-        // ======================================
-        // STATUS
-        // ======================================
+            const statusBadge =
+                status === "Active"
 
-        const isActive =
-            String(product.status || "")
-                .toLowerCase() === "active";
+                    ? `
+                        <span class="badge bg-success">
+                            Active
+                        </span>
+                    `
 
+                    : `
+                        <span class="badge bg-secondary">
+                            Inactive
+                        </span>
+                    `;
 
-        const badge =
-            isActive
 
-                ? `
-                    <span class="badge bg-success">
-                        Active
-                    </span>
-                  `
+            const stock =
+                Number(
+                    product.currentStock || 0
+                );
 
-                : `
-                    <span class="badge bg-secondary">
-                        Inactive
-                    </span>
-                  `;
 
+            table.innerHTML += `
 
-        // ======================================
-        // PRODUCT DATA
-        // ======================================
+                <tr>
 
-        const code =
-            escapeProductHTML(
-                product.code || ""
-            );
+                    <!-- CODE -->
 
+                    <td>
 
-        const name =
-            escapeProductHTML(
-                product.name || ""
-            );
+                        ${escapeProductHTML(
+                            product.code || ""
+                        )}
 
+                    </td>
 
-        const categoryName =
-            escapeProductHTML(
-                product.categoryName || ""
-            );
 
+                    <!-- IMAGE -->
 
-        const price =
-            Number(
-                product.sellingPrice || 0
-            ).toFixed(2);
+                    <td>
 
+                        <img
 
-        const stock =
-            Number(
-                product.currentStock || 0
-            );
+                            src="${escapeProductAttribute(
+                                image
+                            )}"
 
+                            alt="${escapeProductAttribute(
+                                product.name || "Product"
+                            )}"
 
-        // ======================================
-        // TABLE ROW
-        // ======================================
+                            width="60"
 
-        table.innerHTML += `
+                            height="60"
 
-            <tr>
+                            style="
+                                width:60px;
+                                height:60px;
+                                object-fit:cover;
+                                border-radius:10px;
+                            "
 
-                <!-- PRODUCT CODE -->
+                            onerror="
+                                this.onerror=null;
+                                this.src='assets/img/no-product.png';
+                            "
 
-                <td>
+                        >
 
-                    ${code}
+                    </td>
 
-                </td>
 
+                    <!-- PRODUCT -->
 
-                <!-- IMAGE -->
+                    <td>
 
-                <td>
+                        <strong>
 
-                    <img
+                            ${escapeProductHTML(
+                                product.name || ""
+                            )}
 
-                        src="${escapeProductHTML(image)}"
+                        </strong>
 
-                        alt="${name}"
+                    </td>
 
-                        loading="lazy"
 
-                        style="
-                            width:60px;
-                            height:60px;
-                            object-fit:cover;
-                            border-radius:10px;
-                        "
+                    <!-- CATEGORY -->
 
-                        onerror="
-                            this.onerror=null;
-                            this.src='../assets/img/no-product.png';
-                        "
+                    <td>
 
-                    >
+                        ${escapeProductHTML(
+                            product.categoryName || ""
+                        )}
 
-                </td>
+                    </td>
 
 
-                <!-- PRODUCT NAME -->
+                    <!-- PRICE -->
 
-                <td>
+                    <td>
 
-                    <strong>
+                        ₱${Number(
+                            product.sellingPrice || 0
+                        ).toFixed(2)}
 
-                        ${name}
+                    </td>
 
-                    </strong>
 
-                </td>
+                    <!-- STOCK -->
 
+                    <td>
 
-                <!-- CATEGORY -->
+                        ${stock}
 
-                <td>
+                    </td>
 
-                    ${categoryName}
 
-                </td>
+                    <!-- STATUS -->
 
+                    <td>
 
-                <!-- SELLING PRICE -->
+                        ${statusBadge}
 
-                <td>
+                    </td>
 
-                    ₱${price}
 
-                </td>
+                    <!-- ACTION -->
 
+                    <td>
 
-                <!-- CURRENT STOCK -->
+                        <button
 
-                <td>
+                            type="button"
 
-                    ${stock}
+                            class="btn btn-warning btn-sm me-1"
 
-                </td>
+                            onclick="
+                                editProduct(
+                                    '${escapeProductAttribute(
+                                        product.productId
+                                    )}'
+                                )
+                            "
 
+                            title="Edit Product">
 
-                <!-- STATUS -->
+                            <i
+                                class="fa-solid fa-pen">
+                            </i>
 
-                <td>
+                        </button>
 
-                    ${badge}
 
-                </td>
+                        <button
 
+                            type="button"
 
-                <!-- ACTIONS -->
+                            class="btn btn-danger btn-sm"
 
-                <td>
+                            onclick="
+                                deleteProduct(
+                                    '${escapeProductAttribute(
+                                        product.productId
+                                    )}'
+                                )
+                            "
 
-                    <button
+                            title="Delete Product">
 
-                        type="button"
+                            <i
+                                class="fa-solid fa-trash">
+                            </i>
 
-                        class="btn btn-warning btn-sm me-1"
+                        </button>
 
-                        onclick="
-                            editProduct('${product.productId}')
-                        "
+                    </td>
 
-                        title="Edit Product"
+                </tr>
 
-                    >
+            `;
 
-                        <i
-                            class="fa-solid fa-pen"
-                        ></i>
-
-                    </button>
-
-
-                    <button
-
-                        type="button"
-
-                        class="btn btn-danger btn-sm"
-
-                        onclick="
-                            deleteProduct('${product.productId}')
-                        "
-
-                        title="Delete Product"
-
-                    >
-
-                        <i
-                            class="fa-solid fa-trash"
-                        ></i>
-
-                    </button>
-
-                </td>
-
-            </tr>
-
-        `;
-
-    });
+        }
+    );
 
 }
 
 
-// ==========================================
+// ==========================================================
+// GET FILTERED PRODUCTS
+// ==========================================================
+
+function getFilteredProducts() {
+
+    let products =
+        Array.isArray(productList)
+            ? [...productList]
+            : [];
+
+
+    // ======================================================
+    // SEARCH
+    // ======================================================
+
+    const searchElement =
+        document.getElementById(
+            "searchProduct"
+        );
+
+
+    const keyword =
+        searchElement
+            ? searchElement.value
+                .trim()
+                .toLowerCase()
+            : "";
+
+
+    if (keyword !== "") {
+
+        products =
+            products.filter(
+                function (product) {
+
+                    const name =
+                        String(
+                            product.name || ""
+                        ).toLowerCase();
+
+
+                    const code =
+                        String(
+                            product.code || ""
+                        ).toLowerCase();
+
+
+                    const category =
+                        String(
+                            product.categoryName || ""
+                        ).toLowerCase();
+
+
+                    return (
+                        name.includes(keyword) ||
+                        code.includes(keyword) ||
+                        category.includes(keyword)
+                    );
+
+                }
+            );
+
+    }
+
+
+    // ======================================================
+    // CATEGORY FILTER
+    // ======================================================
+
+    const categoryFilter =
+        document.getElementById(
+            "filterCategory"
+        );
+
+
+    const selectedCategory =
+        categoryFilter
+            ? categoryFilter.value
+            : "";
+
+
+    if (
+        selectedCategory !== ""
+    ) {
+
+        products =
+            products.filter(
+                function (product) {
+
+                    return (
+                        product.categoryId ===
+                        selectedCategory
+                    );
+
+                }
+            );
+
+    }
+
+
+    // ======================================================
+    // STATUS FILTER
+    // ======================================================
+
+    const statusFilter =
+        document.getElementById(
+            "filterStatus"
+        );
+
+
+    const selectedStatus =
+        statusFilter
+            ? statusFilter.value
+            : "";
+
+
+    if (
+        selectedStatus !== ""
+    ) {
+
+        products =
+            products.filter(
+                function (product) {
+
+                    return (
+                        product.status ===
+                        selectedStatus
+                    );
+
+                }
+            );
+
+    }
+
+
+    return products;
+
+}
+
+
+// ==========================================================
 // UPDATE PRODUCT COUNTERS
-// ==========================================
+// ==========================================================
 
 function updateProductCounter() {
 
@@ -512,10 +693,16 @@ function updateProductCounter() {
         );
 
 
+    const count =
+        Array.isArray(productList)
+            ? productList.length
+            : 0;
+
+
     if (total) {
 
         total.textContent =
-            productList.length;
+            count;
 
     }
 
@@ -523,38 +710,321 @@ function updateProductCounter() {
     if (footer) {
 
         footer.textContent =
-            productList.length;
+            count;
 
     }
 
 }
 
 
-// ==========================================
-// LOAD PRODUCT CATEGORIES
-// ==========================================
+// ==========================================================
+// LOAD PRODUCT CATEGORY DROPDOWN
+// ==========================================================
 
-function loadProductCategories() {
+async function loadProductCategories() {
 
-    const productCategory =
+    const dropdown =
         document.getElementById(
             "productCategory"
         );
 
 
-    const filterCategory =
+    if (!dropdown) {
+
+        console.warn(
+            "#productCategory not found."
+        );
+
+        return;
+
+    }
+
+
+    if (
+        typeof db ===
+        "undefined" ||
+        !db
+    ) {
+
+        console.error(
+            "Firebase Database is not initialized."
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        dropdown.innerHTML = `
+
+            <option value="">
+                Loading Categories...
+            </option>
+
+        `;
+
+
+        const snapshot =
+            await db
+                .ref("categories")
+                .once("value");
+
+
+        dropdown.innerHTML = `
+
+            <option value="">
+                Select Category
+            </option>
+
+        `;
+
+
+        const categories = [];
+
+
+        snapshot.forEach(
+            function (child) {
+
+                const category =
+                    child.val() || {};
+
+
+                categories.push({
+
+                    id:
+                        child.key,
+
+                    name:
+                        category.name || ""
+
+                });
+
+            }
+        );
+
+
+        // ----------------------------------------------
+        // Sort Categories
+        // ----------------------------------------------
+
+        categories.sort(
+            function (a, b) {
+
+                return a.name
+                    .localeCompare(
+                        b.name
+                    );
+
+            }
+        );
+
+
+        categories.forEach(
+            function (category) {
+
+                if (
+                    category.name.trim() === ""
+                ) {
+
+                    return;
+
+                }
+
+
+                dropdown.innerHTML += `
+
+                    <option
+                        value="${escapeProductAttribute(
+                            category.id
+                        )}">
+
+                        ${escapeProductHTML(
+                            category.name
+                        )}
+
+                    </option>
+
+                `;
+
+            }
+        );
+
+
+        console.log(
+            "Product categories loaded:",
+            categories.length
+        );
+
+
+        return categories;
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Load Product Categories Error:",
+            error
+        );
+
+
+        dropdown.innerHTML = `
+
+            <option value="">
+                Unable to load categories
+            </option>
+
+        `;
+
+    }
+
+}
+
+
+// ==========================================================
+// REFRESH PRODUCT FILTERS
+// ==========================================================
+
+function refreshProductFilters() {
+
+    const filter =
         document.getElementById(
             "filterCategory"
         );
 
 
-    // ==========================================
-    // NO CATEGORY ELEMENTS
-    // ==========================================
+    if (!filter) {
+
+        return;
+
+    }
+
+
+    const currentValue =
+        filter.value;
+
+
+    const categoryMap =
+        new Map();
+
+
+    productList.forEach(
+        function (product) {
+
+            if (
+                product.categoryId &&
+                product.categoryName
+            ) {
+
+                categoryMap.set(
+                    product.categoryId,
+                    product.categoryName
+                );
+
+            }
+
+        }
+    );
+
+
+    filter.innerHTML = `
+
+        <option value="">
+            All Categories
+        </option>
+
+    `;
+
+
+    const categories =
+        Array.from(
+            categoryMap.entries()
+        ).sort(
+            function (a, b) {
+
+                return a[1].localeCompare(
+                    b[1]
+                );
+
+            }
+        );
+
+
+    categories.forEach(
+        function ([id, name]) {
+
+            filter.innerHTML += `
+
+                <option
+                    value="${escapeProductAttribute(
+                        id
+                    )}">
+
+                    ${escapeProductHTML(
+                        name
+                    )}
+
+                </option>
+
+            `;
+
+        }
+    );
+
+
+    // Restore previous selection
 
     if (
-        !productCategory &&
-        !filterCategory
+        Array.from(
+            filter.options
+        ).some(
+            function (option) {
+
+                return (
+                    option.value ===
+                    currentValue
+                );
+
+            }
+        )
+    ) {
+
+        filter.value =
+            currentValue;
+
+    }
+
+}
+
+
+// ==========================================================
+// GENERATE PRODUCT CODE
+// ==========================================================
+
+function generateProductCode() {
+
+    const codeInput =
+        document.getElementById(
+            "productCode"
+        );
+
+
+    if (!codeInput) {
+
+        return;
+
+    }
+
+
+    // Do not replace existing code
+    // during Edit.
+
+    if (
+        typeof editingProductId !==
+        "undefined" &&
+        editingProductId
     ) {
 
         return;
@@ -562,183 +1032,131 @@ function loadProductCategories() {
     }
 
 
-    // ==========================================
-    // LOAD FROM FIREBASE
-    // ==========================================
-
-    db.ref("categories")
-        .orderByChild("name")
-        .once("value")
-
-        .then((snapshot) => {
-
-
-            // ======================================
-            // PRODUCT FORM DROPDOWN
-            // ======================================
-
-            if (productCategory) {
-
-                productCategory.innerHTML = `
-
-                    <option value="">
-
-                        Select Category
-
-                    </option>
-
-                `;
-
-            }
-
-
-            // ======================================
-            // ALL CATEGORIES FILTER
-            // ======================================
-
-            if (filterCategory) {
-
-                filterCategory.innerHTML = `
-
-                    <option value="">
-
-                        All Categories
-
-                    </option>
-
-                `;
-
-            }
-
-
-            // ======================================
-            // LOOP CATEGORIES
-            // ======================================
-
-            snapshot.forEach((child) => {
-
-                const category =
-                    child.val() || {};
-
-
-                const categoryId =
-                    child.key;
-
-
-                const categoryName =
-                    category.name || "";
-
-
-                // ==================================
-                // PRODUCT FORM
-                // ==================================
-
-                if (productCategory) {
-
-                    const option =
-                        document.createElement(
-                            "option"
-                        );
-
-
-                    option.value =
-                        categoryId;
-
-
-                    option.textContent =
-                        categoryName;
-
-
-                    productCategory.appendChild(
-                        option
-                    );
-
-                }
-
-
-                // ==================================
-                // FILTER
-                // ==================================
-
-                if (filterCategory) {
-
-                    const option =
-                        document.createElement(
-                            "option"
-                        );
-
-
-                    option.value =
-                        categoryId;
-
-
-                    option.textContent =
-                        categoryName;
-
-
-                    filterCategory.appendChild(
-                        option
-                    );
-
-                }
-
-            });
-
-        })
-
-        .catch((error) => {
-
-            console.error(
-                "Load Product Categories Error:",
-                error
-            );
-
-        });
-
-}
-
-
-// ==========================================
-// REFRESH PRODUCT CATEGORIES
-// ==========================================
-
-function refreshProductCategories() {
-
-    loadProductCategories();
-
-}
-
-
-// ==========================================
-// CLEANUP PRODUCT LISTENER
-// ==========================================
-
-function stopProductListener() {
-
-    if (!productListener) {
+    if (
+        codeInput.value &&
+        codeInput.value.trim() !== ""
+    ) {
 
         return;
 
     }
 
 
-    productListener.off();
+    const count =
+        Array.isArray(productList)
+            ? productList.length + 1
+            : 1;
 
-    productListener = null;
+
+    const code =
+        "PAP-" +
+        String(count).padStart(
+            5,
+            "0"
+        );
+
+
+    codeInput.value =
+        code;
+
+}
+
+
+// ==========================================================
+// ESCAPE HTML
+// ==========================================================
+
+function escapeProductHTML(value) {
+
+    return String(
+        value ?? ""
+    )
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
 
 }
 
 
-// ==========================================
-// RESET PRODUCT PAGE INITIALIZATION
-// ==========================================
+// ==========================================================
+// ESCAPE HTML ATTRIBUTE
+// ==========================================================
 
-function resetProductPage() {
+function escapeProductAttribute(value) {
 
-    stopProductListener();
-
-    productList = [];
-
-    productPageInitialized = false;
+    return String(
+        value ?? ""
+    )
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        );
 
 }
+
+
+// ==========================================================
+// REFRESH BUTTON
+// ==========================================================
+
+document.addEventListener(
+    "click",
+    function (event) {
+
+        const button =
+            event.target.closest(
+                "#btnRefreshProducts"
+            );
+
+
+        if (!button) {
+
+            return;
+
+        }
+
+
+        console.log(
+            "Refreshing products..."
+        );
+
+
+        renderProductTable();
+
+        updateProductCounter();
+
+    }
+);
