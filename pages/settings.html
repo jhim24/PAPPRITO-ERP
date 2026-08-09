@@ -2,9 +2,10 @@
      PAPPRITO ERP
      SETTINGS MASTER
      File: pages/settings.html
+     Version: 2.0.0
 ========================================================== -->
 
-<div class="container-fluid py-4">
+<div id="settingsPage" class="container-fluid py-4">
 
     <!-- ======================================================
          HEADER
@@ -15,18 +16,12 @@
         <div class="col-lg-8">
 
             <h2 class="fw-bold mb-1">
-
                 <i class="fa-solid fa-gear text-danger me-2"></i>
-
                 Settings
-
             </h2>
 
             <p class="text-muted mb-0">
-
-                Manage PAPPRITO ERP system configuration
-                from one central location.
-
+                Central configuration for PAPPRITO ERP.
             </p>
 
         </div>
@@ -37,7 +32,7 @@
                 id="settingsSaveStatus"
                 class="badge bg-secondary">
 
-                Not saved
+                Loading...
 
             </span>
 
@@ -47,13 +42,13 @@
 
 
     <!-- ======================================================
-         SETTINGS LAYOUT
+         MAIN
     ======================================================= -->
 
     <div class="row g-4">
 
         <!-- ==================================================
-             LEFT NAVIGATION
+             LEFT MENU
         =================================================== -->
 
         <div class="col-lg-3">
@@ -62,14 +57,15 @@
 
                 <div class="card-body p-2">
 
-                    <div
-                        class="settings-nav"
-                        id="settingsNav">
+                    <div class="settings-nav">
+
+
+                        <!-- GENERAL -->
 
                         <button
                             type="button"
                             class="settings-nav-item active"
-                            data-section="general">
+                            data-target="settings-general">
 
                             <i class="fa-solid fa-building"></i>
 
@@ -78,10 +74,12 @@
                         </button>
 
 
+                        <!-- PRODUCT -->
+
                         <button
                             type="button"
                             class="settings-nav-item"
-                            data-section="product">
+                            data-target="settings-product">
 
                             <i class="fa-solid fa-box"></i>
 
@@ -90,10 +88,12 @@
                         </button>
 
 
+                        <!-- CATEGORY -->
+
                         <button
                             type="button"
                             class="settings-nav-item"
-                            data-section="category">
+                            data-target="settings-category">
 
                             <i class="fa-solid fa-tags"></i>
 
@@ -102,10 +102,12 @@
                         </button>
 
 
+                        <!-- POS -->
+
                         <button
                             type="button"
                             class="settings-nav-item"
-                            data-section="pos">
+                            data-target="settings-pos">
 
                             <i class="fa-solid fa-cash-register"></i>
 
@@ -114,10 +116,12 @@
                         </button>
 
 
+                        <!-- ONLINE MENU -->
+
                         <button
                             type="button"
                             class="settings-nav-item"
-                            data-section="onlineMenu">
+                            data-target="settings-onlineMenu">
 
                             <i class="fa-solid fa-globe"></i>
 
@@ -126,10 +130,12 @@
                         </button>
 
 
+                        <!-- INVENTORY -->
+
                         <button
                             type="button"
                             class="settings-nav-item"
-                            data-section="inventory">
+                            data-target="settings-inventory">
 
                             <i class="fa-solid fa-boxes-stacked"></i>
 
@@ -138,10 +144,12 @@
                         </button>
 
 
+                        <!-- KITCHEN -->
+
                         <button
                             type="button"
                             class="settings-nav-item"
-                            data-section="kitchen">
+                            data-target="settings-kitchen">
 
                             <i class="fa-solid fa-kitchen-set"></i>
 
@@ -150,10 +158,12 @@
                         </button>
 
 
+                        <!-- RECEIPT -->
+
                         <button
                             type="button"
                             class="settings-nav-item"
-                            data-section="receipt">
+                            data-target="settings-receipt">
 
                             <i class="fa-solid fa-receipt"></i>
 
@@ -162,10 +172,12 @@
                         </button>
 
 
+                        <!-- USERS -->
+
                         <button
                             type="button"
                             class="settings-nav-item"
-                            data-section="permissions">
+                            data-target="settings-permissions">
 
                             <i class="fa-solid fa-user-shield"></i>
 
@@ -174,16 +186,19 @@
                         </button>
 
 
+                        <!-- SYSTEM -->
+
                         <button
                             type="button"
                             class="settings-nav-item"
-                            data-section="system">
+                            data-target="settings-system">
 
                             <i class="fa-solid fa-server"></i>
 
                             <span>System</span>
 
                         </button>
+
 
                     </div>
 
@@ -200,13 +215,14 @@
 
         <div class="col-lg-9">
 
-            <!-- ==============================================
+
+            <!-- ==================================================
                  GENERAL
-            =============================================== -->
+            =================================================== -->
 
             <section
-                class="settings-section active"
-                data-section-panel="general">
+                id="settings-general"
+                class="settings-section active">
 
                 <div class="card border-0 shadow-sm">
 
@@ -221,9 +237,7 @@
                         </h5>
 
                         <small class="text-muted">
-
-                            Basic restaurant and business information.
-
+                            Basic PAPPRITO business configuration.
                         </small>
 
                     </div>
@@ -232,6 +246,7 @@
                     <div class="card-body">
 
                         <div class="row g-3">
+
 
                             <div class="col-md-6">
 
@@ -242,8 +257,8 @@
                                 <input
                                     type="text"
                                     class="form-control"
-                                    id="settingBusinessName"
-                                    placeholder="PAPPRITO Restaurant">
+                                    id="businessName"
+                                    value="PAPPRITO">
 
                             </div>
 
@@ -251,61 +266,19 @@
                             <div class="col-md-6">
 
                                 <label class="form-label">
-                                    Branch Name
+                                    Business Description
                                 </label>
 
                                 <input
                                     type="text"
                                     class="form-control"
-                                    id="settingBranchName"
-                                    placeholder="Main Branch">
-
-                            </div>
-
-
-                            <div class="col-12">
-
-                                <label class="form-label">
-                                    Business Address
-                                </label>
-
-                                <textarea
-                                    class="form-control"
-                                    id="settingBusinessAddress"
-                                    rows="2"></textarea>
+                                    id="businessDescription"
+                                    value="PAPPRITO Restaurant">
 
                             </div>
 
 
                             <div class="col-md-6">
-
-                                <label class="form-label">
-                                    Contact Number
-                                </label>
-
-                                <input
-                                    type="text"
-                                    class="form-control"
-                                    id="settingContactNumber">
-
-                            </div>
-
-
-                            <div class="col-md-6">
-
-                                <label class="form-label">
-                                    Email
-                                </label>
-
-                                <input
-                                    type="email"
-                                    class="form-control"
-                                    id="settingBusinessEmail">
-
-                            </div>
-
-
-                            <div class="col-md-4">
 
                                 <label class="form-label">
                                     Currency
@@ -313,7 +286,7 @@
 
                                 <select
                                     class="form-select"
-                                    id="settingCurrency">
+                                    id="currency">
 
                                     <option value="PHP">
                                         PHP - Philippine Peso
@@ -332,24 +305,22 @@
                             </div>
 
 
-                            <div class="col-md-4">
+                            <div class="col-md-6">
 
                                 <label class="form-label">
-                                    Tax Rate (%)
+                                    Currency Symbol
                                 </label>
 
                                 <input
-                                    type="number"
+                                    type="text"
                                     class="form-control"
-                                    id="settingTaxRate"
-                                    min="0"
-                                    step="0.01"
-                                    value="0">
+                                    id="currencySymbol"
+                                    value="₱">
 
                             </div>
 
 
-                            <div class="col-md-4">
+                            <div class="col-md-6">
 
                                 <label class="form-label">
                                     Time Zone
@@ -357,7 +328,7 @@
 
                                 <select
                                     class="form-select"
-                                    id="settingTimezone">
+                                    id="timezone">
 
                                     <option value="Asia/Manila">
                                         Asia/Manila
@@ -371,6 +342,103 @@
 
                             </div>
 
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+                                    Date Format
+                                </label>
+
+                                <select
+                                    class="form-select"
+                                    id="dateFormat">
+
+                                    <option value="MM/DD/YYYY">
+                                        MM/DD/YYYY
+                                    </option>
+
+                                    <option value="DD/MM/YYYY">
+                                        DD/MM/YYYY
+                                    </option>
+
+                                    <option value="YYYY-MM-DD">
+                                        YYYY-MM-DD
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+                                    Time Format
+                                </label>
+
+                                <select
+                                    class="form-select"
+                                    id="timeFormat">
+
+                                    <option value="12">
+                                        12 Hour
+                                    </option>
+
+                                    <option value="24">
+                                        24 Hour
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+                                    Language
+                                </label>
+
+                                <select
+                                    class="form-select"
+                                    id="language">
+
+                                    <option value="en">
+                                        English
+                                    </option>
+
+                                    <option value="fil">
+                                        Filipino
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+                                    Theme
+                                </label>
+
+                                <select
+                                    class="form-select"
+                                    id="theme">
+
+                                    <option value="light">
+                                        Light
+                                    </option>
+
+                                    <option value="dark">
+                                        Dark
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
                         </div>
 
                     </div>
@@ -380,24 +448,21 @@
             </section>
 
 
-            <!-- ==============================================
+            <!-- ==================================================
                  PRODUCT
-            =============================================== -->
+            =================================================== -->
 
             <section
-                class="settings-section"
-                data-section-panel="product">
+                id="settings-product"
+                class="settings-section">
 
                 <div class="card border-0 shadow-sm">
 
                     <div class="card-header bg-white">
 
                         <h5 class="fw-bold">
-
                             <i class="fa-solid fa-box text-danger me-2"></i>
-
                             Product Settings
-
                         </h5>
 
                     </div>
@@ -407,15 +472,16 @@
 
                         <div class="row g-3">
 
+
                             <div class="col-md-6">
 
                                 <label class="form-label">
-                                    Product Image Maximum Size
+                                    Maximum Product Image Size
                                 </label>
 
                                 <select
                                     class="form-select"
-                                    id="settingImageMaxSize">
+                                    id="maxProductImageSize">
 
                                     <option value="2">
                                         2 MB
@@ -443,7 +509,7 @@
                                 <input
                                     type="number"
                                     class="form-control"
-                                    id="settingReorderLevel"
+                                    id="defaultReorderLevel"
                                     value="10"
                                     min="0">
 
@@ -458,7 +524,7 @@
 
                                 <select
                                     class="form-select"
-                                    id="settingProductStatus">
+                                    id="defaultProductStatus">
 
                                     <option value="Active">
                                         Active
@@ -475,35 +541,16 @@
 
                             <div class="col-md-6">
 
-                                <label class="form-label">
-                                    Product Code Prefix
-                                </label>
-
-                                <input
-                                    type="text"
-                                    class="form-control"
-                                    id="settingProductPrefix"
-                                    value="PROD">
-
-                            </div>
-
-
-                            <div class="col-12">
-
-                                <div class="form-check form-switch">
+                                <div class="form-check form-switch mt-4">
 
                                     <input
                                         class="form-check-input"
                                         type="checkbox"
-                                        id="settingAutoProductCode"
+                                        id="requireCategory"
                                         checked>
 
-                                    <label
-                                        class="form-check-label"
-                                        for="settingAutoProductCode">
-
-                                        Automatically generate Product Code
-
+                                    <label class="form-check-label">
+                                        Require Category
                                     </label>
 
                                 </div>
@@ -511,27 +558,41 @@
                             </div>
 
 
-                            <div class="col-12">
+                            <div class="col-md-6">
 
                                 <div class="form-check form-switch">
 
                                     <input
                                         class="form-check-input"
                                         type="checkbox"
-                                        id="settingProductImages"
-                                        checked>
+                                        id="allowDuplicateCode">
 
-                                    <label
-                                        class="form-check-label"
-                                        for="settingProductImages">
-
-                                        Enable Product Images
-
+                                    <label class="form-check-label">
+                                        Allow Duplicate Product Code
                                     </label>
 
                                 </div>
 
                             </div>
+
+
+                            <div class="col-md-6">
+
+                                <div class="form-check form-switch">
+
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="allowNegativeStock">
+
+                                    <label class="form-check-label">
+                                        Allow Negative Stock
+                                    </label>
+
+                                </div>
+
+                            </div>
+
 
                         </div>
 
@@ -542,24 +603,21 @@
             </section>
 
 
-            <!-- ==============================================
+            <!-- ==================================================
                  CATEGORY
-            =============================================== -->
+            =================================================== -->
 
             <section
-                class="settings-section"
-                data-section-panel="category">
+                id="settings-category"
+                class="settings-section">
 
                 <div class="card border-0 shadow-sm">
 
                     <div class="card-header bg-white">
 
                         <h5 class="fw-bold">
-
                             <i class="fa-solid fa-tags text-danger me-2"></i>
-
                             Category Settings
-
                         </h5>
 
                     </div>
@@ -567,91 +625,19 @@
 
                     <div class="card-body">
 
-                        <div class="row g-3">
+                        <div class="alert alert-info">
 
-                            <div class="col-md-6">
+                            <i class="fa-solid fa-circle-info me-2"></i>
 
-                                <label class="form-label">
-                                    Category Code Prefix
-                                </label>
-
-                                <input
-                                    type="text"
-                                    class="form-control"
-                                    id="settingCategoryPrefix"
-                                    value="CAT">
-
-                            </div>
-
-
-                            <div class="col-md-6">
-
-                                <label class="form-label">
-                                    Default Display Order
-                                </label>
-
-                                <input
-                                    type="number"
-                                    class="form-control"
-                                    id="settingCategoryOrder"
-                                    value="1">
-
-                            </div>
-
-
-                            <div class="col-md-6">
-
-                                <label class="form-label">
-                                    Default Icon
-                                </label>
-
-                                <input
-                                    type="text"
-                                    class="form-control"
-                                    id="settingCategoryIcon"
-                                    value="fa-utensils">
-
-                            </div>
-
-
-                            <div class="col-md-6">
-
-                                <label class="form-label">
-                                    Default Theme Color
-                                </label>
-
-                                <input
-                                    type="color"
-                                    class="form-control form-control-color"
-                                    id="settingCategoryColor"
-                                    value="#C8102E">
-
-                            </div>
-
-
-                            <div class="col-12">
-
-                                <div class="form-check form-switch">
-
-                                    <input
-                                        class="form-check-input"
-                                        type="checkbox"
-                                        id="settingAutoCategoryCode"
-                                        checked>
-
-                                    <label
-                                        class="form-check-label"
-                                        for="settingAutoCategoryCode">
-
-                                        Automatically generate Category Code
-
-                                    </label>
-
-                                </div>
-
-                            </div>
+                            Category Master controls category names,
+                            codes, icons and display order.
 
                         </div>
+
+                        <p class="text-muted mb-0">
+                            Category-specific configuration will be
+                            connected to the Category Master.
+                        </p>
 
                     </div>
 
@@ -660,24 +646,21 @@
             </section>
 
 
-            <!-- ==============================================
+            <!-- ==================================================
                  POS
-            =============================================== -->
+            =================================================== -->
 
             <section
-                class="settings-section"
-                data-section-panel="pos">
+                id="settings-pos"
+                class="settings-section">
 
                 <div class="card border-0 shadow-sm">
 
                     <div class="card-header bg-white">
 
                         <h5 class="fw-bold">
-
                             <i class="fa-solid fa-cash-register text-danger me-2"></i>
-
                             POS Settings
-
                         </h5>
 
                     </div>
@@ -687,37 +670,190 @@
 
                         <div class="row g-3">
 
+
                             <div class="col-md-6">
 
-                                <label class="form-label">
-                                    Default Payment Method
-                                </label>
+                                <div class="form-check form-switch">
 
-                                <select
-                                    class="form-select"
-                                    id="settingDefaultPayment">
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="enablePOS"
+                                        checked>
 
-                                    <option value="Cash">
-                                        Cash
-                                    </option>
+                                    <label class="form-check-label">
+                                        Enable POS
+                                    </label>
 
-                                    <option value="Card">
-                                        Card
-                                    </option>
+                                </div>
 
-                                    <option value="GCash">
-                                        GCash
-                                    </option>
+                            </div>
 
-                                    <option value="Maya">
-                                        Maya
-                                    </option>
 
-                                    <option value="Bank Transfer">
-                                        Bank Transfer
-                                    </option>
+                            <div class="col-md-6">
 
-                                </select>
+                                <div class="form-check form-switch">
+
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="allowDiscount"
+                                        checked>
+
+                                    <label class="form-check-label">
+                                        Allow Discount
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <div class="form-check form-switch">
+
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="allowVoid"
+                                        checked>
+
+                                    <label class="form-check-label">
+                                        Allow Void
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <div class="form-check form-switch">
+
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="allowRefund"
+                                        checked>
+
+                                    <label class="form-check-label">
+                                        Allow Refund
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <div class="form-check form-switch">
+
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="requireCustomer">
+
+                                    <label class="form-check-label">
+                                        Require Customer
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <div class="form-check form-switch">
+
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="autoPrintReceipt">
+
+                                    <label class="form-check-label">
+                                        Auto Print Receipt
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <div class="form-check form-switch">
+
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="posShowProductImages"
+                                        checked>
+
+                                    <label class="form-check-label">
+                                        Show Product Images
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <div class="form-check form-switch">
+
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="posShowProductCode"
+                                        checked>
+
+                                    <label class="form-check-label">
+                                        Show Product Code
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <div class="form-check form-switch">
+
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="posShowStock"
+                                        checked>
+
+                                    <label class="form-check-label">
+                                        Show Stock
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <div class="form-check form-switch">
+
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="taxEnabled">
+
+                                    <label class="form-check-label">
+                                        Enable Tax
+                                    </label>
+
+                                </div>
 
                             </div>
 
@@ -725,13 +861,13 @@
                             <div class="col-md-6">
 
                                 <label class="form-label">
-                                    Service Charge (%)
+                                    Tax Rate (%)
                                 </label>
 
                                 <input
                                     type="number"
                                     class="form-control"
-                                    id="settingServiceCharge"
+                                    id="taxRate"
                                     value="0"
                                     min="0"
                                     step="0.01">
@@ -739,118 +875,6 @@
                             </div>
 
 
-                            <div class="col-12">
-
-                                <label class="form-label">
-                                    Enabled Payment Methods
-                                </label>
-
-                                <div class="row g-2">
-
-                                    <div class="col-md-4">
-                                        <div class="form-check">
-                                            <input
-                                                class="form-check-input"
-                                                type="checkbox"
-                                                id="paymentCash"
-                                                checked>
-                                            <label
-                                                class="form-check-label"
-                                                for="paymentCash">
-                                                Cash
-                                            </label>
-                                        </div>
-                                    </div>
-
-
-                                    <div class="col-md-4">
-                                        <div class="form-check">
-                                            <input
-                                                class="form-check-input"
-                                                type="checkbox"
-                                                id="paymentCard"
-                                                checked>
-                                            <label
-                                                class="form-check-label"
-                                                for="paymentCard">
-                                                Card
-                                            </label>
-                                        </div>
-                                    </div>
-
-
-                                    <div class="col-md-4">
-                                        <div class="form-check">
-                                            <input
-                                                class="form-check-input"
-                                                type="checkbox"
-                                                id="paymentGCash"
-                                                checked>
-                                            <label
-                                                class="form-check-label"
-                                                for="paymentGCash">
-                                                GCash
-                                            </label>
-                                        </div>
-                                    </div>
-
-
-                                    <div class="col-md-4">
-                                        <div class="form-check">
-                                            <input
-                                                class="form-check-input"
-                                                type="checkbox"
-                                                id="paymentMaya">
-                                            <label
-                                                class="form-check-label"
-                                                for="paymentMaya">
-                                                Maya
-                                            </label>
-                                        </div>
-                                    </div>
-
-
-                                    <div class="col-md-4">
-                                        <div class="form-check">
-                                            <input
-                                                class="form-check-input"
-                                                type="checkbox"
-                                                id="paymentBank">
-                                            <label
-                                                class="form-check-label"
-                                                for="paymentBank">
-                                                Bank Transfer
-                                            </label>
-                                        </div>
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-
-                            <div class="col-12">
-
-                                <div class="form-check form-switch">
-
-                                    <input
-                                        class="form-check-input"
-                                        type="checkbox"
-                                        id="settingAllowDiscount"
-                                        checked>
-
-                                    <label
-                                        class="form-check-label"
-                                        for="settingAllowDiscount">
-
-                                        Allow Discounts
-
-                                    </label>
-
-                                </div>
-
-                            </div>
-
                         </div>
 
                     </div>
@@ -860,262 +884,21 @@
             </section>
 
 
-            <!-- ==============================================
+            <!-- ==================================================
                  ONLINE MENU
-            =============================================== -->
+            =================================================== -->
 
             <section
-                class="settings-section"
-                data-section-panel="onlineMenu">
+                id="settings-onlineMenu"
+                class="settings-section">
 
                 <div class="card border-0 shadow-sm">
 
                     <div class="card-header bg-white">
 
                         <h5 class="fw-bold">
-
                             <i class="fa-solid fa-globe text-danger me-2"></i>
-
                             Online Menu Settings
-
-                        </h5>
-
-                    </div>
-
-
-                    <div class="card-body">
-
-                        <div class="form-check form-switch mb-3">
-
-                            <input
-                                class="form-check-input"
-                                type="checkbox"
-                                id="settingOnlineMenu"
-                                checked>
-
-                            <label
-                                class="form-check-label"
-                                for="settingOnlineMenu">
-
-                                Enable Online Menu
-
-                            </label>
-
-                        </div>
-
-
-                        <div class="form-check form-switch mb-3">
-
-                            <input
-                                class="form-check-input"
-                                type="checkbox"
-                                id="settingOnlineImages"
-                                checked>
-
-                            <label
-                                class="form-check-label"
-                                for="settingOnlineImages">
-
-                                Show Product Images
-
-                            </label>
-
-                        </div>
-
-
-                        <div class="form-check form-switch">
-
-                            <input
-                                class="form-check-input"
-                                type="checkbox"
-                                id="settingOnlineUnavailable">
-
-                            <label
-                                class="form-check-label"
-                                for="settingOnlineUnavailable">
-
-                                Show Unavailable Products
-
-                            </label>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </section>
-
-
-            <!-- ==============================================
-                 INVENTORY
-            =============================================== -->
-
-            <section
-                class="settings-section"
-                data-section-panel="inventory">
-
-                <div class="card border-0 shadow-sm">
-
-                    <div class="card-header bg-white">
-
-                        <h5 class="fw-bold">
-
-                            <i class="fa-solid fa-boxes-stacked text-danger me-2"></i>
-
-                            Inventory Settings
-
-                        </h5>
-
-                    </div>
-
-
-                    <div class="card-body">
-
-                        <div class="form-check form-switch mb-3">
-
-                            <input
-                                class="form-check-input"
-                                type="checkbox"
-                                id="settingInventoryTracking"
-                                checked>
-
-                            <label
-                                class="form-check-label">
-
-                                Enable Inventory Tracking
-
-                            </label>
-
-                        </div>
-
-
-                        <div class="form-check form-switch mb-3">
-
-                            <input
-                                class="form-check-input"
-                                type="checkbox"
-                                id="settingNegativeStock">
-
-                            <label
-                                class="form-check-label">
-
-                                Allow Negative Stock
-
-                            </label>
-
-                        </div>
-
-
-                        <div class="form-check form-switch">
-
-                            <input
-                                class="form-check-input"
-                                type="checkbox"
-                                id="settingLowStock"
-                                checked>
-
-                            <label
-                                class="form-check-label">
-
-                                Enable Low Stock Warning
-
-                            </label>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </section>
-
-
-            <!-- ==============================================
-                 KITCHEN
-            =============================================== -->
-
-            <section
-                class="settings-section"
-                data-section-panel="kitchen">
-
-                <div class="card border-0 shadow-sm">
-
-                    <div class="card-header bg-white">
-
-                        <h5 class="fw-bold">
-
-                            <i class="fa-solid fa-kitchen-set text-danger me-2"></i>
-
-                            Kitchen Settings
-
-                        </h5>
-
-                    </div>
-
-
-                    <div class="card-body">
-
-                        <div class="form-check form-switch mb-3">
-
-                            <input
-                                class="form-check-input"
-                                type="checkbox"
-                                id="settingKitchen"
-                                checked>
-
-                            <label
-                                class="form-check-label">
-
-                                Enable Kitchen Display
-
-                            </label>
-
-                        </div>
-
-
-                        <div class="form-check form-switch">
-
-                            <input
-                                class="form-check-input"
-                                type="checkbox"
-                                id="settingAutoKitchen"
-                                checked>
-
-                            <label
-                                class="form-check-label">
-
-                                Automatically Send POS Orders to Kitchen
-
-                            </label>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </section>
-
-
-            <!-- ==============================================
-                 RECEIPT
-            =============================================== -->
-
-            <section
-                class="settings-section"
-                data-section-panel="receipt">
-
-                <div class="card border-0 shadow-sm">
-
-                    <div class="card-header bg-white">
-
-                        <h5 class="fw-bold">
-
-                            <i class="fa-solid fa-receipt text-danger me-2"></i>
-
-                            Receipt & Printing
-
                         </h5>
 
                     </div>
@@ -1125,15 +908,624 @@
 
                         <div class="row g-3">
 
+
+                            <div class="col-md-6">
+
+                                <div class="form-check form-switch">
+
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="onlineMenuEnabled"
+                                        checked>
+
+                                    <label class="form-check-label">
+                                        Enable Online Menu
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <div class="form-check form-switch">
+
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="menuShowProductImages"
+                                        checked>
+
+                                    <label class="form-check-label">
+                                        Show Product Images
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <div class="form-check form-switch">
+
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="menuShowDescription"
+                                        checked>
+
+                                    <label class="form-check-label">
+                                        Show Description
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <div class="form-check form-switch">
+
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="menuShowPrice"
+                                        checked>
+
+                                    <label class="form-check-label">
+                                        Show Price
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <div class="form-check form-switch">
+
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="menuShowUnavailable">
+
+                                    <label class="form-check-label">
+                                        Show Unavailable Products
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <div class="form-check form-switch">
+
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="allowOnlineOrder"
+                                        checked>
+
+                                    <label class="form-check-label">
+                                        Allow Online Orders
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <div class="form-check form-switch">
+
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="allowReservation"
+                                        checked>
+
+                                    <label class="form-check-label">
+                                        Allow Reservation
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <div class="form-check form-switch">
+
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="menuShowBestSeller"
+                                        checked>
+
+                                    <label class="form-check-label">
+                                        Show Best Sellers
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <div class="form-check form-switch">
+
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="menuShowCategories"
+                                        checked>
+
+                                    <label class="form-check-label">
+                                        Show Categories
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ==================================================
+                 INVENTORY
+            =================================================== -->
+
+            <section
+                id="settings-inventory"
+                class="settings-section">
+
+                <div class="card border-0 shadow-sm">
+
+                    <div class="card-header bg-white">
+
+                        <h5 class="fw-bold">
+                            <i class="fa-solid fa-boxes-stacked text-danger me-2"></i>
+                            Inventory Settings
+                        </h5>
+
+                    </div>
+
+
+                    <div class="card-body">
+
+                        <div class="row g-3">
+
+
+                            <div class="col-md-6">
+
+                                <div class="form-check form-switch">
+
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="inventoryEnabled"
+                                        checked>
+
+                                    <label class="form-check-label">
+                                        Enable Inventory
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <div class="form-check form-switch">
+
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="inventoryTracking"
+                                        checked>
+
+                                    <label class="form-check-label">
+                                        Inventory Tracking
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <div class="form-check form-switch">
+
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="allowStockAdjustment"
+                                        checked>
+
+                                    <label class="form-check-label">
+                                        Allow Stock Adjustment
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <div class="form-check form-switch">
+
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="inventoryAllowNegativeStock">
+
+                                    <label class="form-check-label">
+                                        Allow Negative Stock
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <div class="form-check form-switch">
+
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="lowStockAlert"
+                                        checked>
+
+                                    <label class="form-check-label">
+                                        Low Stock Alert
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
                             <div class="col-md-6">
 
                                 <label class="form-label">
-                                    Receipt Paper Size
+                                    Default Reorder Level
+                                </label>
+
+                                <input
+                                    type="number"
+                                    class="form-control"
+                                    id="inventoryReorderLevel"
+                                    value="10"
+                                    min="0">
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <div class="form-check form-switch">
+
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="autoDeductPOS"
+                                        checked>
+
+                                    <label class="form-check-label">
+                                        Auto Deduct Stock from POS
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <div class="form-check form-switch">
+
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="autoDeductProduction"
+                                        checked>
+
+                                    <label class="form-check-label">
+                                        Auto Deduct from Production
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ==================================================
+                 KITCHEN
+            =================================================== -->
+
+            <section
+                id="settings-kitchen"
+                class="settings-section">
+
+                <div class="card border-0 shadow-sm">
+
+                    <div class="card-header bg-white">
+
+                        <h5 class="fw-bold">
+                            <i class="fa-solid fa-kitchen-set text-danger me-2"></i>
+                            Kitchen Settings
+                        </h5>
+
+                    </div>
+
+
+                    <div class="card-body">
+
+                        <div class="row g-3">
+
+
+                            <div class="col-md-6">
+
+                                <div class="form-check form-switch">
+
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="kitchenEnabled"
+                                        checked>
+
+                                    <label class="form-check-label">
+                                        Enable Kitchen Display
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <div class="form-check form-switch">
+
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="kitchenAutoSendOrders"
+                                        checked>
+
+                                    <label class="form-check-label">
+                                        Auto Send POS Orders
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <div class="form-check form-switch">
+
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="kitchenShowOrderNumber"
+                                        checked>
+
+                                    <label class="form-check-label">
+                                        Show Order Number
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <div class="form-check form-switch">
+
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="kitchenShowTableNumber"
+                                        checked>
+
+                                    <label class="form-check-label">
+                                        Show Table Number
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <div class="form-check form-switch">
+
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="kitchenSoundAlert"
+                                        checked>
+
+                                    <label class="form-check-label">
+                                        Sound Alert
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <div class="form-check form-switch">
+
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="kitchenAutoRefresh"
+                                        checked>
+
+                                    <label class="form-check-label">
+                                        Auto Refresh
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+                                    Refresh Interval
                                 </label>
 
                                 <select
                                     class="form-select"
-                                    id="settingReceiptSize">
+                                    id="kitchenRefreshSeconds">
+
+                                    <option value="5">
+                                        5 seconds
+                                    </option>
+
+                                    <option value="10">
+                                        10 seconds
+                                    </option>
+
+                                    <option value="15">
+                                        15 seconds
+                                    </option>
+
+                                    <option value="30">
+                                        30 seconds
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ==================================================
+                 RECEIPT
+            =================================================== -->
+
+            <section
+                id="settings-receipt"
+                class="settings-section">
+
+                <div class="card border-0 shadow-sm">
+
+                    <div class="card-header bg-white">
+
+                        <h5 class="fw-bold">
+                            <i class="fa-solid fa-receipt text-danger me-2"></i>
+                            Receipt & Printing
+                        </h5>
+
+                    </div>
+
+
+                    <div class="card-body">
+
+                        <div class="row g-3">
+
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+                                    Receipt Business Name
+                                </label>
+
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    id="receiptBusinessName"
+                                    value="PAPPRITO">
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+                                    Phone
+                                </label>
+
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    id="receiptPhone">
+
+                            </div>
+
+
+                            <div class="col-12">
+
+                                <label class="form-label">
+                                    Address
+                                </label>
+
+                                <textarea
+                                    class="form-control"
+                                    id="receiptAddress"
+                                    rows="2"></textarea>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+                                    Paper Size
+                                </label>
+
+                                <select
+                                    class="form-select"
+                                    id="receiptPaperSize">
 
                                     <option value="58mm">
                                         58mm
@@ -1161,32 +1553,126 @@
                                 <input
                                     type="text"
                                     class="form-control"
-                                    id="settingReceiptFooter"
+                                    id="receiptFooter"
                                     value="Thank you for dining with us!">
 
                             </div>
 
 
-                            <div class="col-12">
+                            <div class="col-md-6">
 
                                 <div class="form-check form-switch">
 
                                     <input
                                         class="form-check-input"
                                         type="checkbox"
-                                        id="settingAutoPrint">
+                                        id="receiptShowLogo"
+                                        checked>
 
-                                    <label
-                                        class="form-check-label">
-
-                                        Automatically Print Receipt
-
+                                    <label class="form-check-label">
+                                        Show Logo
                                     </label>
 
                                 </div>
 
                             </div>
 
+
+                            <div class="col-md-6">
+
+                                <div class="form-check form-switch">
+
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="receiptShowAddress"
+                                        checked>
+
+                                    <label class="form-check-label">
+                                        Show Address
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <div class="form-check form-switch">
+
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="receiptShowPhone"
+                                        checked>
+
+                                    <label class="form-check-label">
+                                        Show Phone
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <div class="form-check form-switch">
+
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="receiptShowCashier"
+                                        checked>
+
+                                    <label class="form-check-label">
+                                        Show Cashier
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <div class="form-check form-switch">
+
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="receiptShowDate"
+                                        checked>
+
+                                    <label class="form-check-label">
+                                        Show Date
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <div class="form-check form-switch">
+
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="receiptShowOrderNumber"
+                                        checked>
+
+                                    <label class="form-check-label">
+                                        Show Order Number
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
                         </div>
 
                     </div>
@@ -1196,74 +1682,21 @@
             </section>
 
 
-            <!-- ==============================================
+            <!-- ==================================================
                  PERMISSIONS
-            =============================================== -->
+            =================================================== -->
 
             <section
-                class="settings-section"
-                data-section-panel="permissions">
+                id="settings-permissions"
+                class="settings-section">
 
                 <div class="card border-0 shadow-sm">
 
                     <div class="card-header bg-white">
 
                         <h5 class="fw-bold">
-
                             <i class="fa-solid fa-user-shield text-danger me-2"></i>
-
                             Users & Permissions
-
-                        </h5>
-
-                    </div>
-
-
-                    <div class="card-body">
-
-                        <p class="text-muted">
-
-                            User roles and detailed permissions will be
-                            managed here.
-
-                        </p>
-
-
-                        <div class="alert alert-info mb-0">
-
-                            <i class="fa-solid fa-circle-info me-2"></i>
-
-                            Admin, Manager, Cashier, Kitchen,
-                            Inventory and Viewer roles will be connected
-                            to the permission system.
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </section>
-
-
-            <!-- ==============================================
-                 SYSTEM
-            =============================================== -->
-
-            <section
-                class="settings-section"
-                data-section-panel="system">
-
-                <div class="card border-0 shadow-sm">
-
-                    <div class="card-header bg-white">
-
-                        <h5 class="fw-bold">
-
-                            <i class="fa-solid fa-server text-danger me-2"></i>
-
-                            System
-
                         </h5>
 
                     </div>
@@ -1273,19 +1706,115 @@
 
                         <div class="row g-3">
 
+
                             <div class="col-md-6">
 
-                                <label class="form-label">
-                                    System Version
-                                </label>
+                                <div class="form-check form-switch">
 
-                                <input
-                                    type="text"
-                                    class="form-control"
-                                    value="PAPPRITO ERP V3"
-                                    readonly>
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="requireLogin"
+                                        checked>
+
+                                    <label class="form-check-label">
+                                        Require User Login
+                                    </label>
+
+                                </div>
 
                             </div>
+
+
+                            <div class="col-md-6">
+
+                                <div class="form-check form-switch">
+
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="allowCashier"
+                                        checked>
+
+                                    <label class="form-check-label">
+                                        Allow Cashier Role
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <div class="form-check form-switch">
+
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="allowManager"
+                                        checked>
+
+                                    <label class="form-check-label">
+                                        Allow Manager Role
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <div class="form-check form-switch">
+
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="allowAdmin"
+                                        checked>
+
+                                    <label class="form-check-label">
+                                        Allow Admin Role
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ==================================================
+                 SYSTEM
+            =================================================== -->
+
+            <section
+                id="settings-system"
+                class="settings-section">
+
+                <div class="card border-0 shadow-sm">
+
+                    <div class="card-header bg-white">
+
+                        <h5 class="fw-bold">
+                            <i class="fa-solid fa-server text-danger me-2"></i>
+                            System
+                        </h5>
+
+                    </div>
+
+
+                    <div class="card-body">
+
+                        <div class="row g-3">
 
 
                             <div class="col-md-6">
@@ -1350,6 +1879,114 @@
 
                             </div>
 
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+                                    System Version
+                                </label>
+
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    value="PAPPRITO ERP V3"
+                                    readonly>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <div class="form-check form-switch">
+
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="maintenanceMode">
+
+                                    <label class="form-check-label">
+                                        Maintenance Mode
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <div class="form-check form-switch">
+
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="debugMode">
+
+                                    <label class="form-check-label">
+                                        Debug Mode
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <div class="form-check form-switch">
+
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="autoBackup">
+
+                                    <label class="form-check-label">
+                                        Automatic Backup
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <div class="form-check form-switch">
+
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="enableNotifications"
+                                        checked>
+
+                                    <label class="form-check-label">
+                                        Enable Notifications
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <div class="form-check form-switch">
+
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="enableSound"
+                                        checked>
+
+                                    <label class="form-check-label">
+                                        Enable System Sound
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
                         </div>
 
                     </div>
@@ -1365,52 +2002,60 @@
 
             <div class="card border-0 shadow-sm mt-4">
 
-                <div class="card-body d-flex
-                            flex-column flex-md-row
-                            justify-content-between
-                            align-items-center gap-3">
+                <div class="card-body">
 
-                    <div class="text-muted">
+                    <div
+                        class="d-flex
+                               flex-column
+                               flex-md-row
+                               justify-content-between
+                               align-items-center
+                               gap-3">
 
-                        <i class="fa-solid fa-circle-info me-1"></i>
+                        <div class="text-muted">
 
-                        Changes will be saved to PAPPRITO ERP Settings.
+                            <i class="fa-solid fa-circle-info me-1"></i>
 
-                    </div>
+                            Changes are saved to Firebase Settings.
 
-
-                    <div>
-
-                        <button
-                            type="button"
-                            class="btn btn-outline-secondary me-2"
-                            id="btnResetSettings">
-
-                            <i class="fa-solid fa-rotate-left me-1"></i>
-
-                            Reset
-
-                        </button>
+                        </div>
 
 
-                        <button
-                            type="button"
-                            class="btn btn-danger"
-                            id="btnSaveSettings">
+                        <div>
 
-                            <i class="fa-solid fa-floppy-disk me-1"></i>
+                            <button
+                                type="button"
+                                class="btn btn-outline-secondary me-2"
+                                id="btnResetSettings">
 
-                            <span id="btnSaveSettingsText">
-                                Save Settings
-                            </span>
+                                <i class="fa-solid fa-rotate-left me-1"></i>
 
-                        </button>
+                                Reset
+
+                            </button>
+
+
+                            <button
+                                type="button"
+                                class="btn btn-danger"
+                                id="btnSaveSettings">
+
+                                <i class="fa-solid fa-floppy-disk me-1"></i>
+
+                                <span id="btnSaveSettingsText">
+                                    Save Settings
+                                </span>
+
+                            </button>
+
+                        </div>
 
                     </div>
 
                 </div>
 
             </div>
+
 
         </div>
 
