@@ -873,8 +873,7 @@ function uploadProductImageSafe(
             // MAX SIZE
             // =================================================
 
-            const maxSize =
-                2 * 1024 * 1024;
+            const maxSize = 10 * 1024 * 1024;
 
 
             if (
