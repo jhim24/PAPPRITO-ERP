@@ -1,6 +1,6 @@
 // ==========================================================
 // PAPPRITO ERP
-// CATEGORY SAVE / UPDATE ENGINE V2
+// CATEGORY SAVE / UPDATE ENGINE V3
 // File: assets/js/category/category-save.js
 //
 // INTEGRATED WITH:
@@ -11,6 +11,14 @@
 //
 // Firebase:
 // categories/{categoryId}
+//
+// FUNCTIONS:
+// - Add Category
+// - Update Category
+// - Duplicate Protection
+// - Category Code Generator
+// - Icon Preview
+// - Modal Reset
 // ==========================================================
 
 "use strict";
@@ -20,12 +28,12 @@
 // GLOBAL EDIT STATE
 // ==========================================================
 
-let editingCategoryId =
-    null;
+window.editingCategoryId =
+    window.editingCategoryId || null;
 
 
 // ==========================================================
-// INITIALIZE
+// INITIALIZE SAVE BUTTON
 // ==========================================================
 
 function initializeCategorySave() {
@@ -70,7 +78,7 @@ function initializeCategorySave() {
 
 
     console.log(
-        "Category Save Engine V2 initialized."
+        "PAPPRITO Category Save Engine V3 initialized."
     );
 
 }
@@ -94,9 +102,19 @@ async function saveCategory() {
         );
 
 
+    // ======================================================
+    // IMPORTANT
+    // Always read the shared global edit ID.
+    // ======================================================
+
+    const editingId =
+        window.editingCategoryId ||
+        null;
+
+
     const isUpdate =
         Boolean(
-            editingCategoryId
+            editingId
         );
 
 
@@ -119,7 +137,7 @@ async function saveCategory() {
 
 
         // ==================================================
-        // FORM VALUES
+        // FORM ELEMENTS
         // ==================================================
 
         const codeInput =
@@ -164,47 +182,52 @@ async function saveCategory() {
             );
 
 
+        // ==================================================
+        // FORM VALUES
+        // ==================================================
+
         const code =
-            codeInput
-                ?.value
+            codeInput?.value
                 .trim() || "";
 
 
         const name =
-            nameInput
-                ?.value
+            nameInput?.value
                 .trim() || "";
 
 
         const description =
-            descriptionInput
-                ?.value
+            descriptionInput?.value
                 .trim() || "";
 
 
-        const icon =
-            iconInput
-                ?.value
-                .trim()
-                .replace(/^fa-solid\s+/i, "")
-                || "fa-utensils";
+        let icon =
+            iconInput?.value
+                .trim() ||
+            "fa-utensils";
+
+
+        icon =
+            icon.replace(
+                /^fa-solid\s+/i,
+                ""
+            );
 
 
         const color =
-            colorInput
-                ?.value || "#C8102E";
+            colorInput?.value ||
+            "#C8102E";
 
 
         const displayOrder =
             Number(
-                orderInput
-                    ?.value || 1
+                orderInput?.value || 1
             );
 
 
         const status =
-            statusInput
-                ?.value || "Active";
+            statusInput?.value ||
+            "Active";
 
 
         // ==================================================
@@ -242,6 +265,21 @@ async function saveCategory() {
 
 
         if (
+            displayOrder < 1
+        ) {
+
+            alert(
+                "Display Order must be 1 or higher."
+            );
+
+            orderInput?.focus();
+
+            return;
+
+        }
+
+
+        if (
             status !== "Active" &&
             status !== "Inactive"
         ) {
@@ -256,7 +294,7 @@ async function saveCategory() {
 
 
         // ==================================================
-        // BUTTON STATE
+        // DISABLE SAVE BUTTON
         // ==================================================
 
         if (button) {
@@ -278,7 +316,7 @@ async function saveCategory() {
 
 
         // ==================================================
-        // CHECK DUPLICATE CATEGORY NAME
+        // LOAD EXISTING CATEGORIES
         // ==================================================
 
         const categoriesSnapshot =
@@ -287,8 +325,12 @@ async function saveCategory() {
                 .once("value");
 
 
-        let duplicateId =
-            null;
+        // ==================================================
+        // DUPLICATE CATEGORY NAME CHECK
+        // ==================================================
+
+        let duplicateName =
+            false;
 
 
         if (
@@ -298,13 +340,16 @@ async function saveCategory() {
             categoriesSnapshot.forEach(
                 function(child) {
 
-                    // Don't compare category
-                    // against itself during update.
+                    const childId =
+                        child.key;
+
+
+                    // Ignore itself during update
 
                     if (
                         isUpdate &&
-                        child.key ===
-                        editingCategoryId
+                        childId ===
+                        editingId
                     ) {
 
                         return;
@@ -329,8 +374,8 @@ async function saveCategory() {
                         name.toLowerCase()
                     ) {
 
-                        duplicateId =
-                            child.key;
+                        duplicateName =
+                            true;
 
                     }
 
@@ -340,12 +385,14 @@ async function saveCategory() {
         }
 
 
-        if (duplicateId) {
+        if (duplicateName) {
 
             alert(
                 "Category already exists.\n\n" +
                 "Please use a different Category Name."
             );
+
+            nameInput?.focus();
 
             return;
 
@@ -353,7 +400,86 @@ async function saveCategory() {
 
 
         // ==================================================
-        // GET / CREATE CATEGORY REFERENCE
+        // DUPLICATE CATEGORY CODE CHECK
+        // ==================================================
+
+        if (code) {
+
+            let duplicateCode =
+                false;
+
+
+            if (
+                categoriesSnapshot.exists()
+            ) {
+
+                categoriesSnapshot.forEach(
+                    function(child) {
+
+                        const childId =
+                            child.key;
+
+
+                        // Ignore itself during update
+
+                        if (
+                            isUpdate &&
+                            childId ===
+                            editingId
+                        ) {
+
+                            return;
+
+                        }
+
+
+                        const existing =
+                            child.val() || {};
+
+
+                        const existingCode =
+                            String(
+                                existing.code || ""
+                            )
+                            .trim()
+                            .toLowerCase();
+
+
+                        if (
+                            existingCode &&
+                            existingCode ===
+                            code.toLowerCase()
+                        ) {
+
+                            duplicateCode =
+                                true;
+
+                        }
+
+                    }
+                );
+
+            }
+
+
+            if (duplicateCode) {
+
+                alert(
+                    "Category Code already exists.\n\n" +
+                    "Please use a different Category Code."
+                );
+
+                codeInput?.focus();
+
+                return;
+
+            }
+
+        }
+
+
+        // ==================================================
+        // CATEGORY REFERENCE
         // ==================================================
 
         let categoryRef;
@@ -364,7 +490,7 @@ async function saveCategory() {
             categoryRef =
                 db.ref(
                     "categories/" +
-                    editingCategoryId
+                    editingId
                 );
 
         }
@@ -384,7 +510,32 @@ async function saveCategory() {
 
 
         // ==================================================
-        // EXISTING PRODUCT COUNT
+        // VERIFY UPDATE CATEGORY
+        // ==================================================
+
+        if (isUpdate) {
+
+            const existingCategorySnapshot =
+                await categoryRef.once(
+                    "value"
+                );
+
+
+            if (
+                !existingCategorySnapshot.exists()
+            ) {
+
+                throw new Error(
+                    "The category you are trying to update no longer exists."
+                );
+
+            }
+
+        }
+
+
+        // ==================================================
+        // PRESERVE PRODUCT COUNT
         // ==================================================
 
         let productCount =
@@ -425,9 +576,8 @@ async function saveCategory() {
 
         const categoryData = {
 
-            // ----------------------------------------------
-            // PRIMARY IDENTIFIER
-            // ----------------------------------------------
+            id:
+                categoryId,
 
             code:
                 code,
@@ -435,16 +585,8 @@ async function saveCategory() {
             name:
                 name,
 
-            // ----------------------------------------------
-            // DESCRIPTION
-            // ----------------------------------------------
-
             description:
                 description,
-
-            // ----------------------------------------------
-            // UI
-            // ----------------------------------------------
 
             icon:
                 icon,
@@ -452,30 +594,14 @@ async function saveCategory() {
             color:
                 color,
 
-            // ----------------------------------------------
-            // SORTING
-            // ----------------------------------------------
-
             displayOrder:
                 displayOrder,
-
-            // ----------------------------------------------
-            // STATUS
-            // ----------------------------------------------
 
             status:
                 status,
 
-            // ----------------------------------------------
-            // PRODUCT COUNT
-            // ----------------------------------------------
-
             productCount:
                 productCount,
-
-            // ----------------------------------------------
-            // UPDATED
-            // ----------------------------------------------
 
             updatedAt:
                 firebase.database
@@ -500,13 +626,14 @@ async function saveCategory() {
 
 
         // ==================================================
-        // SAVE CATEGORY
+        // SAVE TO FIREBASE
         // ==================================================
 
         console.log(
             isUpdate
-                ? "Updating category..."
-                : "Creating category..."
+                ? "Updating category:"
+                : "Creating category:",
+            categoryId
         );
 
 
@@ -516,19 +643,8 @@ async function saveCategory() {
 
 
         console.log(
-            "Category saved:",
+            "Category saved successfully:",
             categoryId
-        );
-
-
-        // ==================================================
-        // SUCCESS
-        // ==================================================
-
-        alert(
-            isUpdate
-                ? "Category updated successfully."
-                : "Category created successfully."
         );
 
 
@@ -542,12 +658,11 @@ async function saveCategory() {
         ) {
 
             /*
-             * loadCategories() already uses
-             * Firebase realtime listener.
+             * loadCategories() should ideally
+             * have one realtime listener only.
              *
-             * Calling it here is harmless for
-             * simple page refresh, but avoid
-             * creating duplicate listeners.
+             * Firebase will automatically update
+             * the existing listener after .set().
              */
 
             const table =
@@ -558,10 +673,11 @@ async function saveCategory() {
 
             if (
                 table &&
-                !table.dataset.listenerActive
+                table.innerHTML
             ) {
 
-                loadCategories();
+                // No manual reload needed
+                // if realtime listener is active.
 
             }
 
@@ -569,7 +685,7 @@ async function saveCategory() {
 
 
         // ==================================================
-        // REFRESH PRODUCT CATEGORY DROPDOWN
+        // REFRESH PRODUCT DROPDOWNS
         // ==================================================
 
         if (
@@ -592,6 +708,17 @@ async function saveCategory() {
 
 
         // ==================================================
+        // SUCCESS MESSAGE
+        // ==================================================
+
+        alert(
+            isUpdate
+                ? "Category updated successfully."
+                : "Category created successfully."
+        );
+
+
+        // ==================================================
         // RESET
         // ==================================================
 
@@ -603,7 +730,6 @@ async function saveCategory() {
         // ==================================================
 
         closeCategoryModal();
-
 
     }
 
@@ -653,7 +779,11 @@ async function saveCategory() {
 
 function resetCategoryForm() {
 
-    editingCategoryId =
+    // ======================================================
+    // CLEAR EDIT MODE
+    // ======================================================
+
+    window.editingCategoryId =
         null;
 
 
@@ -787,7 +917,14 @@ function resetCategoryForm() {
     // ICON PREVIEW
     // ======================================================
 
-    updateCategoryIconPreview();
+    if (
+        typeof updateCategoryIconPreview ===
+        "function"
+    ) {
+
+        updateCategoryIconPreview();
+
+    }
 
 
     // ======================================================
@@ -832,7 +969,7 @@ function resetCategoryForm() {
 
 
     // ======================================================
-    // GENERATE CODE
+    // GENERATE NEW CODE
     // ======================================================
 
     generateCategoryCode();
@@ -859,10 +996,20 @@ async function generateCategoryCode() {
     }
 
 
-    // Don't overwrite code while editing.
+    // Don't overwrite edit code
 
     if (
-        editingCategoryId
+        window.editingCategoryId
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+        typeof db === "undefined" ||
+        !db
     ) {
 
         return;
@@ -893,14 +1040,14 @@ async function generateCategoryCode() {
                         child.val() || {};
 
 
-                    const code =
+                    const categoryCode =
                         String(
                             category.code || ""
                         );
 
 
                     const match =
-                        code.match(
+                        categoryCode.match(
                             /CAT[-_ ]?(\d+)/i
                         );
 
@@ -950,7 +1097,7 @@ async function generateCategoryCode() {
     catch (error) {
 
         console.error(
-            "Category Code Error:",
+            "Category Code Generation Error:",
             error
         );
 
@@ -998,13 +1145,10 @@ function updateCategoryIconPreview() {
 
 
     let icon =
-        iconInput
-            ?.value
+        iconInput?.value
             .trim() ||
         "fa-utensils";
 
-
-    // Remove fa-solid if user typed it.
 
     icon =
         icon.replace(
@@ -1014,8 +1158,7 @@ function updateCategoryIconPreview() {
 
 
     const color =
-        colorInput
-            ?.value ||
+        colorInput?.value ||
         "#C8102E";
 
 
@@ -1031,7 +1174,7 @@ function updateCategoryIconPreview() {
 
 
 // ==========================================================
-// CLOSE MODAL
+// CLOSE CATEGORY MODAL
 // ==========================================================
 
 function closeCategoryModal() {
@@ -1108,7 +1251,7 @@ function openAddCategory() {
 
 
 // ==========================================================
-// LISTEN TO ICON / COLOR CHANGES
+// CATEGORY PREVIEW INITIALIZER
 // ==========================================================
 
 function initializeCategoryPreview() {
@@ -1127,22 +1270,47 @@ function initializeCategoryPreview() {
 
     if (iconInput) {
 
-        iconInput.addEventListener(
-            "input",
-            updateCategoryIconPreview
-        );
+        if (
+            iconInput.dataset.previewInitialized !==
+            "true"
+        ) {
+
+            iconInput.dataset.previewInitialized =
+                "true";
+
+
+            iconInput.addEventListener(
+                "input",
+                updateCategoryIconPreview
+            );
+
+        }
 
     }
 
 
     if (colorInput) {
 
-        colorInput.addEventListener(
-            "input",
-            updateCategoryIconPreview
-        );
+        if (
+            colorInput.dataset.previewInitialized !==
+            "true"
+        ) {
+
+            colorInput.dataset.previewInitialized =
+                "true";
+
+
+            colorInput.addEventListener(
+                "input",
+                updateCategoryIconPreview
+            );
+
+        }
 
     }
+
+
+    updateCategoryIconPreview();
 
 }
 
@@ -1150,9 +1318,6 @@ function initializeCategoryPreview() {
 // ==========================================================
 // GLOBAL EXPORT
 // ==========================================================
-
-window.editingCategoryId =
-    editingCategoryId;
 
 window.initializeCategorySave =
     initializeCategorySave;
@@ -1220,6 +1385,10 @@ function autoInitializeCategorySave() {
 autoInitializeCategorySave();
 
 
+// ==========================================================
+// READY
+// ==========================================================
+
 console.log(
-    "PAPPRITO Category Save Engine V2 ready."
+    "PAPPRITO Category Save Engine V3 ready."
 );
