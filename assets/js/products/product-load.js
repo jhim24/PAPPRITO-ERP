@@ -1,8 +1,20 @@
 // ==========================================================
 // PAPPRITO ERP
-// PRODUCT MASTER - LOAD ENGINE
+// PRODUCT MASTER - LOAD ENGINE V2
 // File : assets/js/products/product-load.js
-// Description : Product Loading, Firebase Listener & Table
+//
+// CATEGORY INTEGRATION:
+//
+// categories/
+//      ↓
+// Product Category Dropdown
+//      ↓
+// categoryId + categoryName
+//      ↓
+// products/
+//
+// IMPORTANT:
+// Product Save Engine remains unchanged.
 // ==========================================================
 
 "use strict";
@@ -16,6 +28,8 @@ let productList = [];
 
 let productListener = null;
 
+let productCategories = [];
+
 
 // ==========================================================
 // INITIALIZE PRODUCT PAGE
@@ -24,7 +38,7 @@ let productListener = null;
 function initializeProductPage() {
 
     console.log(
-        "PAPPRITO PRODUCT MASTER INITIALIZING..."
+        "PAPPRITO PRODUCT MASTER V2 INITIALIZING..."
     );
 
 
@@ -43,17 +57,10 @@ function initializeProductPage() {
 
 
     // ------------------------------------------------------
-    // PRODUCT CATEGORIES
+    // LOAD CATEGORIES
     // ------------------------------------------------------
 
-    if (
-        typeof loadProductCategories ===
-        "function"
-    ) {
-
-        loadProductCategories();
-
-    }
+    loadProductCategories();
 
 
     // ------------------------------------------------------
@@ -99,7 +106,7 @@ function initializeProductPage() {
 
 
     // ------------------------------------------------------
-    // FIREBASE LISTENER
+    // FIREBASE PRODUCT LISTENER
     // ------------------------------------------------------
 
     startProductListener();
@@ -164,13 +171,16 @@ function startProductListener() {
     // ------------------------------------------------------
 
     productListener.on(
+
         "value",
+
         function (snapshot) {
 
             productList = [];
 
 
             snapshot.forEach(
+
                 function (child) {
 
                     const product =
@@ -186,6 +196,7 @@ function startProductListener() {
                     );
 
                 }
+
             );
 
 
@@ -196,7 +207,7 @@ function startProductListener() {
 
 
             // ------------------------------------------------
-            // RENDER TABLE
+            // RENDER
             // ------------------------------------------------
 
             renderProductTable();
@@ -210,19 +221,13 @@ function startProductListener() {
 
 
             // ------------------------------------------------
-            // CATEGORY FILTER
+            // REFRESH CATEGORY FILTER
             // ------------------------------------------------
 
-            if (
-                typeof refreshProductFilters ===
-                "function"
-            ) {
-
-                refreshProductFilters();
-
-            }
+            refreshProductFilters();
 
         },
+
         function (error) {
 
             console.error(
@@ -231,6 +236,7 @@ function startProductListener() {
             );
 
         }
+
     );
 
 }
@@ -260,14 +266,14 @@ function renderProductTable() {
 
 
     // ------------------------------------------------------
-    // CLEAR TABLE
+    // CLEAR
     // ------------------------------------------------------
 
     table.innerHTML = "";
 
 
     // ------------------------------------------------------
-    // FILTER PRODUCTS
+    // FILTER
     // ------------------------------------------------------
 
     const products =
@@ -321,17 +327,20 @@ function renderProductTable() {
 
 
     // ------------------------------------------------------
-    // RENDER PRODUCTS
+    // PRODUCTS
     // ------------------------------------------------------
 
     products.forEach(
+
         function (product) {
+
 
             // ----------------------------------------------
             // IMAGE
             // ----------------------------------------------
 
             const image =
+
                 product.image &&
                 String(
                     product.image
@@ -352,6 +361,7 @@ function renderProductTable() {
 
 
             const statusBadge =
+
                 status === "Active"
 
                     ? `
@@ -378,20 +388,68 @@ function renderProductTable() {
 
 
             // ----------------------------------------------
-            // TABLE ROW
+            // STOCK CLASS
+            // ----------------------------------------------
+
+            const reorderLevel =
+                Number(
+                    product.reorderLevel || 0
+                );
+
+
+            let stockClass =
+                "product-stock";
+
+
+            if (
+                stock <= reorderLevel
+            ) {
+
+                stockClass +=
+                    " stock-low";
+
+            }
+
+            else {
+
+                stockClass +=
+                    " stock-good";
+
+            }
+
+
+            // ----------------------------------------------
+            // CATEGORY
+            // ----------------------------------------------
+
+            const categoryName =
+                product.categoryName ||
+                getCategoryNameById(
+                    product.categoryId
+                ) ||
+                "Uncategorized";
+
+
+            // ----------------------------------------------
+            // TABLE
             // ----------------------------------------------
 
             table.innerHTML += `
 
                 <tr>
 
-                    <!-- PRODUCT CODE -->
+
+                    <!-- CODE -->
 
                     <td>
 
-                        ${escapeProductHTML(
-                            product.code || ""
-                        )}
+                        <strong>
+
+                            ${escapeProductHTML(
+                                product.code || ""
+                            )}
+
+                        </strong>
 
                     </td>
 
@@ -402,6 +460,8 @@ function renderProductTable() {
 
                         <img
 
+                            class="product-table-image"
+
                             src="${escapeProductAttribute(
                                 image
                             )}"
@@ -410,17 +470,6 @@ function renderProductTable() {
                                 product.name ||
                                 "Product"
                             )}"
-
-                            width="60"
-
-                            height="60"
-
-                            style="
-                                width:60px;
-                                height:60px;
-                                object-fit:cover;
-                                border-radius:10px;
-                            "
 
                             onerror="
                                 this.onerror=null;
@@ -432,17 +481,32 @@ function renderProductTable() {
                     </td>
 
 
-                    <!-- PRODUCT NAME -->
+                    <!-- PRODUCT -->
 
                     <td>
 
-                        <strong>
+                        <div class="product-name">
 
                             ${escapeProductHTML(
                                 product.name || ""
                             )}
 
-                        </strong>
+                        </div>
+
+
+                        ${
+                            product.description
+                                ? `
+                                    <small class="text-muted">
+
+                                        ${escapeProductHTML(
+                                            product.description
+                                        )}
+
+                                    </small>
+                                `
+                                : ""
+                        }
 
                     </td>
 
@@ -451,29 +515,43 @@ function renderProductTable() {
 
                     <td>
 
-                        ${escapeProductHTML(
-                            product.categoryName || ""
-                        )}
+                        <span class="product-category">
+
+                            <i class="fa-solid fa-tag"></i>
+
+                            ${escapeProductHTML(
+                                categoryName
+                            )}
+
+                        </span>
 
                     </td>
 
 
-                    <!-- SELLING PRICE -->
+                    <!-- PRICE -->
 
                     <td>
 
-                        ₱${Number(
-                            product.sellingPrice || 0
-                        ).toFixed(2)}
+                        <span class="product-price">
+
+                            ₱${Number(
+                                product.sellingPrice || 0
+                            ).toFixed(2)}
+
+                        </span>
 
                     </td>
 
 
-                    <!-- CURRENT STOCK -->
+                    <!-- STOCK -->
 
                     <td>
 
-                        ${stock}
+                        <span class="${stockClass}">
+
+                            ${stock}
+
+                        </span>
 
                     </td>
 
@@ -496,9 +574,8 @@ function renderProductTable() {
                             type="button"
 
                             class="
-                                btn
-                                btn-warning
-                                btn-sm
+                                product-action-btn
+                                product-edit-btn
                                 me-1
                             "
 
@@ -524,9 +601,8 @@ function renderProductTable() {
                             type="button"
 
                             class="
-                                btn
-                                btn-danger
-                                btn-sm
+                                product-action-btn
+                                product-delete-btn
                             "
 
                             onclick="
@@ -547,11 +623,13 @@ function renderProductTable() {
 
                     </td>
 
+
                 </tr>
 
             `;
 
         }
+
     );
 
 }
@@ -564,8 +642,11 @@ function renderProductTable() {
 function getFilteredProducts() {
 
     let products =
+
         Array.isArray(productList)
+
             ? [...productList]
+
             : [];
 
 
@@ -580,10 +661,13 @@ function getFilteredProducts() {
 
 
     const keyword =
+
         searchElement
+
             ? searchElement.value
                 .trim()
                 .toLowerCase()
+
             : "";
 
 
@@ -592,7 +676,9 @@ function getFilteredProducts() {
     ) {
 
         products =
+
             products.filter(
+
                 function (product) {
 
                     const name =
@@ -634,6 +720,7 @@ function getFilteredProducts() {
                     );
 
                 }
+
             );
 
     }
@@ -660,17 +747,24 @@ function getFilteredProducts() {
     ) {
 
         products =
+
             products.filter(
+
                 function (product) {
 
                     return (
 
-                        product.categoryId ===
-                        selectedCategory
+                        String(
+                            product.categoryId || ""
+                        ) ===
+                        String(
+                            selectedCategory
+                        )
 
                     );
 
                 }
+
             );
 
     }
@@ -697,7 +791,9 @@ function getFilteredProducts() {
     ) {
 
         products =
+
             products.filter(
+
                 function (product) {
 
                     return (
@@ -708,6 +804,7 @@ function getFilteredProducts() {
                     );
 
                 }
+
             );
 
     }
@@ -737,8 +834,11 @@ function updateProductCounter() {
 
 
     const count =
+
         Array.isArray(productList)
+
             ? productList.length
+
             : 0;
 
 
@@ -762,6 +862,11 @@ function updateProductCounter() {
 
 // ==========================================================
 // LOAD PRODUCT CATEGORIES
+//
+// SOURCE:
+// Firebase categories/
+//
+// ONLY ACTIVE CATEGORIES
 // ==========================================================
 
 async function loadProductCategories() {
@@ -802,48 +907,94 @@ async function loadProductCategories() {
         dropdown.innerHTML = `
 
             <option value="">
+
                 Loading Categories...
+
             </option>
 
         `;
 
 
         const snapshot =
+
             await db
                 .ref("categories")
+                .orderByChild("displayOrder")
                 .once("value");
 
 
-        dropdown.innerHTML = `
-
-            <option value="">
-                Select Category
-            </option>
-
-        `;
-
-
-        const categories = [];
+        productCategories = [];
 
 
         snapshot.forEach(
+
             function (child) {
 
                 const category =
                     child.val() || {};
 
 
-                categories.push({
+                // ------------------------------------------
+                // ONLY ACTIVE
+                // ------------------------------------------
+
+                const status =
+                    category.status ||
+                    "Active";
+
+
+                if (
+                    status !== "Active"
+                ) {
+
+                    return;
+
+                }
+
+
+                const name =
+                    String(
+                        category.name || ""
+                    ).trim();
+
+
+                if (
+                    name === ""
+                ) {
+
+                    return;
+
+                }
+
+
+                productCategories.push({
 
                     id:
                         child.key,
 
                     name:
-                        category.name || ""
+                        name,
+
+                    code:
+                        category.code || "",
+
+                    icon:
+                        category.icon ||
+                        "fa-utensils",
+
+                    color:
+                        category.color ||
+                        "#C8102E",
+
+                    displayOrder:
+                        Number(
+                            category.displayOrder || 0
+                        )
 
                 });
 
             }
+
         );
 
 
@@ -851,32 +1002,54 @@ async function loadProductCategories() {
         // SORT
         // --------------------------------------------------
 
-        categories.sort(
+        productCategories.sort(
+
             function (a, b) {
+
+                if (
+                    a.displayOrder !==
+                    b.displayOrder
+                ) {
+
+                    return (
+                        a.displayOrder -
+                        b.displayOrder
+                    );
+
+                }
+
 
                 return a.name.localeCompare(
                     b.name
                 );
 
             }
+
         );
 
 
         // --------------------------------------------------
-        // ADD OPTIONS
+        // RESET DROPDOWN
         // --------------------------------------------------
 
-        categories.forEach(
+        dropdown.innerHTML = `
+
+            <option value="">
+
+                Select Category
+
+            </option>
+
+        `;
+
+
+        // --------------------------------------------------
+        // ADD CATEGORIES
+        // --------------------------------------------------
+
+        productCategories.forEach(
+
             function (category) {
-
-                if (
-                    category.name.trim() === ""
-                ) {
-
-                    return;
-
-                }
-
 
                 dropdown.innerHTML += `
 
@@ -894,16 +1067,24 @@ async function loadProductCategories() {
                 `;
 
             }
+
         );
 
 
         console.log(
-            "Product categories loaded:",
-            categories.length
+            "Active Product Categories loaded:",
+            productCategories.length
         );
 
 
-        return categories;
+        // --------------------------------------------------
+        // REFRESH FILTER
+        // --------------------------------------------------
+
+        refreshProductFilters();
+
+
+        return productCategories;
 
     }
 
@@ -915,10 +1096,15 @@ async function loadProductCategories() {
         );
 
 
+        productCategories = [];
+
+
         dropdown.innerHTML = `
 
             <option value="">
+
                 Unable to load categories
+
             </option>
 
         `;
@@ -929,7 +1115,11 @@ async function loadProductCategories() {
 
 
 // ==========================================================
-// REFRESH PRODUCT FILTERS
+// REFRESH PRODUCT CATEGORY FILTER
+//
+// IMPORTANT:
+// This now uses Firebase categories,
+// NOT only categories already used by products.
 // ==========================================================
 
 function refreshProductFilters() {
@@ -951,64 +1141,49 @@ function refreshProductFilters() {
         filter.value;
 
 
-    const categoryMap =
-        new Map();
+    // ------------------------------------------------------
+    // IF CATEGORIES HAVE NOT LOADED YET
+    // ------------------------------------------------------
 
+    if (
+        !Array.isArray(
+            productCategories
+        )
+    ) {
 
-    productList.forEach(
-        function (product) {
+        productCategories = [];
 
-            if (
-                product.categoryId &&
-                product.categoryName
-            ) {
-
-                categoryMap.set(
-                    product.categoryId,
-                    product.categoryName
-                );
-
-            }
-
-        }
-    );
+    }
 
 
     filter.innerHTML = `
 
         <option value="">
+
             All Categories
+
         </option>
 
     `;
 
 
-    const categories =
-        Array.from(
-            categoryMap.entries()
-        ).sort(
-            function (a, b) {
+    // ------------------------------------------------------
+    // ADD ALL ACTIVE CATEGORIES
+    // ------------------------------------------------------
 
-                return a[1].localeCompare(
-                    b[1]
-                );
+    productCategories.forEach(
 
-            }
-        );
-
-
-    categories.forEach(
-        function ([id, name]) {
+        function (category) {
 
             filter.innerHTML += `
 
                 <option
                     value="${escapeProductAttribute(
-                        id
+                        category.id
                     )}">
 
                     ${escapeProductHTML(
-                        name
+                        category.name
                     )}
 
                 </option>
@@ -1016,6 +1191,7 @@ function refreshProductFilters() {
             `;
 
         }
+
     );
 
 
@@ -1024,17 +1200,22 @@ function refreshProductFilters() {
     // ------------------------------------------------------
 
     const optionExists =
+
         Array.from(
             filter.options
         ).some(
+
             function (option) {
 
                 return (
+
                     option.value ===
                     currentValue
+
                 );
 
             }
+
         );
 
 
@@ -1044,6 +1225,52 @@ function refreshProductFilters() {
             currentValue;
 
     }
+
+}
+
+
+// ==========================================================
+// FIND CATEGORY NAME BY ID
+// ==========================================================
+
+function getCategoryNameById(
+    categoryId
+) {
+
+    if (
+        !categoryId
+    ) {
+
+        return "";
+
+    }
+
+
+    const category =
+
+        productCategories.find(
+
+            function (item) {
+
+                return (
+
+                    String(
+                        item.id
+                    ) ===
+                    String(
+                        categoryId
+                    )
+
+                );
+
+            }
+
+        );
+
+
+    return category
+        ? category.name
+        : "";
 
 }
 
@@ -1067,12 +1294,19 @@ function generateProductCode() {
     }
 
 
-    // Do not replace code during edit
+    // ------------------------------------------------------
+    // DO NOT REPLACE CODE DURING EDIT
+    // ------------------------------------------------------
 
     if (
+
         typeof editingProductId !==
-        "undefined" &&
+        "undefined"
+
+        &&
+
         editingProductId
+
     ) {
 
         return;
@@ -1081,8 +1315,11 @@ function generateProductCode() {
 
 
     if (
+
         codeInput.value &&
+
         codeInput.value.trim() !== ""
+
     ) {
 
         return;
@@ -1091,13 +1328,18 @@ function generateProductCode() {
 
 
     const count =
+
         Array.isArray(productList)
+
             ? productList.length + 1
+
             : 1;
 
 
     const code =
+
         "PAP-" +
+
         String(
             count
         ).padStart(
@@ -1193,14 +1435,82 @@ function escapeProductAttribute(
 
 
 // ==========================================================
+// SEARCH EVENTS
+// ==========================================================
+
+document.addEventListener(
+
+    "input",
+
+    function (event) {
+
+        if (
+
+            event.target &&
+            event.target.id ===
+            "searchProduct"
+
+        ) {
+
+            renderProductTable();
+
+        }
+
+    }
+
+);
+
+
+// ==========================================================
+// FILTER EVENTS
+// ==========================================================
+
+document.addEventListener(
+
+    "change",
+
+    function (event) {
+
+        if (!event.target) {
+
+            return;
+
+        }
+
+
+        if (
+
+            event.target.id ===
+            "filterCategory"
+
+            ||
+
+            event.target.id ===
+            "filterStatus"
+
+        ) {
+
+            renderProductTable();
+
+        }
+
+    }
+
+);
+
+
+// ==========================================================
 // REFRESH BUTTON
 // ==========================================================
 
 document.addEventListener(
+
     "click",
+
     function (event) {
 
         const button =
+
             event.target.closest(
                 "#btnRefreshProducts"
             );
@@ -1214,13 +1524,16 @@ document.addEventListener(
 
 
         console.log(
-            "Refreshing products..."
+            "Refreshing Products..."
         );
 
+
+        loadProductCategories();
 
         renderProductTable();
 
         updateProductCounter();
 
     }
+
 );
