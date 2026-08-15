@@ -1,21 +1,25 @@
 // ==========================================================
 // PAPPRITO ERP
-// PREMIUM DASHBOARD ENGINE V2
-// File: assets/js/dashboard/dashboard.js
+// PREMIUM DASHBOARD ENGINE V3
+// File:
+// assets/js/dashboard/dashboard.js
+//
+// IMPORTANT:
+// app.js is the ONLY dashboard initializer.
 //
 // FEATURES
 // - Today's Sales
 // - Today's Orders
 // - Occupied Tables
 // - Total Products
-// - Sales Overview Chart
-// - Sales by Category Chart
+// - Sales Overview
+// - Sales by Category
 // - Top Selling Products
 // - Recent Orders
 // - Firebase Realtime Database
 // - Dynamic Page Loading Safe
-// - Mobile Safe
 // - Duplicate Listener Safe
+// - Mobile Safe
 // ==========================================================
 
 "use strict";
@@ -53,7 +57,7 @@ function initializeDashboard() {
     ) {
 
         console.warn(
-            "Dashboard: Firebase Database is not available yet."
+            "Dashboard: Firebase Database is not available."
         );
 
         scheduleDashboardRetry();
@@ -64,17 +68,19 @@ function initializeDashboard() {
 
 
     // ------------------------------------------------------
-    // Check if Dashboard HTML exists
+    // Dashboard HTML check
     // ------------------------------------------------------
 
-    const dashboardContent =
-        document.getElementById("todaySales");
+    const dashboardElement =
+        document.getElementById(
+            "todaySales"
+        );
 
 
-    if (!dashboardContent) {
+    if (!dashboardElement) {
 
-        console.log(
-            "Dashboard HTML not loaded yet."
+        console.warn(
+            "Dashboard HTML is not ready."
         );
 
         scheduleDashboardRetry();
@@ -85,7 +91,7 @@ function initializeDashboard() {
 
 
     // ------------------------------------------------------
-    // Stop retry timer
+    // Cancel retry
     // ------------------------------------------------------
 
     if (dashboardRetryTimer) {
@@ -100,7 +106,7 @@ function initializeDashboard() {
 
 
     // ------------------------------------------------------
-    // Initialize charts
+    // Charts
     // ------------------------------------------------------
 
     initializeSalesChart();
@@ -135,14 +141,14 @@ function initializeDashboard() {
 
 
     console.log(
-        "PAPPRITO PREMIUM DASHBOARD READY."
+        "PAPPRITO DASHBOARD READY."
     );
 
 }
 
 
 // ==========================================================
-// RETRY DASHBOARD
+// RETRY
 // ==========================================================
 
 function scheduleDashboardRetry() {
@@ -156,7 +162,7 @@ function scheduleDashboardRetry() {
 
     dashboardRetryTimer =
         setTimeout(
-            function() {
+            function () {
 
                 dashboardRetryTimer =
                     null;
@@ -176,10 +182,22 @@ function scheduleDashboardRetry() {
 
 function loadDashboardProducts() {
 
+    if (
+        typeof db === "undefined" ||
+        !db
+    ) {
+
+        return;
+
+    }
+
+
     db.ref("products")
         .on(
+
             "value",
-            function(snapshot) {
+
+            function (snapshot) {
 
                 let total = 0;
 
@@ -189,17 +207,23 @@ function loadDashboardProducts() {
                 ) {
 
                     snapshot.forEach(
-                        function(child) {
+                        function (child) {
 
                             const product =
                                 child.val() || {};
 
 
-                            if (
+                            const status =
                                 String(
                                     product.status ||
                                     "Active"
-                                ).toLowerCase() ===
+                                )
+                                .toLowerCase()
+                                .trim();
+
+
+                            if (
+                                status ===
                                 "inactive"
                             ) {
 
@@ -221,15 +245,23 @@ function loadDashboardProducts() {
                     formatNumber(total)
                 );
 
+
+                console.log(
+                    "Dashboard Products:",
+                    total
+                );
+
             },
-            function(error) {
+
+            function (error) {
 
                 console.error(
-                    "Products dashboard error:",
+                    "Dashboard products error:",
                     error
                 );
 
             }
+
         );
 
 }
@@ -241,7 +273,17 @@ function loadDashboardProducts() {
 
 function loadDashboardTables() {
 
-    const possiblePaths = [
+    if (
+        typeof db === "undefined" ||
+        !db
+    ) {
+
+        return;
+
+    }
+
+
+    const paths = [
 
         "tables",
 
@@ -251,8 +293,8 @@ function loadDashboardTables() {
 
 
     findFirstFirebasePath(
-        possiblePaths,
-        function(snapshot) {
+        paths,
+        function (snapshot) {
 
             let occupied = 0;
 
@@ -263,7 +305,7 @@ function loadDashboardTables() {
             ) {
 
                 snapshot.forEach(
-                    function(child) {
+                    function (child) {
 
                         const table =
                             child.val() || {};
@@ -280,23 +322,28 @@ function loadDashboardTables() {
 
                         if (
 
-                            status === "occupied"
+                            status ===
+                            "occupied"
 
                             ||
 
-                            status === "busy"
+                            status ===
+                            "busy"
 
                             ||
 
-                            status === "serving"
+                            status ===
+                            "serving"
 
                             ||
 
-                            table.occupied === true
+                            table.occupied ===
+                            true
 
                             ||
 
-                            table.isOccupied === true
+                            table.isOccupied ===
+                            true
 
                         ) {
 
@@ -315,6 +362,12 @@ function loadDashboardTables() {
                 formatNumber(occupied)
             );
 
+
+            console.log(
+                "Dashboard Occupied Tables:",
+                occupied
+            );
+
         }
     );
 
@@ -327,10 +380,22 @@ function loadDashboardTables() {
 
 function loadDashboardOrders() {
 
+    if (
+        typeof db === "undefined" ||
+        !db
+    ) {
+
+        return;
+
+    }
+
+
     db.ref("orders")
         .on(
+
             "value",
-            function(snapshot) {
+
+            function (snapshot) {
 
                 const orders = [];
 
@@ -344,7 +409,7 @@ function loadDashboardOrders() {
                 ) {
 
                     snapshot.forEach(
-                        function(child) {
+                        function (child) {
 
                             const order =
                                 child.val() || {};
@@ -410,7 +475,7 @@ function loadDashboardOrders() {
 
 
                 // ------------------------------------------------
-                // CHARTS
+                // Charts
                 // ------------------------------------------------
 
                 updateSalesOverview(
@@ -424,34 +489,42 @@ function loadDashboardOrders() {
 
 
                 // ------------------------------------------------
-                // TABLES
+                // Tables
                 // ------------------------------------------------
+
+                renderTopSellingProducts(
+                    orders
+                );
+
 
                 renderRecentOrders(
                     orders
                 );
 
 
-                renderTopSellingProducts(
-                    orders
+                console.log(
+                    "Dashboard Orders:",
+                    orders.length
                 );
 
             },
-            function(error) {
+
+            function (error) {
 
                 console.error(
-                    "Orders dashboard error:",
+                    "Dashboard orders error:",
                     error
                 );
 
             }
+
         );
 
 }
 
 
 // ==========================================================
-// FIND FIREBASE PATH
+// FIND FIRST FIREBASE PATH
 // ==========================================================
 
 function findFirstFirebasePath(
@@ -477,12 +550,13 @@ function findFirstFirebasePath(
 
 
     paths.forEach(
-        function(path) {
+        function (path) {
 
             db.ref(path)
                 .once("value")
+
                 .then(
-                    function(snapshot) {
+                    function (snapshot) {
 
                         completed++;
 
@@ -494,11 +568,9 @@ function findFirstFirebasePath(
 
                             returned = true;
 
-
                             callback(
                                 snapshot
                             );
-
 
                             return;
 
@@ -513,7 +585,6 @@ function findFirstFirebasePath(
 
                             returned = true;
 
-
                             callback(
                                 null
                             );
@@ -522,8 +593,9 @@ function findFirstFirebasePath(
 
                     }
                 )
+
                 .catch(
-                    function(error) {
+                    function (error) {
 
                         console.warn(
                             "Firebase path check failed:",
@@ -542,7 +614,6 @@ function findFirstFirebasePath(
                         ) {
 
                             returned = true;
-
 
                             callback(
                                 null
@@ -670,12 +741,12 @@ function convertToDate(value) {
         typeof value === "string"
     ) {
 
-        const trimmed =
+        const valueTrimmed =
             value.trim();
 
 
         if (
-            trimmed === ""
+            valueTrimmed === ""
         ) {
 
             return null;
@@ -684,24 +755,26 @@ function convertToDate(value) {
 
 
         const numeric =
-            Number(trimmed);
+            Number(
+                valueTrimmed
+            );
 
 
         if (
             !isNaN(numeric)
         ) {
 
-            const date =
+            const numericDate =
                 new Date(numeric);
 
 
             if (
                 !isNaN(
-                    date.getTime()
+                    numericDate.getTime()
                 )
             ) {
 
-                return date;
+                return numericDate;
 
             }
 
@@ -709,7 +782,9 @@ function convertToDate(value) {
 
 
         const date =
-            new Date(trimmed);
+            new Date(
+                valueTrimmed
+            );
 
 
         if (
@@ -731,7 +806,7 @@ function convertToDate(value) {
 
 
 // ==========================================================
-// TODAY CHECK
+// TODAY
 // ==========================================================
 
 function isToday(date) {
@@ -810,10 +885,8 @@ function getOrderTotal(order) {
 
 
         if (
-            rawValue ===
-            null ||
-            rawValue ===
-            undefined ||
+            rawValue === null ||
+            rawValue === undefined ||
             rawValue === ""
         ) {
 
@@ -850,14 +923,14 @@ function getOrderTotal(order) {
 
 
     if (
-        items.length > 0
+        items.length
     ) {
 
         let total = 0;
 
 
         items.forEach(
-            function(item) {
+            function (item) {
 
                 const quantity =
                     Number(
@@ -944,12 +1017,13 @@ function getOrderItems(order) {
 
         if (
             value &&
-            typeof value === "object"
+            typeof value ===
+            "object"
         ) {
 
             return Object.keys(value)
                 .map(
-                    function(key) {
+                    function (key) {
 
                         return value[key];
 
@@ -999,10 +1073,6 @@ function initializeSalesChart() {
     }
 
 
-    // ------------------------------------------------------
-    // Destroy old chart
-    // ------------------------------------------------------
-
     if (
         pappritoSalesChart
     ) {
@@ -1015,7 +1085,7 @@ function initializeSalesChart() {
         catch (error) {
 
             console.warn(
-                "Unable to destroy old sales chart:",
+                "Unable to destroy sales chart:",
                 error
             );
 
@@ -1128,7 +1198,9 @@ function initializeSalesChart() {
                             callbacks: {
 
                                 label:
-                                    function(context) {
+                                    function (
+                                        context
+                                    ) {
 
                                         return (
                                             " Sales: " +
@@ -1162,12 +1234,16 @@ function initializeSalesChart() {
                             ticks: {
 
                                 callback:
-                                    function(value) {
+                                    function (
+                                        value
+                                    ) {
 
-                                        return "₱" +
+                                        return (
+                                            "₱" +
                                             formatCompactNumber(
                                                 value
-                                            );
+                                            )
+                                        );
 
                                     }
 
@@ -1275,10 +1351,10 @@ function getLast7DaysSales(
 
 
         orders.forEach(
-            function(orderWrapper) {
+            function (wrapper) {
 
                 const order =
-                    orderWrapper.data;
+                    wrapper.data;
 
 
                 const orderDate =
@@ -1369,7 +1445,7 @@ function initializeCategoryChart() {
         catch (error) {
 
             console.warn(
-                "Unable to destroy old category chart:",
+                "Unable to destroy category chart:",
                 error
             );
 
@@ -1495,15 +1571,14 @@ function updateCategorySales(
     }
 
 
-    const categoryTotals =
-        {};
+    const categoryTotals = {};
 
 
     orders.forEach(
-        function(orderWrapper) {
+        function (wrapper) {
 
             const order =
-                orderWrapper.data;
+                wrapper.data;
 
 
             const orderDate =
@@ -1529,7 +1604,7 @@ function updateCategorySales(
 
 
             items.forEach(
-                function(item) {
+                function (item) {
 
                     const category =
                         item.categoryName ||
@@ -1590,7 +1665,7 @@ function updateCategorySales(
 
     const values =
         labels.map(
-            function(category) {
+            function (category) {
 
                 return categoryTotals[
                     category
@@ -1604,42 +1679,54 @@ function updateCategorySales(
         labels.length === 0
     ) {
 
-        pappritoCategoryChart.data.labels =
-            [
+        pappritoCategoryChart
+            .data
+            .labels = [
 
                 "No Sales"
 
             ];
 
 
-        pappritoCategoryChart.data.datasets[0].data =
-            [
+        pappritoCategoryChart
+            .data
+            .datasets[0]
+            .data = [
 
                 1
 
             ];
 
 
-        pappritoCategoryChart.data.datasets[0].backgroundColor =
-            [
+        pappritoCategoryChart
+            .data
+            .datasets[0]
+            .backgroundColor = [
 
                 "#E5E7EB"
 
             ];
 
     }
-
     else {
 
-        pappritoCategoryChart.data.labels =
+        pappritoCategoryChart
+            .data
+            .labels =
             labels;
 
 
-        pappritoCategoryChart.data.datasets[0].data =
+        pappritoCategoryChart
+            .data
+            .datasets[0]
+            .data =
             values;
 
 
-        pappritoCategoryChart.data.datasets[0].backgroundColor =
+        pappritoCategoryChart
+            .data
+            .datasets[0]
+            .backgroundColor =
             generateChartColors(
                 labels.length
             );
@@ -1686,15 +1773,14 @@ function renderTopSellingProducts(
     }
 
 
-    const productTotals =
-        {};
+    const productTotals = {};
 
 
     orders.forEach(
-        function(orderWrapper) {
+        function (wrapper) {
 
             const order =
-                orderWrapper.data;
+                wrapper.data;
 
 
             const orderDate =
@@ -1720,7 +1806,7 @@ function renderTopSellingProducts(
 
 
             items.forEach(
-                function(item) {
+                function (item) {
 
                     const name =
                         item.name ||
@@ -1786,7 +1872,7 @@ function renderTopSellingProducts(
             productTotals
         )
         .map(
-            function(name) {
+            function (name) {
 
                 return {
 
@@ -1806,10 +1892,12 @@ function renderTopSellingProducts(
             }
         )
         .sort(
-            function(a, b) {
+            function (a, b) {
 
-                return b.sales -
-                    a.sales;
+                return (
+                    b.sales -
+                    a.sales
+                );
 
             }
         )
@@ -1861,7 +1949,7 @@ function renderTopSellingProducts(
     tableBody.innerHTML =
         products
         .map(
-            function(product) {
+            function (product) {
 
                 return `
 
@@ -1944,7 +2032,7 @@ function renderRecentOrders(
         orders
         .slice()
         .sort(
-            function(a, b) {
+            function (a, b) {
 
                 const dateA =
                     getOrderDate(
@@ -2015,7 +2103,7 @@ function renderRecentOrders(
     tableBody.innerHTML =
         recent
         .map(
-            function(wrapper) {
+            function (wrapper) {
 
                 const order =
                     wrapper.data;
@@ -2090,11 +2178,6 @@ function renderRecentOrders(
 
 // ==========================================================
 // FIND DASHBOARD PANEL
-//
-// Supports:
-// .premium-panel
-// .card
-// .dashboard-card
 // ==========================================================
 
 function findDashboardPanel(
@@ -2335,14 +2418,15 @@ function formatNumber(
 
 
 // ==========================================================
-// CURRENCY FORMAT
+// CURRENCY
 // ==========================================================
 
 function formatCurrency(
     value
 ) {
 
-    return "₱" +
+    return (
+        "₱" +
         Number(
             value || 0
         )
@@ -2357,7 +2441,8 @@ function formatCurrency(
                     2
 
             }
-        );
+        )
+    );
 
 }
 
@@ -2381,10 +2466,8 @@ function formatCompactNumber(
     ) {
 
         return (
-
             number /
             1000000
-
         ).toFixed(1) + "M";
 
     }
@@ -2395,10 +2478,8 @@ function formatCompactNumber(
     ) {
 
         return (
-
             number /
             1000
-
         ).toFixed(1) + "K";
 
     }
@@ -2447,103 +2528,20 @@ function escapeHTML(
 
 
 // ==========================================================
-// DYNAMIC PAGE SUPPORT
+// GLOBAL API
 //
-// Important for PAPPRITO ERP because Dashboard can be
-// loaded into #content without a full browser refresh.
-// ==========================================================
-
-function watchDashboardContent() {
-
-    const content =
-        document.getElementById(
-            "content"
-        );
-
-
-    if (!content) {
-
-        return;
-
-    }
-
-
-    const observer =
-        new MutationObserver(
-            function() {
-
-                if (
-                    document.getElementById(
-                        "todaySales"
-                    )
-                ) {
-
-                    initializeDashboard();
-
-                }
-
-            }
-        );
-
-
-    observer.observe(
-        content,
-        {
-
-            childList:
-                true,
-
-            subtree:
-                true
-
-        }
-    );
-
-
-    console.log(
-        "Dashboard dynamic page watcher enabled."
-    );
-
-}
-
-
-// ==========================================================
-// DOM READY
-// ==========================================================
-
-function startDashboardEngine() {
-
-    watchDashboardContent();
-
-    initializeDashboard();
-
-}
-
-
-// ==========================================================
-// START
-// ==========================================================
-
-if (
-    document.readyState ===
-    "loading"
-) {
-
-    document.addEventListener(
-        "DOMContentLoaded",
-        startDashboardEngine
-    );
-
-}
-else {
-
-    startDashboardEngine();
-
-}
-
-
-// ==========================================================
-// GLOBAL
+// IMPORTANT:
+//
+// app.js is the ONLY initializer.
+//
+// DO NOT add:
+// DOMContentLoaded
+// MutationObserver
+// startDashboardEngine()
+// automatic initializeDashboard()
+//
+// app.js dynamically loads this file and calls:
+// initializeDashboard()
 // ==========================================================
 
 window.initializeDashboard =
