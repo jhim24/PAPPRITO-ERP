@@ -1,6 +1,6 @@
 // ==========================================================
 // PAPPRITO ERP
-// PREMIUM DASHBOARD ENGINE
+// PREMIUM DASHBOARD ENGINE V2
 // File: assets/js/dashboard/dashboard.js
 //
 // FEATURES
@@ -13,7 +13,9 @@
 // - Top Selling Products
 // - Recent Orders
 // - Firebase Realtime Database
-// - Responsive / Mobile Safe
+// - Dynamic Page Loading Safe
+// - Mobile Safe
+// - Duplicate Listener Safe
 // ==========================================================
 
 "use strict";
@@ -26,23 +28,18 @@
 let pappritoSalesChart = null;
 let pappritoCategoryChart = null;
 
-let dashboardInitialized = false;
+let dashboardListenersInitialized = false;
+let dashboardRetryTimer = null;
 
 
 // ==========================================================
-// INITIALIZE
+// INITIALIZE DASHBOARD
 // ==========================================================
 
 function initializeDashboard() {
 
-    if (dashboardInitialized) {
-        return;
-    }
-
-    dashboardInitialized = true;
-
     console.log(
-        "PAPPRITO PREMIUM DASHBOARD INITIALIZING..."
+        "PAPPRITO DASHBOARD INITIALIZING..."
     );
 
 
@@ -55,11 +52,49 @@ function initializeDashboard() {
         !db
     ) {
 
-        console.error(
-            "Dashboard: Firebase Database is not available."
+        console.warn(
+            "Dashboard: Firebase Database is not available yet."
         );
 
+        scheduleDashboardRetry();
+
         return;
+
+    }
+
+
+    // ------------------------------------------------------
+    // Check if Dashboard HTML exists
+    // ------------------------------------------------------
+
+    const dashboardContent =
+        document.getElementById("todaySales");
+
+
+    if (!dashboardContent) {
+
+        console.log(
+            "Dashboard HTML not loaded yet."
+        );
+
+        scheduleDashboardRetry();
+
+        return;
+
+    }
+
+
+    // ------------------------------------------------------
+    // Stop retry timer
+    // ------------------------------------------------------
+
+    if (dashboardRetryTimer) {
+
+        clearTimeout(
+            dashboardRetryTimer
+        );
+
+        dashboardRetryTimer = null;
 
     }
 
@@ -77,16 +112,60 @@ function initializeDashboard() {
     // Firebase listeners
     // ------------------------------------------------------
 
-    loadDashboardProducts();
+    if (
+        !dashboardListenersInitialized
+    ) {
 
-    loadDashboardOrders();
+        dashboardListenersInitialized =
+            true;
 
-    loadDashboardTables();
+
+        loadDashboardProducts();
+
+        loadDashboardOrders();
+
+        loadDashboardTables();
+
+
+        console.log(
+            "Dashboard Firebase listeners initialized."
+        );
+
+    }
 
 
     console.log(
         "PAPPRITO PREMIUM DASHBOARD READY."
     );
+
+}
+
+
+// ==========================================================
+// RETRY DASHBOARD
+// ==========================================================
+
+function scheduleDashboardRetry() {
+
+    if (dashboardRetryTimer) {
+
+        return;
+
+    }
+
+
+    dashboardRetryTimer =
+        setTimeout(
+            function() {
+
+                dashboardRetryTimer =
+                    null;
+
+                initializeDashboard();
+
+            },
+            500
+        );
 
 }
 
@@ -104,7 +183,10 @@ function loadDashboardProducts() {
 
                 let total = 0;
 
-                if (snapshot.exists()) {
+
+                if (
+                    snapshot.exists()
+                ) {
 
                     snapshot.forEach(
                         function(child) {
@@ -112,14 +194,19 @@ function loadDashboardProducts() {
                             const product =
                                 child.val() || {};
 
+
                             if (
-                                product.status ===
-                                "Inactive"
+                                String(
+                                    product.status ||
+                                    "Active"
+                                ).toLowerCase() ===
+                                "inactive"
                             ) {
 
                                 return;
 
                             }
+
 
                             total++;
 
@@ -129,18 +216,10 @@ function loadDashboardProducts() {
                 }
 
 
-                const element =
-                    document.getElementById(
-                        "totalProducts"
-                    );
-
-
-                if (element) {
-
-                    element.textContent =
-                        formatNumber(total);
-
-                }
+                updateElement(
+                    "totalProducts",
+                    formatNumber(total)
+                );
 
             },
             function(error) {
@@ -163,8 +242,11 @@ function loadDashboardProducts() {
 function loadDashboardTables() {
 
     const possiblePaths = [
+
         "tables",
+
         "restaurantTables"
+
     ];
 
 
@@ -191,15 +273,31 @@ function loadDashboardTables() {
                             String(
                                 table.status ||
                                 ""
-                            ).toLowerCase();
+                            )
+                            .toLowerCase()
+                            .trim();
 
 
                         if (
-                            status === "occupied" ||
-                            status === "busy" ||
-                            status === "serving" ||
-                            table.occupied === true ||
+
+                            status === "occupied"
+
+                            ||
+
+                            status === "busy"
+
+                            ||
+
+                            status === "serving"
+
+                            ||
+
+                            table.occupied === true
+
+                            ||
+
                             table.isOccupied === true
+
                         ) {
 
                             occupied++;
@@ -212,18 +310,10 @@ function loadDashboardTables() {
             }
 
 
-            const element =
-                document.getElementById(
-                    "occupiedTables"
-                );
-
-
-            if (element) {
-
-                element.textContent =
-                    formatNumber(occupied);
-
-            }
+            updateElement(
+                "occupiedTables",
+                formatNumber(occupied)
+            );
 
         }
     );
@@ -249,7 +339,9 @@ function loadDashboardOrders() {
                 let todaySales = 0;
 
 
-                if (snapshot.exists()) {
+                if (
+                    snapshot.exists()
+                ) {
 
                     snapshot.forEach(
                         function(child) {
@@ -257,8 +349,11 @@ function loadDashboardOrders() {
                             const order =
                                 child.val() || {};
 
+
                             const orderDate =
-                                getOrderDate(order);
+                                getOrderDate(
+                                    order
+                                );
 
 
                             if (
@@ -268,6 +363,7 @@ function loadDashboardOrders() {
                             ) {
 
                                 todayOrders++;
+
 
                                 todaySales +=
                                     getOrderTotal(
@@ -314,7 +410,7 @@ function loadDashboardOrders() {
 
 
                 // ------------------------------------------------
-                // Charts
+                // CHARTS
                 // ------------------------------------------------
 
                 updateSalesOverview(
@@ -328,17 +424,13 @@ function loadDashboardOrders() {
 
 
                 // ------------------------------------------------
-                // Recent Orders
+                // TABLES
                 // ------------------------------------------------
 
                 renderRecentOrders(
                     orders
                 );
 
-
-                // ------------------------------------------------
-                // Top Products
-                // ------------------------------------------------
 
                 renderTopSellingProducts(
                     orders
@@ -402,9 +494,11 @@ function findFirstFirebasePath(
 
                             returned = true;
 
+
                             callback(
                                 snapshot
                             );
+
 
                             return;
 
@@ -419,7 +513,10 @@ function findFirstFirebasePath(
 
                             returned = true;
 
-                            callback(null);
+
+                            callback(
+                                null
+                            );
 
                         }
 
@@ -446,7 +543,10 @@ function findFirstFirebasePath(
 
                             returned = true;
 
-                            callback(null);
+
+                            callback(
+                                null
+                            );
 
                         }
 
@@ -466,7 +566,9 @@ function findFirstFirebasePath(
 function getOrderDate(order) {
 
     if (!order) {
+
         return null;
+
     }
 
 
@@ -509,7 +611,9 @@ function getOrderDate(order) {
 
 
         const date =
-            convertToDate(value);
+            convertToDate(
+                value
+            );
 
 
         if (date) {
@@ -566,13 +670,25 @@ function convertToDate(value) {
         typeof value === "string"
     ) {
 
-        const numeric =
-            Number(value);
+        const trimmed =
+            value.trim();
 
 
         if (
-            !isNaN(numeric) &&
-            value.trim() !== ""
+            trimmed === ""
+        ) {
+
+            return null;
+
+        }
+
+
+        const numeric =
+            Number(trimmed);
+
+
+        if (
+            !isNaN(numeric)
         ) {
 
             const date =
@@ -593,7 +709,7 @@ function convertToDate(value) {
 
 
         const date =
-            new Date(value);
+            new Date(trimmed);
 
 
         if (
@@ -621,7 +737,9 @@ function convertToDate(value) {
 function isToday(date) {
 
     if (!date) {
+
         return false;
+
     }
 
 
@@ -630,18 +748,20 @@ function isToday(date) {
 
 
     return (
+
         date.getFullYear() ===
-            now.getFullYear()
+        now.getFullYear()
 
         &&
 
         date.getMonth() ===
-            now.getMonth()
+        now.getMonth()
 
         &&
 
         date.getDate() ===
-            now.getDate()
+        now.getDate()
+
     );
 
 }
@@ -654,7 +774,9 @@ function isToday(date) {
 function getOrderTotal(order) {
 
     if (!order) {
+
         return 0;
+
     }
 
 
@@ -683,9 +805,26 @@ function getOrderTotal(order) {
         i++
     ) {
 
+        const rawValue =
+            possibleTotals[i];
+
+
+        if (
+            rawValue ===
+            null ||
+            rawValue ===
+            undefined ||
+            rawValue === ""
+        ) {
+
+            continue;
+
+        }
+
+
         const value =
             Number(
-                possibleTotals[i]
+                rawValue
             );
 
 
@@ -701,11 +840,13 @@ function getOrderTotal(order) {
 
 
     // ------------------------------------------------------
-    // Calculate from items if no total exists
+    // Calculate from items
     // ------------------------------------------------------
 
     const items =
-        getOrderItems(order);
+        getOrderItems(
+            order
+        );
 
 
     if (
@@ -761,7 +902,9 @@ function getOrderTotal(order) {
 function getOrderItems(order) {
 
     if (!order) {
+
         return [];
+
     }
 
 
@@ -824,7 +967,7 @@ function getOrderItems(order) {
 
 
 // ==========================================================
-// SALES OVERVIEW CHART
+// SALES CHART
 // ==========================================================
 
 function initializeSalesChart() {
@@ -836,12 +979,59 @@ function initializeSalesChart() {
 
 
     if (!canvas) {
+
         return;
+
+    }
+
+
+    if (
+        typeof Chart ===
+        "undefined"
+    ) {
+
+        console.warn(
+            "Chart.js is not loaded."
+        );
+
+        return;
+
+    }
+
+
+    // ------------------------------------------------------
+    // Destroy old chart
+    // ------------------------------------------------------
+
+    if (
+        pappritoSalesChart
+    ) {
+
+        try {
+
+            pappritoSalesChart.destroy();
+
+        }
+        catch (error) {
+
+            console.warn(
+                "Unable to destroy old sales chart:",
+                error
+            );
+
+        }
+
+
+        pappritoSalesChart =
+            null;
+
     }
 
 
     const context =
-        canvas.getContext("2d");
+        canvas.getContext(
+            "2d"
+        );
 
 
     pappritoSalesChart =
@@ -849,11 +1039,13 @@ function initializeSalesChart() {
             context,
             {
 
-                type: "line",
+                type:
+                    "line",
 
                 data: {
 
-                    labels: getLast7DaysLabels(),
+                    labels:
+                        getLast7DaysLabels(),
 
                     datasets: [
 
@@ -862,16 +1054,17 @@ function initializeSalesChart() {
                             label:
                                 "Sales",
 
-                            data:
-                                [
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0
-                                ],
+                            data: [
+
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0
+
+                            ],
 
                             borderColor:
                                 "#C8102E",
@@ -895,7 +1088,7 @@ function initializeSalesChart() {
                                 6,
 
                             pointBackgroundColor:
-                                "#FFC107"
+                                "#FFC72C"
 
                         }
 
@@ -911,12 +1104,42 @@ function initializeSalesChart() {
                     maintainAspectRatio:
                         false,
 
+                    interaction: {
+
+                        intersect:
+                            false,
+
+                        mode:
+                            "index"
+
+                    },
+
                     plugins: {
 
                         legend: {
 
                             display:
                                 false
+
+                        },
+
+                        tooltip: {
+
+                            callbacks: {
+
+                                label:
+                                    function(context) {
+
+                                        return (
+                                            " Sales: " +
+                                            formatCurrency(
+                                                context.parsed.y
+                                            )
+                                        );
+
+                                    }
+
+                            }
 
                         }
 
@@ -932,7 +1155,7 @@ function initializeSalesChart() {
                             grid: {
 
                                 color:
-                                    "rgba(0,0,0,.05)"
+                                    "rgba(0,0,0,.06)"
 
                             },
 
@@ -974,7 +1197,7 @@ function initializeSalesChart() {
 
 
 // ==========================================================
-// UPDATE SALES CHART
+// UPDATE SALES OVERVIEW
 // ==========================================================
 
 function updateSalesOverview(
@@ -985,27 +1208,28 @@ function updateSalesOverview(
         !pappritoSalesChart
     ) {
 
+        initializeSalesChart();
+
+    }
+
+
+    if (
+        !pappritoSalesChart
+    ) {
+
         return;
 
     }
 
 
-    const labels =
+    pappritoSalesChart.data.labels =
         getLast7DaysLabels();
 
 
-    const values =
+    pappritoSalesChart.data.datasets[0].data =
         getLast7DaysSales(
             orders
         );
-
-
-    pappritoSalesChart.data.labels =
-        labels;
-
-
-    pappritoSalesChart.data.datasets[0].data =
-        values;
 
 
     pappritoSalesChart.update();
@@ -1021,8 +1245,7 @@ function getLast7DaysSales(
     orders
 ) {
 
-    const result =
-        [];
+    const result = [];
 
 
     for (
@@ -1059,11 +1282,15 @@ function getLast7DaysSales(
 
 
                 const orderDate =
-                    getOrderDate(order);
+                    getOrderDate(
+                        order
+                    );
 
 
                 if (!orderDate) {
+
                     return;
+
                 }
 
 
@@ -1110,12 +1337,55 @@ function initializeCategoryChart() {
 
 
     if (!canvas) {
+
         return;
+
+    }
+
+
+    if (
+        typeof Chart ===
+        "undefined"
+    ) {
+
+        console.warn(
+            "Chart.js is not loaded."
+        );
+
+        return;
+
+    }
+
+
+    if (
+        pappritoCategoryChart
+    ) {
+
+        try {
+
+            pappritoCategoryChart.destroy();
+
+        }
+        catch (error) {
+
+            console.warn(
+                "Unable to destroy old category chart:",
+                error
+            );
+
+        }
+
+
+        pappritoCategoryChart =
+            null;
+
     }
 
 
     const context =
-        canvas.getContext("2d");
+        canvas.getContext(
+            "2d"
+        );
 
 
     pappritoCategoryChart =
@@ -1123,12 +1393,15 @@ function initializeCategoryChart() {
             context,
             {
 
-                type: "doughnut",
+                type:
+                    "doughnut",
 
                 data: {
 
                     labels: [
+
                         "No Sales"
+
                     ],
 
                     datasets: [
@@ -1136,11 +1409,15 @@ function initializeCategoryChart() {
                         {
 
                             data: [
+
                                 1
+
                             ],
 
                             backgroundColor: [
-                                "#e5e7eb"
+
+                                "#E5E7EB"
+
                             ],
 
                             borderWidth:
@@ -1204,6 +1481,15 @@ function updateCategorySales(
         !pappritoCategoryChart
     ) {
 
+        initializeCategoryChart();
+
+    }
+
+
+    if (
+        !pappritoCategoryChart
+    ) {
+
         return;
 
     }
@@ -1221,7 +1507,9 @@ function updateCategorySales(
 
 
             const orderDate =
-                getOrderDate(order);
+                getOrderDate(
+                    order
+                );
 
 
             if (
@@ -1235,7 +1523,9 @@ function updateCategorySales(
 
 
             const items =
-                getOrderItems(order);
+                getOrderItems(
+                    order
+                );
 
 
             items.forEach(
@@ -1315,13 +1605,27 @@ function updateCategorySales(
     ) {
 
         pappritoCategoryChart.data.labels =
-            ["No Sales"];
+            [
+
+                "No Sales"
+
+            ];
+
 
         pappritoCategoryChart.data.datasets[0].data =
-            [1];
+            [
+
+                1
+
+            ];
+
 
         pappritoCategoryChart.data.datasets[0].backgroundColor =
-            ["#e5e7eb"];
+            [
+
+                "#E5E7EB"
+
+            ];
 
     }
 
@@ -1330,8 +1634,10 @@ function updateCategorySales(
         pappritoCategoryChart.data.labels =
             labels;
 
+
         pappritoCategoryChart.data.datasets[0].data =
             values;
+
 
         pappritoCategoryChart.data.datasets[0].backgroundColor =
             generateChartColors(
@@ -1355,13 +1661,15 @@ function renderTopSellingProducts(
 ) {
 
     const panel =
-        findDashboardTable(
+        findDashboardPanel(
             "Top Selling Products"
         );
 
 
     if (!panel) {
+
         return;
+
     }
 
 
@@ -1372,7 +1680,9 @@ function renderTopSellingProducts(
 
 
     if (!tableBody) {
+
         return;
+
     }
 
 
@@ -1388,7 +1698,9 @@ function renderTopSellingProducts(
 
 
             const orderDate =
-                getOrderDate(order);
+                getOrderDate(
+                    order
+                );
 
 
             if (
@@ -1402,7 +1714,9 @@ function renderTopSellingProducts(
 
 
             const items =
-                getOrderItems(order);
+                getOrderItems(
+                    order
+                );
 
 
             items.forEach(
@@ -1411,6 +1725,7 @@ function renderTopSellingProducts(
                     const name =
                         item.name ||
                         item.productName ||
+                        item.product ||
                         "Unknown Product";
 
 
@@ -1449,11 +1764,13 @@ function renderTopSellingProducts(
                     }
 
 
-                    productTotals[name].quantity +=
+                    productTotals[name]
+                        .quantity +=
                         quantity;
 
 
-                    productTotals[name].sales +=
+                    productTotals[name]
+                        .sales +=
                         quantity *
                         price;
 
@@ -1477,19 +1794,22 @@ function renderTopSellingProducts(
                         name,
 
                     quantity:
-                        productTotals[name].quantity,
+                        productTotals[name]
+                            .quantity,
 
                     sales:
-                        productTotals[name].sales
+                        productTotals[name]
+                            .sales
 
                 };
 
             }
         )
         .sort(
-            function(a,b) {
+            function(a, b) {
 
-                return b.sales - a.sales;
+                return b.sales -
+                    a.sales;
 
             }
         )
@@ -1509,11 +1829,13 @@ function renderTopSellingProducts(
 
                 <td
                     colspan="3"
-                    class="empty-table">
+                    class="text-center py-5">
 
-                    <div class="empty-icon">
+                    <div class="mb-2">
 
-                        <i class="fa-solid fa-box-open"></i>
+                        <i
+                            class="fa-solid fa-box-open fa-2x text-secondary">
+                        </i>
 
                     </div>
 
@@ -1521,9 +1843,9 @@ function renderTopSellingProducts(
                         No Data
                     </strong>
 
-                    <span>
+                    <div class="small text-muted">
                         Product sales will appear here.
-                    </span>
+                    </div>
 
                 </td>
 
@@ -1537,7 +1859,8 @@ function renderTopSellingProducts(
 
 
     tableBody.innerHTML =
-        products.map(
+        products
+        .map(
             function(product) {
 
                 return `
@@ -1555,9 +1878,11 @@ function renderTopSellingProducts(
                         </td>
 
                         <td>
+
                             ${formatNumber(
                                 product.quantity
                             )}
+
                         </td>
 
                         <td>
@@ -1590,13 +1915,15 @@ function renderRecentOrders(
 ) {
 
     const panel =
-        findDashboardTable(
+        findDashboardPanel(
             "Recent Orders"
         );
 
 
     if (!panel) {
+
         return;
+
     }
 
 
@@ -1607,25 +1934,30 @@ function renderRecentOrders(
 
 
     if (!tableBody) {
+
         return;
+
     }
 
 
     const recent =
         orders
+        .slice()
         .sort(
-            function(a,b) {
+            function(a, b) {
 
                 const dateA =
                     getOrderDate(
                         a.data
-                    ) || new Date(0);
+                    ) ||
+                    new Date(0);
 
 
                 const dateB =
                     getOrderDate(
                         b.data
-                    ) || new Date(0);
+                    ) ||
+                    new Date(0);
 
 
                 return (
@@ -1651,11 +1983,13 @@ function renderRecentOrders(
 
                 <td
                     colspan="3"
-                    class="empty-table">
+                    class="text-center py-5">
 
-                    <div class="empty-icon">
+                    <div class="mb-2">
 
-                        <i class="fa-solid fa-receipt"></i>
+                        <i
+                            class="fa-solid fa-receipt fa-2x text-secondary">
+                        </i>
 
                     </div>
 
@@ -1663,9 +1997,9 @@ function renderRecentOrders(
                         No Recent Orders
                     </strong>
 
-                    <span>
+                    <div class="small text-muted">
                         New orders will appear here.
-                    </span>
+                    </div>
 
                 </td>
 
@@ -1679,7 +2013,8 @@ function renderRecentOrders(
 
 
     tableBody.innerHTML =
-        recent.map(
+        recent
+        .map(
             function(wrapper) {
 
                 const order =
@@ -1697,7 +2032,6 @@ function renderRecentOrders(
                 const customer =
                     order.customerName ||
                     order.customer ||
-                    order.customerName ||
                     "Walk-in Customer";
 
 
@@ -1755,38 +2089,63 @@ function renderRecentOrders(
 
 
 // ==========================================================
-// FIND TABLE BY HEADER
+// FIND DASHBOARD PANEL
+//
+// Supports:
+// .premium-panel
+// .card
+// .dashboard-card
 // ==========================================================
 
-function findDashboardTable(
+function findDashboardPanel(
     title
 ) {
 
-    const panels =
-        document.querySelectorAll(
-            ".premium-panel"
-        );
+    const selectors = [
+
+        ".premium-panel",
+
+        ".dashboard-card",
+
+        ".card"
+
+    ];
 
 
     for (
-        let i = 0;
-        i < panels.length;
-        i++
+        let s = 0;
+        s < selectors.length;
+        s++
     ) {
 
-        const panel =
-            panels[i];
+        const panels =
+            document.querySelectorAll(
+                selectors[s]
+            );
 
 
-        const text =
-            panel.innerText || "";
-
-
-        if (
-            text.includes(title)
+        for (
+            let i = 0;
+            i < panels.length;
+            i++
         ) {
 
-            return panel;
+            const panel =
+                panels[i];
+
+
+            const text =
+                panel.innerText ||
+                "";
+
+
+            if (
+                text.includes(title)
+            ) {
+
+                return panel;
+
+            }
 
         }
 
@@ -1806,6 +2165,16 @@ function sameDate(
     date1,
     date2
 ) {
+
+    if (
+        !date1 ||
+        !date2
+    ) {
+
+        return false;
+
+    }
+
 
     return (
 
@@ -1833,8 +2202,7 @@ function sameDate(
 
 function getLast7DaysLabels() {
 
-    const labels =
-        [];
+    const labels = [];
 
 
     for (
@@ -1882,7 +2250,7 @@ function generateChartColors(
 
         "#C8102E",
 
-        "#FFC107",
+        "#FFC72C",
 
         "#E51D3F",
 
@@ -1899,8 +2267,7 @@ function generateChartColors(
     ];
 
 
-    const result =
-        [];
+    const result = [];
 
 
     for (
@@ -1934,7 +2301,9 @@ function updateElement(
 ) {
 
     const element =
-        document.getElementById(id);
+        document.getElementById(
+            id
+        );
 
 
     if (element) {
@@ -1980,11 +2349,13 @@ function formatCurrency(
         .toLocaleString(
             "en-PH",
             {
+
                 minimumFractionDigits:
                     2,
 
                 maximumFractionDigits:
                     2
+
             }
         );
 
@@ -2010,7 +2381,10 @@ function formatCompactNumber(
     ) {
 
         return (
-            number / 1000000
+
+            number /
+            1000000
+
         ).toFixed(1) + "M";
 
     }
@@ -2021,7 +2395,10 @@ function formatCompactNumber(
     ) {
 
         return (
-            number / 1000
+
+            number /
+            1000
+
         ).toFixed(1) + "K";
 
     }
@@ -2070,7 +2447,81 @@ function escapeHTML(
 
 
 // ==========================================================
+// DYNAMIC PAGE SUPPORT
+//
+// Important for PAPPRITO ERP because Dashboard can be
+// loaded into #content without a full browser refresh.
+// ==========================================================
+
+function watchDashboardContent() {
+
+    const content =
+        document.getElementById(
+            "content"
+        );
+
+
+    if (!content) {
+
+        return;
+
+    }
+
+
+    const observer =
+        new MutationObserver(
+            function() {
+
+                if (
+                    document.getElementById(
+                        "todaySales"
+                    )
+                ) {
+
+                    initializeDashboard();
+
+                }
+
+            }
+        );
+
+
+    observer.observe(
+        content,
+        {
+
+            childList:
+                true,
+
+            subtree:
+                true
+
+        }
+    );
+
+
+    console.log(
+        "Dashboard dynamic page watcher enabled."
+    );
+
+}
+
+
+// ==========================================================
 // DOM READY
+// ==========================================================
+
+function startDashboardEngine() {
+
+    watchDashboardContent();
+
+    initializeDashboard();
+
+}
+
+
+// ==========================================================
+// START
 // ==========================================================
 
 if (
@@ -2080,14 +2531,13 @@ if (
 
     document.addEventListener(
         "DOMContentLoaded",
-        initializeDashboard
+        startDashboardEngine
     );
 
 }
-
 else {
 
-    initializeDashboard();
+    startDashboardEngine();
 
 }
 
@@ -2098,3 +2548,12 @@ else {
 
 window.initializeDashboard =
     initializeDashboard;
+
+window.loadDashboardProducts =
+    loadDashboardProducts;
+
+window.loadDashboardOrders =
+    loadDashboardOrders;
+
+window.loadDashboardTables =
+    loadDashboardTables;
