@@ -1,21 +1,26 @@
 // ==========================================================
 // PAPPRITO ERP
-// CATEGORY MODAL ENGINE V1
+// CATEGORY MODAL ENGINE V2
+// File:
+// assets/js/category/category-modal.js
 //
 // FUNCTIONS:
 // - Open Add Category
 // - Close Category Modal
 // - X Button
 // - Cancel Button
+// - Bootstrap Modal Events
 // - Reset Form
-// - Edit Modal Support
+// - Add Category Mode
+// - Edit Category Support
+// - Prevent Button Submit
 // ==========================================================
 
 "use strict";
 
 
 // ==========================================================
-// GET MODAL
+// GET CATEGORY MODAL
 // ==========================================================
 
 function getCategoryModalElement() {
@@ -36,14 +41,31 @@ function getCategoryModalInstance() {
     const modalElement =
         getCategoryModalElement();
 
-    if (
-        !modalElement ||
-        typeof bootstrap === "undefined"
-    ) {
+
+    if (!modalElement) {
+
+        console.warn(
+            "Category modal element not found."
+        );
 
         return null;
 
     }
+
+
+    if (
+        typeof bootstrap ===
+        "undefined"
+    ) {
+
+        console.error(
+            "Bootstrap is not loaded."
+        );
+
+        return null;
+
+    }
+
 
     return bootstrap.Modal
         .getOrCreateInstance(
@@ -64,13 +86,17 @@ function openAddCategory() {
     );
 
 
-    // Make sure edit mode is cleared
+    // ======================================================
+    // CLEAR EDIT MODE
+    // ======================================================
 
     window.editingCategoryId =
         null;
 
 
-    // Reset form
+    // ======================================================
+    // RESET FORM
+    // ======================================================
 
     if (
         typeof resetCategoryForm ===
@@ -82,7 +108,9 @@ function openAddCategory() {
     }
 
 
-    // Change title
+    // ======================================================
+    // TITLE
+    // ======================================================
 
     const title =
         document.getElementById(
@@ -103,7 +131,9 @@ function openAddCategory() {
     }
 
 
-    // Change button
+    // ======================================================
+    // SAVE BUTTON TEXT
+    // ======================================================
 
     const buttonText =
         document.getElementById(
@@ -119,17 +149,55 @@ function openAddCategory() {
     }
 
 
-    // Open modal
+    // ======================================================
+    // GENERATE CATEGORY CODE
+    // ======================================================
+
+    if (
+        typeof generateCategoryCode ===
+        "function"
+    ) {
+
+        generateCategoryCode();
+
+    }
+
+
+    // ======================================================
+    // UPDATE ICON PREVIEW
+    // ======================================================
+
+    if (
+        typeof updateCategoryIconPreview ===
+        "function"
+    ) {
+
+        updateCategoryIconPreview();
+
+    }
+
+
+    // ======================================================
+    // OPEN MODAL
+    // ======================================================
 
     const modal =
         getCategoryModalInstance();
 
 
-    if (modal) {
+    if (!modal) {
 
-        modal.show();
+        return;
 
     }
+
+
+    modal.show();
+
+
+    console.log(
+        "Category modal opened."
+    );
 
 }
 
@@ -149,36 +217,14 @@ function closeCategoryModal() {
         getCategoryModalInstance();
 
 
-    if (modal) {
+    if (!modal) {
 
-        modal.hide();
+        return;
 
     }
 
 
-    // Clear edit state
-
-    window.editingCategoryId =
-        null;
-
-
-    // Reset after animation
-
-    setTimeout(
-        function () {
-
-            if (
-                typeof resetCategoryForm ===
-                "function"
-            ) {
-
-                resetCategoryForm();
-
-            }
-
-        },
-        250
-    );
+    modal.hide();
 
 }
 
@@ -205,33 +251,31 @@ function initializeCategoryCloseButtons() {
 
 
     // ======================================================
-    // CLOSE BUTTON
+    // X BUTTON
     // ======================================================
 
-    const closeButtons =
-        modalElement.querySelectorAll(
-            ".btn-close, [data-bs-dismiss='modal']"
+    const closeButton =
+        modalElement.querySelector(
+            ".btn-close"
         );
 
 
-    closeButtons.forEach(
-        function(button) {
+    if (closeButton) {
 
-            if (
-                button.dataset.categoryCloseInitialized ===
-                "true"
-            ) {
+        if (
+            closeButton.dataset.categoryCloseInitialized !==
+            "true"
+        ) {
 
-                return;
-
-            }
-
-
-            button.dataset.categoryCloseInitialized =
+            closeButton.dataset.categoryCloseInitialized =
                 "true";
 
 
-            button.addEventListener(
+            closeButton.type =
+                "button";
+
+
+            closeButton.addEventListener(
                 "click",
                 function(event) {
 
@@ -239,50 +283,63 @@ function initializeCategoryCloseButtons() {
 
                     event.stopPropagation();
 
+                    console.log(
+                        "Category X button clicked."
+                    );
+
+
                     closeCategoryModal();
 
                 }
             );
 
         }
-    );
+
+    }
+
+    else {
+
+        console.warn(
+            "Category X button not found."
+        );
+
+    }
 
 
     // ======================================================
     // CANCEL BUTTON
     // ======================================================
 
-    const cancelButtons =
-        modalElement.querySelectorAll(
-            ".category-cancel-btn, .btn-secondary"
+    const cancelButton =
+        modalElement.querySelector(
+            "#categoryCancelBtn"
         );
 
 
-    cancelButtons.forEach(
-        function(button) {
-
-            if (
-                button.id ===
-                "btnSaveCategory"
-            ) {
-
-                return;
-
-            }
+    const fallbackCancel =
+        modalElement.querySelector(
+            ".category-cancel-btn"
+        );
 
 
-            if (
-                button.dataset.categoryCancelInitialized ===
-                "true"
-            ) {
+    const button =
+        cancelButton ||
+        fallbackCancel;
 
-                return;
 
-            }
+    if (button) {
 
+        if (
+            button.dataset.categoryCancelInitialized !==
+            "true"
+        ) {
 
             button.dataset.categoryCancelInitialized =
                 "true";
+
+
+            button.type =
+                "button";
 
 
             button.addEventListener(
@@ -293,13 +350,27 @@ function initializeCategoryCloseButtons() {
 
                     event.stopPropagation();
 
+                    console.log(
+                        "Category Cancel button clicked."
+                    );
+
+
                     closeCategoryModal();
 
                 }
             );
 
         }
-    );
+
+    }
+
+    else {
+
+        console.warn(
+            "Category Cancel button not found."
+        );
+
+    }
 
 
     console.log(
@@ -310,7 +381,7 @@ function initializeCategoryCloseButtons() {
 
 
 // ==========================================================
-// MODAL HIDDEN EVENT
+// INITIALIZE BOOTSTRAP MODAL EVENTS
 // ==========================================================
 
 function initializeCategoryModalEvents() {
@@ -326,8 +397,12 @@ function initializeCategoryModalEvents() {
     }
 
 
+    // ======================================================
+    // PREVENT DUPLICATE EVENTS
+    // ======================================================
+
     if (
-        modalElement.dataset.eventsInitialized ===
+        modalElement.dataset.categoryEventsInitialized ===
         "true"
     ) {
 
@@ -336,9 +411,39 @@ function initializeCategoryModalEvents() {
     }
 
 
-    modalElement.dataset.eventsInitialized =
+    modalElement.dataset.categoryEventsInitialized =
         "true";
 
+
+    // ======================================================
+    // MODAL SHOWN
+    // ======================================================
+
+    modalElement.addEventListener(
+        "shown.bs.modal",
+        function() {
+
+            console.log(
+                "Category modal opened."
+            );
+
+
+            if (
+                typeof updateCategoryIconPreview ===
+                "function"
+            ) {
+
+                updateCategoryIconPreview();
+
+            }
+
+        }
+    );
+
+
+    // ======================================================
+    // MODAL HIDDEN
+    // ======================================================
 
     modalElement.addEventListener(
         "hidden.bs.modal",
@@ -349,9 +454,13 @@ function initializeCategoryModalEvents() {
             );
 
 
+            // Clear edit mode
+
             window.editingCategoryId =
                 null;
 
+
+            // Reset form
 
             if (
                 typeof resetCategoryForm ===
@@ -366,34 +475,15 @@ function initializeCategoryModalEvents() {
     );
 
 
-    modalElement.addEventListener(
-        "shown.bs.modal",
-        function() {
-
-            console.log(
-                "Category modal opened."
-            );
-
-
-            // Make sure icon preview is correct
-
-            if (
-                typeof updateCategoryIconPreview ===
-                "function"
-            ) {
-
-                updateCategoryIconPreview();
-
-            }
-
-        }
+    console.log(
+        "Category Bootstrap modal events initialized."
     );
 
 }
 
 
 // ==========================================================
-// PREVENT MODAL BUTTONS FROM SUBMITTING
+// INITIALIZE BUTTON TYPES
 // ==========================================================
 
 function initializeCategoryButtonTypes() {
@@ -418,6 +508,14 @@ function initializeCategoryButtonTypes() {
     buttons.forEach(
         function(button) {
 
+            /*
+             * If button has no type,
+             * make it a normal button.
+             *
+             * This prevents accidental
+             * form submission.
+             */
+
             if (
                 !button.hasAttribute(
                     "type"
@@ -434,14 +532,190 @@ function initializeCategoryButtonTypes() {
         }
     );
 
+
+    console.log(
+        "Category button types initialized."
+    );
+
 }
 
 
 // ==========================================================
-// INITIALIZE
+// ADD CATEGORY BUTTON
+// ==========================================================
+//
+// Supports buttons such as:
+//
+// onclick="openAddCategory()"
+//
+// or:
+//
+// onclick="openAddCategory(); return false;"
+//
+
+function initializeAddCategoryButtons() {
+
+    const buttons =
+        document.querySelectorAll(
+            "#btnAddCategory, .btn-add-category"
+        );
+
+
+    buttons.forEach(
+        function(button) {
+
+            if (
+                button.dataset.addCategoryInitialized ===
+                "true"
+            ) {
+
+                return;
+
+            }
+
+
+            button.dataset.addCategoryInitialized =
+                "true";
+
+
+            button.type =
+                "button";
+
+
+            button.addEventListener(
+                "click",
+                function(event) {
+
+                    event.preventDefault();
+
+                    event.stopPropagation();
+
+
+                    openAddCategory();
+
+                }
+            );
+
+        }
+    );
+
+}
+
+
+// ==========================================================
+// ESCAPE KEY SUPPORT
+// ==========================================================
+
+function initializeCategoryEscapeSupport() {
+
+    document.addEventListener(
+        "keydown",
+        function(event) {
+
+            if (
+                event.key !==
+                "Escape"
+            ) {
+
+                return;
+
+            }
+
+
+            const modalElement =
+                getCategoryModalElement();
+
+
+            if (!modalElement) {
+
+                return;
+
+            }
+
+
+            if (
+                !modalElement.classList.contains(
+                    "show"
+                )
+            ) {
+
+                return;
+
+            }
+
+
+            console.log(
+                "Escape pressed. Closing Category Modal."
+            );
+
+
+            closeCategoryModal();
+
+        }
+    );
+
+}
+
+
+// ==========================================================
+// BACKDROP CLICK SUPPORT
+// ==========================================================
+
+function initializeCategoryBackdropSupport() {
+
+    const modalElement =
+        getCategoryModalElement();
+
+
+    if (!modalElement) {
+
+        return;
+
+    }
+
+
+    modalElement.addEventListener(
+        "click",
+        function(event) {
+
+            /*
+             * Only close when the actual
+             * modal container is clicked.
+             *
+             * Do NOT close when clicking
+             * inside modal-content.
+             */
+
+            if (
+                event.target ===
+                modalElement
+            ) {
+
+                console.log(
+                    "Category backdrop clicked."
+                );
+
+
+                closeCategoryModal();
+
+            }
+
+        }
+    );
+
+}
+
+
+// ==========================================================
+// FULL INITIALIZATION
 // ==========================================================
 
 function initializeCategoryModal() {
+
+    console.log(
+        "Initializing PAPPRITO Category Modal..."
+    );
+
 
     initializeCategoryCloseButtons();
 
@@ -449,29 +723,81 @@ function initializeCategoryModal() {
 
     initializeCategoryButtonTypes();
 
+    initializeAddCategoryButtons();
+
+    initializeCategoryEscapeSupport();
+
+    initializeCategoryBackdropSupport();
+
+
     console.log(
-        "PAPPRITO Category Modal Engine V1 ready."
+        "PAPPRITO Category Modal Engine V2 ready."
     );
 
 }
 
 
 // ==========================================================
-// GLOBAL
+// GLOBAL EXPORT
 // ==========================================================
+
+window.getCategoryModalElement =
+    getCategoryModalElement;
+
+
+window.getCategoryModalInstance =
+    getCategoryModalInstance;
+
 
 window.openAddCategory =
     openAddCategory;
 
+
 window.closeCategoryModal =
     closeCategoryModal;
+
 
 window.initializeCategoryModal =
     initializeCategoryModal;
 
 
 // ==========================================================
-// AUTO START
+// AUTO INITIALIZATION
+// ==========================================================
+
+function startCategoryModalEngine() {
+
+    /*
+     * Important:
+     * The Category HTML is loaded dynamically
+     * by app.js.
+     *
+     * Therefore, if the modal does not exist
+     * yet, wait for the page loader.
+     */
+
+    const modalElement =
+        getCategoryModalElement();
+
+
+    if (!modalElement) {
+
+        console.log(
+            "Category modal not available yet."
+        );
+
+        return;
+
+    }
+
+
+    initializeCategoryModal();
+
+}
+
+
+// ==========================================================
+// DOM READY
 // ==========================================================
 
 if (
@@ -481,7 +807,7 @@ if (
 
     document.addEventListener(
         "DOMContentLoaded",
-        initializeCategoryModal,
+        startCategoryModalEngine,
         {
             once: true
         }
@@ -491,6 +817,15 @@ if (
 
 else {
 
-    initializeCategoryModal();
+    startCategoryModalEngine();
 
 }
+
+
+// ==========================================================
+// READY MESSAGE
+// ==========================================================
+
+console.log(
+    "PAPPRITO Category Modal Engine V2 loaded."
+);
