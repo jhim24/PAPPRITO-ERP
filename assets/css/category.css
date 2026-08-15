@@ -1,0 +1,431 @@
+/* ==========================================================
+   PAPPRITO ERP
+   CATEGORY MODAL
+   FINAL LAYER + PREMIUM STYLE
+========================================================== */
+
+#categoryModal {
+
+    z-index: 3000 !important;
+
+}
+
+
+/* ==========================================================
+   CATEGORY MODAL BACKDROP
+========================================================== */
+
+.modal-backdrop {
+
+    z-index: 2990 !important;
+
+}
+
+
+/* ==========================================================
+   CATEGORY MODAL DIALOG
+========================================================== */
+
+#categoryModal .modal-dialog {
+
+    position: relative;
+
+    z-index: 3001;
+
+}
+
+
+/* ==========================================================
+   CATEGORY MODAL CONTENT
+========================================================== */
+
+#categoryModal .modal-content {
+
+    position: relative;
+
+    z-index: 3002;
+
+    overflow: hidden;
+
+    border: none;
+
+    border-radius: 18px;
+
+    box-shadow:
+        0 25px 70px
+        rgba(0,0,0,.25);
+
+}
+
+
+/* ==========================================================
+   CATEGORY HEADER
+========================================================== */
+
+#categoryModal .modal-header {
+
+    min-height: 62px;
+
+    padding:
+        15px 20px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        space-between;
+
+    border: none;
+
+    background:
+        linear-gradient(
+            135deg,
+            #C8102E,
+            #E51B3E
+        );
+
+}
+
+
+/* ==========================================================
+   CATEGORY TITLE
+========================================================== */
+
+#categoryModal .modal-title {
+
+    margin: 0;
+
+    color:
+        #FFFFFF;
+
+    font-size:
+        17px;
+
+    font-weight:
+        800;
+
+}
+
+
+#categoryModal .modal-title i {
+
+    margin-right:
+        8px;
+
+    color:
+        #FFC72C;
+
+}
+
+
+/* ==========================================================
+   CLOSE BUTTON
+========================================================== */
+
+#categoryModal .btn-close {
+
+    opacity:
+        1;
+
+    filter:
+        brightness(0) invert(1);
+
+}
+
+
+/* ==========================================================
+   CATEGORY BODY
+========================================================== */
+
+#categoryModal .modal-body {
+
+    padding:
+        24px;
+
+    background:
+        #F1F3F6;
+
+}
+
+
+/* ==========================================================
+   FORM LABELS
+========================================================== */
+
+#categoryModal .form-label {
+
+    margin-bottom:
+        6px;
+
+    color:
+        #3F4650;
+
+    font-size:
+        12px;
+
+    font-weight:
+        700;
+
+}
+
+
+/* ==========================================================
+   FORM CONTROLS
+========================================================== */
+
+#categoryModal .form-control,
+#categoryModal .form-select {
+
+    min-height:
+        43px;
+
+    border:
+        1px solid
+        #D7DCE3;
+
+    border-radius:
+        10px;
+
+    background:
+        #FFFFFF;
+
+}
+
+
+#categoryModal textarea.form-control {
+
+    min-height:
+        90px;
+
+    resize:
+        vertical;
+
+}
+
+
+#categoryModal .form-control:focus,
+#categoryModal .form-select:focus {
+
+    border-color:
+        #C8102E;
+
+    box-shadow:
+        0 0 0 .15rem
+        rgba(200,16,46,.12);
+
+}
+
+
+/* ==========================================================
+   COLOR INPUT
+========================================================== */
+
+#categoryModal .form-control-color {
+
+    width:
+        100%;
+
+    min-height:
+        43px;
+
+    padding:
+        4px;
+
+    cursor:
+        pointer;
+
+}
+
+
+/* ==========================================================
+   ICON PREVIEW
+========================================================== */
+
+#categoryModal #iconPreview {
+
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    min-height:
+        32px;
+
+}
+
+
+/* ==========================================================
+   ICON PREVIEW CONTAINER
+========================================================== */
+
+#categoryModal .border.rounded {
+
+    min-height:
+        65px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    background:
+        #FFFFFF;
+
+    border:
+        1px solid
+        #DDE2E8 !important;
+
+}
+
+
+/* ==========================================================
+   MODAL FOOTER
+========================================================== */
+
+#categoryModal .modal-footer {
+
+    padding:
+        14px 20px;
+
+    border-top:
+        1px solid
+        #DDE2E8;
+
+    background:
+        #FFFFFF;
+
+}
+
+
+/* ==========================================================
+   CANCEL BUTTON
+========================================================== */
+
+#categoryModal .modal-footer .btn-secondary {
+
+    border:
+        none;
+
+    border-radius:
+        9px;
+
+    font-weight:
+        700;
+
+}
+
+
+/* ==========================================================
+   SAVE / UPDATE BUTTON
+========================================================== */
+
+#categoryModal #btnSaveCategory {
+
+    min-height:
+        42px;
+
+    min-width:
+        145px;
+
+    border:
+        none;
+
+    border-radius:
+        9px;
+
+    color:
+        #FFFFFF;
+
+    background:
+        #C8102E;
+
+    font-weight:
+        700;
+
+    box-shadow:
+        0 5px 14px
+        rgba(200,16,46,.18);
+
+}
+
+
+#categoryModal #btnSaveCategory:hover {
+
+    background:
+        #9E0B23;
+
+    transform:
+        translateY(-1px);
+
+}
+
+
+/* ==========================================================
+   SIDEBAR / NAVBAR MUST STAY BELOW MODAL
+========================================================== */
+
+body.modal-open #sidebar {
+
+    z-index:
+        900 !important;
+
+}
+
+
+body.modal-open #navbar {
+
+    z-index:
+        900 !important;
+
+}
+
+
+/* ==========================================================
+   MOBILE
+========================================================== */
+
+@media (max-width: 768px) {
+
+    #categoryModal .modal-dialog {
+
+        margin:
+            10px;
+
+    }
+
+
+    #categoryModal .modal-body {
+
+        padding:
+            17px;
+
+    }
+
+
+    #categoryModal .modal-footer {
+
+        flex-direction:
+            column;
+
+    }
+
+
+    #categoryModal .modal-footer .btn {
+
+        width:
+            100%;
+
+    }
+
+}
