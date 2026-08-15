@@ -1,323 +1,618 @@
 <!-- ==========================================
      PAPPRITO ERP
-     DASHBOARD
+     PREMIUM FULL-SCREEN DASHBOARD
 ========================================== -->
 
-<div class="dashboard">
+<div class="papprito-dashboard">
 
-    <!-- HEADER -->
+    <!-- ======================================
+         HERO HEADER
+    ======================================= -->
 
-    <div class="dashboard-header">
+    <section class="dashboard-hero">
 
-        <div>
+        <div class="hero-content">
 
-            <h2>
-                Welcome Back 👋
-            </h2>
+            <div class="hero-icon">
+                <i class="fa-solid fa-store"></i>
+            </div>
 
-            <p>
-                PAPPRITO Restaurant ERP Dashboard
-            </p>
+            <div>
+                <span class="hero-label">
+                    PAPPRITO RESTAURANT ERP
+                </span>
+
+                <h1>
+                    Welcome Back <span>👋</span>
+                </h1>
+
+                <p>
+                    Manage your restaurant operations,
+                    sales, products and inventory in one place.
+                </p>
+            </div>
 
         </div>
 
-        <button class="btn btn-warning">
+        <button
+            class="premium-order-btn"
+            type="button"
+            onclick="window.location.href='pages/pos.html'">
 
-            <i class="fa-solid fa-plus"></i>
+            <i class="fa-solid fa-cart-plus"></i>
 
-            New Order
+            <span>New Order</span>
 
         </button>
 
-    </div>
+    </section>
 
-    <!-- SUMMARY CARDS -->
 
-    <div class="row g-4 mt-2">
+    <!-- ======================================
+         QUICK SUMMARY
+    ======================================= -->
 
-        <div class="col-lg-3 col-md-6">
+    <section class="dashboard-stats">
 
-            <div class="card dashboard-card">
+        <!-- SALES -->
 
-                <div class="card-body">
+        <div class="premium-stat-card sales-card">
 
-                    <div class="card-icon bg-danger">
+            <div class="stat-top">
 
-                        <i class="fa-solid fa-peso-sign"></i>
-
-                    </div>
-
-                    <h6>Today's Sales</h6>
-
-                    <h2 id="todaySales">
-
-                        ₱0.00
-
-                    </h2>
-
+                <div class="stat-icon">
+                    <i class="fa-solid fa-peso-sign"></i>
                 </div>
+
+                <span class="stat-badge">
+                    Today
+                </span>
+
+            </div>
+
+            <div class="stat-content">
+
+                <span class="stat-label">
+                    Today's Sales
+                </span>
+
+                <h2 id="todaySales">
+                    ₱0.00
+                </h2>
+
+                <span class="stat-description">
+                    Total sales for today
+                </span>
 
             </div>
 
         </div>
 
-        <div class="col-lg-3 col-md-6">
 
-            <div class="card dashboard-card">
+        <!-- ORDERS -->
 
-                <div class="card-body">
+        <div class="premium-stat-card orders-card">
 
-                    <div class="card-icon bg-warning">
+            <div class="stat-top">
 
-                        <i class="fa-solid fa-cart-shopping"></i>
-
-                    </div>
-
-                    <h6>Orders Today</h6>
-
-                    <h2 id="todayOrders">
-
-                        0
-
-                    </h2>
-
+                <div class="stat-icon">
+                    <i class="fa-solid fa-cart-shopping"></i>
                 </div>
+
+                <span class="stat-badge">
+                    Today
+                </span>
+
+            </div>
+
+            <div class="stat-content">
+
+                <span class="stat-label">
+                    Orders Today
+                </span>
+
+                <h2 id="todayOrders">
+                    0
+                </h2>
+
+                <span class="stat-description">
+                    Orders processed today
+                </span>
 
             </div>
 
         </div>
 
-        <div class="col-lg-3 col-md-6">
 
-            <div class="card dashboard-card">
+        <!-- TABLES -->
 
-                <div class="card-body">
+        <div class="premium-stat-card tables-card">
 
-                    <div class="card-icon bg-success">
+            <div class="stat-top">
 
-                        <i class="fa-solid fa-utensils"></i>
-
-                    </div>
-
-                    <h6>Occupied Tables</h6>
-
-                    <h2 id="occupiedTables">
-
-                        0
-
-                    </h2>
-
+                <div class="stat-icon">
+                    <i class="fa-solid fa-utensils"></i>
                 </div>
+
+                <span class="stat-badge">
+                    Live
+                </span>
+
+            </div>
+
+            <div class="stat-content">
+
+                <span class="stat-label">
+                    Occupied Tables
+                </span>
+
+                <h2 id="occupiedTables">
+                    0
+                </h2>
+
+                <span class="stat-description">
+                    Currently occupied
+                </span>
 
             </div>
 
         </div>
 
-        <div class="col-lg-3 col-md-6">
 
-            <div class="card dashboard-card">
+        <!-- PRODUCTS -->
 
-                <div class="card-body">
+        <div class="premium-stat-card products-card">
 
-                    <div class="card-icon bg-primary">
+            <div class="stat-top">
 
-                        <i class="fa-solid fa-box-open"></i>
-
-                    </div>
-
-                    <h6>Total Products</h6>
-
-                    <h2 id="totalProducts">
-
-                        0
-
-                    </h2>
-
+                <div class="stat-icon">
+                    <i class="fa-solid fa-box-open"></i>
                 </div>
+
+                <span class="stat-badge">
+                    Master
+                </span>
+
+            </div>
+
+            <div class="stat-content">
+
+                <span class="stat-label">
+                    Total Products
+                </span>
+
+                <h2 id="totalProducts">
+                    0
+                </h2>
+
+                <span class="stat-description">
+                    Products in master list
+                </span>
 
             </div>
 
         </div>
 
-    </div>
+    </section>
 
-    <!-- CHARTS -->
 
-    <div class="row mt-4">
+    <!-- ======================================
+         ANALYTICS
+    ======================================= -->
 
-        <div class="col-lg-8">
+    <section class="dashboard-analytics">
 
-            <div class="card">
+        <!-- SALES OVERVIEW -->
 
-                <div class="card-header">
+        <div class="premium-panel sales-overview-panel">
 
-                    <strong>
+            <div class="panel-header">
 
+                <div>
+
+                    <span class="panel-kicker">
+                        ANALYTICS
+                    </span>
+
+                    <h3>
                         Sales Overview
+                    </h3>
 
-                    </strong>
+                    <p>
+                        Monitor your sales performance
+                    </p>
 
                 </div>
 
-                <div class="card-body">
+                <div class="panel-header-icon">
 
-                    <canvas id="salesChart"
-                            height="120">
-
-                    </canvas>
+                    <i class="fa-solid fa-chart-line"></i>
 
                 </div>
 
             </div>
 
+            <div class="chart-container">
+
+                <canvas
+                    id="salesChart">
+                </canvas>
+
+            </div>
+
         </div>
 
-        <div class="col-lg-4">
 
-            <div class="card">
+        <!-- CATEGORY CHART -->
 
-                <div class="card-header">
+        <div class="premium-panel category-panel">
 
-                    <strong>
+            <div class="panel-header">
 
+                <div>
+
+                    <span class="panel-kicker">
+                        PERFORMANCE
+                    </span>
+
+                    <h3>
                         Sales by Category
+                    </h3>
 
-                    </strong>
+                    <p>
+                        Category performance
+                    </p>
 
                 </div>
 
-                <div class="card-body">
+                <div class="panel-header-icon">
 
-                    <canvas id="categoryChart">
-
-                    </canvas>
+                    <i class="fa-solid fa-chart-pie"></i>
 
                 </div>
 
             </div>
 
+            <div class="category-chart-container">
+
+                <canvas
+                    id="categoryChart">
+                </canvas>
+
+            </div>
+
         </div>
 
-    </div>
+    </section>
 
-    <!-- LOWER SECTION -->
 
-    <div class="row mt-4">
+    <!-- ======================================
+         LOWER DASHBOARD
+    ======================================= -->
 
-        <!-- TOP SELLING -->
+    <section class="dashboard-lower">
 
-        <div class="col-lg-6">
 
-            <div class="card">
+        <!-- ==================================
+             TOP SELLING PRODUCTS
+        =================================== -->
 
-                <div class="card-header">
+        <div class="premium-panel">
 
-                    <strong>
+            <div class="panel-header">
 
+                <div>
+
+                    <span class="panel-kicker">
+                        PRODUCTS
+                    </span>
+
+                    <h3>
                         Top Selling Products
+                    </h3>
 
-                    </strong>
+                    <p>
+                        Best performing products
+                    </p>
 
                 </div>
 
-                <div class="card-body">
+                <div class="panel-header-icon">
 
-                    <table class="table">
-
-                        <thead>
-
-                        <tr>
-
-                            <th>Product</th>
-
-                            <th>Sold</th>
-
-                            <th>Sales</th>
-
-                        </tr>
-
-                        </thead>
-
-                        <tbody>
-
-                        <tr>
-
-                            <td colspan="3"
-                                class="text-center">
-
-                                No Data
-
-                            </td>
-
-                        </tr>
-
-                        </tbody>
-
-                    </table>
+                    <i class="fa-solid fa-trophy"></i>
 
                 </div>
 
             </div>
 
+
+            <div class="premium-table-wrapper">
+
+                <table class="premium-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Product
+                            </th>
+
+                            <th>
+                                Sold
+                            </th>
+
+                            <th>
+                                Sales
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+
+                            <td
+                                colspan="3"
+                                class="empty-table">
+
+                                <div class="empty-icon">
+
+                                    <i class="fa-solid fa-box-open"></i>
+
+                                </div>
+
+                                <strong>
+                                    No Data
+                                </strong>
+
+                                <span>
+                                    Product sales will appear here.
+                                </span>
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
         </div>
 
-        <!-- RECENT ORDERS -->
 
-        <div class="col-lg-6">
+        <!-- ==================================
+             RECENT ORDERS
+        =================================== -->
 
-            <div class="card">
+        <div class="premium-panel">
 
-                <div class="card-header">
+            <div class="panel-header">
+
+                <div>
+
+                    <span class="panel-kicker">
+                        ORDERS
+                    </span>
+
+                    <h3>
+                        Recent Orders
+                    </h3>
+
+                    <p>
+                        Latest restaurant transactions
+                    </p>
+
+                </div>
+
+                <div class="panel-header-icon">
+
+                    <i class="fa-solid fa-receipt"></i>
+
+                </div>
+
+            </div>
+
+
+            <div class="premium-table-wrapper">
+
+                <table class="premium-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Order #
+                            </th>
+
+                            <th>
+                                Customer
+                            </th>
+
+                            <th>
+                                Total
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+
+                            <td
+                                colspan="3"
+                                class="empty-table">
+
+                                <div class="empty-icon">
+
+                                    <i class="fa-solid fa-receipt"></i>
+
+                                </div>
+
+                                <strong>
+                                    No Recent Orders
+                                </strong>
+
+                                <span>
+                                    New orders will appear here.
+                                </span>
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ======================================
+         QUICK ACTIONS
+    ======================================= -->
+
+    <section class="quick-actions">
+
+        <div class="quick-actions-header">
+
+            <div>
+
+                <span class="panel-kicker">
+                    QUICK ACCESS
+                </span>
+
+                <h3>
+                    Restaurant Operations
+                </h3>
+
+            </div>
+
+        </div>
+
+
+        <div class="quick-action-grid">
+
+            <button
+                class="quick-action"
+                onclick="window.location.href='pages/pos.html'">
+
+                <span class="quick-action-icon red">
+
+                    <i class="fa-solid fa-cash-register"></i>
+
+                </span>
+
+                <span>
 
                     <strong>
-
-                        Recent Orders
-
+                        POS Cashier
                     </strong>
 
-                </div>
+                    <small>
+                        Create new orders
+                    </small>
 
-                <div class="card-body">
+                </span>
 
-                    <table class="table">
+                <i class="fa-solid fa-chevron-right"></i>
 
-                        <thead>
+            </button>
 
-                        <tr>
 
-                            <th>Order #</th>
+            <button
+                class="quick-action"
+                onclick="window.location.href='pages/products.html'">
 
-                            <th>Customer</th>
+                <span class="quick-action-icon yellow">
 
-                            <th>Total</th>
+                    <i class="fa-solid fa-box"></i>
 
-                        </tr>
+                </span>
 
-                        </thead>
+                <span>
 
-                        <tbody>
+                    <strong>
+                        Products
+                    </strong>
 
-                        <tr>
+                    <small>
+                        Manage products
+                    </small>
 
-                            <td colspan="3"
-                                class="text-center">
+                </span>
 
-                                No Data
+                <i class="fa-solid fa-chevron-right"></i>
 
-                            </td>
+            </button>
 
-                        </tr>
 
-                        </tbody>
+            <button
+                class="quick-action"
+                onclick="window.location.href='pages/categories.html'">
 
-                    </table>
+                <span class="quick-action-icon red">
 
-                </div>
+                    <i class="fa-solid fa-tags"></i>
 
-            </div>
+                </span>
+
+                <span>
+
+                    <strong>
+                        Categories
+                    </strong>
+
+                    <small>
+                        Manage categories
+                    </small>
+
+                </span>
+
+                <i class="fa-solid fa-chevron-right"></i>
+
+            </button>
+
+
+            <button
+                class="quick-action"
+                onclick="window.location.href='pages/inventory.html'">
+
+                <span class="quick-action-icon yellow">
+
+                    <i class="fa-solid fa-warehouse"></i>
+
+                </span>
+
+                <span>
+
+                    <strong>
+                        Inventory
+                    </strong>
+
+                    <small>
+                        Monitor stock
+                    </small>
+
+                </span>
+
+                <i class="fa-solid fa-chevron-right"></i>
+
+            </button>
 
         </div>
 
-    </div>
+    </section>
 
 </div>
