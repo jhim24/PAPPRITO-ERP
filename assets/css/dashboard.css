@@ -1,340 +1,169 @@
-/* ==========================================
+/* ==========================================================
    PAPPRITO ERP
-   DASHBOARD
-========================================== */
+   DASHBOARD LAYOUT FIX
+   ========================================================== */
 
-.dashboard{
-
-    width:100%;
-
+:root {
+    --sidebar-width: 260px;
+    --navbar-height: 70px;
 }
 
-/* ==========================================
-   HEADER
-========================================== */
 
-.dashboard-header{
+/* ==========================================================
+   SIDEBAR
+   ========================================================== */
 
-    display:flex;
+#sidebar,
+.sidebar,
+.erp-sidebar {
+    position: fixed;
+    top: var(--navbar-height);
+    left: 0;
 
-    justify-content:space-between;
+    width: var(--sidebar-width);
+    height: calc(100vh - var(--navbar-height));
 
-    align-items:center;
+    z-index: 1040;
 
-    margin-bottom:25px;
-
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
-.dashboard-header h2{
 
-    font-size:30px;
+/* ==========================================================
+   MAIN CONTENT
+   ========================================================== */
 
-    font-weight:700;
+#mainContent,
+.main-content,
+.content-wrapper,
+.erp-main {
+    margin-left: var(--sidebar-width);
 
-    color:#1E293B;
+    width: calc(100% - var(--sidebar-width));
 
-    margin:0;
+    min-height: calc(100vh - var(--navbar-height));
 
+    box-sizing: border-box;
 }
 
-.dashboard-header p{
 
-    color:#64748B;
+/* ==========================================================
+   NAVBAR
+   ========================================================== */
 
-    margin-top:5px;
+#navbar,
+.navbar,
+.erp-navbar {
+    position: fixed;
 
+    top: 0;
+    left: var(--sidebar-width);
+
+    width: calc(100% - var(--sidebar-width));
+
+    height: var(--navbar-height);
+
+    z-index: 1050;
 }
 
-/* ==========================================
-   CARDS
-========================================== */
 
-.dashboard-card{
+/* ==========================================================
+   PAGE CONTENT
+   ========================================================== */
 
-    border:none;
-
-    border-radius:20px;
-
-    background:#fff;
-
-    overflow:hidden;
-
-    transition:.35s;
-
-    box-shadow:0 8px 30px rgba(0,0,0,.08);
-
+.page-content {
+    padding: 24px;
 }
 
-.dashboard-card:hover{
 
-    transform:translateY(-8px);
-
-    box-shadow:0 18px 45px rgba(0,0,0,.15);
-
-}
-
-.dashboard-card .card-body{
-
-    padding:25px;
-
-}
-
-.dashboard-card h6{
-
-    color:#64748B;
-
-    font-size:15px;
-
-    margin-top:20px;
-
-}
-
-.dashboard-card h2{
-
-    margin-top:8px;
-
-    font-size:34px;
-
-    font-weight:700;
-
-    color:#1E293B;
-
-}
-
-/* ==========================================
-   ICON
-========================================== */
-
-.card-icon{
-
-    width:70px;
-
-    height:70px;
-
-    border-radius:18px;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    color:white;
-
-    font-size:30px;
-
-}
-
-.bg-danger{
-
-    background:linear-gradient(135deg,#C8102E,#E63946)!important;
-
-}
-
-.bg-warning{
-
-    background:linear-gradient(135deg,#FFC72C,#FFB300)!important;
-
-    color:#222!important;
-
-}
-
-.bg-success{
-
-    background:linear-gradient(135deg,#16A34A,#22C55E)!important;
-
-}
-
-.bg-primary{
-
-    background:linear-gradient(135deg,#2563EB,#3B82F6)!important;
-
-}
-
-/* ==========================================
-   BIG CARDS
-========================================== */
-
-.card{
-
-    border:none;
-
-    border-radius:20px;
-
-    overflow:hidden;
-
-    box-shadow:0 8px 25px rgba(0,0,0,.08);
-
-}
-
-.card-header{
-
-    background:white;
-
-    border-bottom:1px solid #EDF2F7;
-
-    padding:18px 25px;
-
-    font-size:17px;
-
-    font-weight:700;
-
-}
-
-.card-body{
-
-    padding:25px;
-
-}
-
-/* ==========================================
+/* ==========================================================
    TABLE
-========================================== */
+   ========================================================== */
 
-.table{
-
-    margin:0;
-
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
 }
 
-.table thead th{
 
-    background:#F8FAFC;
-
-    color:#475569;
-
-    border:none;
-
-    font-size:14px;
-
-}
-
-.table td{
-
-    vertical-align:middle;
-
-    border-color:#F1F5F9;
-
-}
-
-/* ==========================================
-   BUTTON
-========================================== */
-
-.btn-warning{
-
-    background:#FFC72C;
-
-    color:#222;
-
-    border:none;
-
-    border-radius:12px;
-
-    font-weight:600;
-
-    padding:10px 22px;
-
-}
-
-.btn-warning:hover{
-
-    background:#FFB300;
-
-}
-
-/* ==========================================
-   CHART
-========================================== */
-
-canvas{
-
-    width:100%!important;
-
-}
-
-/* ==========================================
-   ANIMATION
-========================================== */
-
-.dashboard-card{
-
-    animation:fadeUp .6s ease;
-
-}
-
-@keyframes fadeUp{
-
-    from{
-
-        opacity:0;
-
-        transform:translateY(25px);
-
-    }
-
-    to{
-
-        opacity:1;
-
-        transform:translateY(0);
-
-    }
-
-}
-
-/* ==========================================
+/* ==========================================================
    MOBILE
-========================================== */
+   ========================================================== */
 
-@media(max-width:992px){
+@media (max-width: 768px) {
 
-.dashboard-header{
+    #sidebar,
+    .sidebar,
+    .erp-sidebar {
 
-    flex-direction:column;
+        left: -260px;
 
-    align-items:flex-start;
+        transition:
+            left 0.25s ease;
 
-    gap:20px;
+    }
+
+
+    #sidebar.active,
+    .sidebar.active,
+    .erp-sidebar.active {
+
+        left: 0;
+
+    }
+
+
+    #mainContent,
+    .main-content,
+    .content-wrapper,
+    .erp-main {
+
+        margin-left: 0;
+
+        width: 100%;
+
+    }
+
+
+    #navbar,
+    .navbar,
+    .erp-navbar {
+
+        left: 0;
+
+        width: 100%;
+
+    }
+
+
+    .page-content {
+
+        padding: 15px;
+
+    }
 
 }
 
-.dashboard-card h2{
 
-    font-size:28px;
+/* ==========================================================
+   SIDEBAR OPEN OVERLAY ON MOBILE
+   ========================================================== */
 
-}
+@media (max-width: 768px) {
 
-}
+    body.sidebar-open::before {
 
-@media(max-width:768px){
+        content: "";
 
-.dashboard-header h2{
+        position: fixed;
 
-    font-size:24px;
+        inset: 0;
 
-}
+        background: rgba(0,0,0,0.45);
 
-.card-body{
+        z-index: 1030;
 
-    padding:20px;
-
-}
-
-.card-icon{
-
-    width:60px;
-
-    height:60px;
-
-    font-size:24px;
-
-}
-
-.dashboard-card h2{
-
-    font-size:26px;
-
-}
+    }
 
 }
