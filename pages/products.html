@@ -1,133 +1,149 @@
-<!-- ==========================================
+<!-- ==========================================================
      PAPPRITO ERP
      PRODUCT MASTER
-========================================== -->
+     PREMIUM VERSION
+     ========================================================== -->
 
-<div class="container-fluid py-4">
+<div class="product-master">
 
-    <!-- PAGE HEADER -->
 
-    <div class="row align-items-center mb-4">
+    <!-- ======================================================
+         PAGE HEADER
+         ====================================================== -->
 
-        <div class="col-lg-6">
+    <div class="product-page-header">
 
-            <h2 class="fw-bold mb-1">
 
-                <i class="fa-solid fa-box-open text-danger"></i>
+        <div class="product-title">
 
-                Product Master
+            <div class="product-title-icon">
 
-            </h2>
+                <i class="fa-solid fa-box-open"></i>
 
-            <p class="text-muted mb-0">
+            </div>
 
-                Manage all PAPPRITO products used in POS, Kitchen,
-                QR Menu and Inventory.
+            <div>
 
-            </p>
+                <h2>
+                    Product Master
+                </h2>
 
-        </div>
+                <p>
+                    Manage all PAPPRITO products used in POS,
+                    Kitchen, QR Menu and Inventory.
+                </p>
 
-        <div class="col-lg-6 text-lg-end mt-3 mt-lg-0">
-
-            <button
-                class="btn btn-danger"
-                data-bs-toggle="modal"
-                data-bs-target="#productModal">
-
-                <i class="fa-solid fa-plus"></i>
-
-                Add Product
-
-            </button>
+            </div>
 
         </div>
+
+
+        <button
+            type="button"
+            class="btn-add-product"
+            data-bs-toggle="modal"
+            data-bs-target="#productModal">
+
+            <i class="fa-solid fa-plus"></i>
+
+            Add Product
+
+        </button>
+
 
     </div>
 
-    <!-- TOOLBAR -->
 
-    <div class="card shadow-sm border-0 mb-4">
+    <!-- ======================================================
+         TOOLBAR
+         ====================================================== -->
 
-        <div class="card-body">
+    <div class="product-toolbar">
 
-            <div class="row g-3">
+        <div class="row g-3 align-items-center">
 
-                <!-- SEARCH -->
 
-                <div class="col-lg-4">
+            <!-- SEARCH -->
 
-                    <div class="input-group">
+            <div class="col-lg-4">
 
-                        <span class="input-group-text">
+                <div class="input-group">
 
-                            <i class="fa-solid fa-magnifying-glass"></i>
+                    <span class="input-group-text">
 
-                        </span>
+                        <i class="fa-solid fa-magnifying-glass"></i>
 
-                        <input
-                            type="text"
-                            id="searchProduct"
-                            class="form-control"
-                            placeholder="Search Product">
+                    </span>
 
-                    </div>
-
-                </div>
-
-                <!-- CATEGORY FILTER -->
-
-                <div class="col-lg-3">
-
-                    <select
-                        id="filterCategory"
-                        class="form-select">
-
-                        <option value="">
-
-                            All Categories
-
-                        </option>
-
-                    </select>
+                    <input
+                        type="text"
+                        id="searchProduct"
+                        class="form-control"
+                        placeholder="Search Product">
 
                 </div>
 
-                <!-- STATUS FILTER -->
+            </div>
 
-                <div class="col-lg-2">
 
-                    <select
-                        id="filterStatus"
-                        class="form-select">
+            <!-- CATEGORY -->
 
-                        <option value="">
+            <div class="col-lg-3">
 
-                            All Status
+                <select
+                    id="filterCategory"
+                    class="form-select">
 
-                        </option>
+                    <option value="">
 
-                        <option value="Active">
+                        All Categories
 
-                            Active
+                    </option>
 
-                        </option>
+                </select>
 
-                        <option value="Inactive">
+            </div>
 
-                            Inactive
 
-                        </option>
+            <!-- STATUS -->
 
-                    </select>
+            <div class="col-lg-2">
 
-                </div>
+                <select
+                    id="filterStatus"
+                    class="form-select">
 
-                <!-- ACTION BUTTONS -->
+                    <option value="">
 
-                <div class="col-lg-3 text-lg-end">
+                        All Status
+
+                    </option>
+
+                    <option value="Active">
+
+                        Active
+
+                    </option>
+
+                    <option value="Inactive">
+
+                        Inactive
+
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- ACTIONS -->
+
+            <div class="col-lg-3">
+
+                <div class="d-flex gap-2 justify-content-lg-end">
 
                     <button
+                        type="button"
                         class="btn btn-success"
                         id="btnExportProducts">
 
@@ -137,7 +153,9 @@
 
                     </button>
 
+
                     <button
+                        type="button"
                         class="btn btn-primary"
                         id="btnRefreshProducts">
 
@@ -151,207 +169,244 @@
 
             </div>
 
+
         </div>
 
     </div>
 
-   <!-- ==========================================
-     PRODUCT TABLE
-========================================== -->
 
-<div class="card shadow-sm border-0">
+    <!-- ======================================================
+         PRODUCT LIST
+         ====================================================== -->
 
-    <div class="card-header bg-white">
+    <div class="product-list-card">
 
-        <div class="row align-items-center">
 
-            <div class="col">
+        <!-- TABLE HEADER -->
+
+        <div class="product-list-header">
+
+            <div>
 
                 <strong>
-
                     Product List
-
                 </strong>
 
             </div>
 
-            <div class="col text-end">
+
+            <div class="product-total">
 
                 Total :
 
-                <span
-                    id="totalProducts"
-                    class="fw-bold text-danger">
-
+                <span id="totalProducts">
                     0
-
                 </span>
 
             </div>
 
         </div>
 
-    </div>
 
-    <div class="table-responsive">
+        <!-- TABLE -->
 
-        <table class="table table-hover align-middle mb-0">
+        <div class="table-responsive">
 
-            <thead class="table-light">
+            <table class="table product-table align-middle mb-0">
 
-                <tr>
 
-                    <th width="100">
-                        Code
-                    </th>
+                <thead>
 
-                    <th width="80">
-                        Image
-                    </th>
+                    <tr>
 
-                    <th>
-                        Product
-                    </th>
+                        <th width="100">
+                            Code
+                        </th>
 
-                    <th width="180">
-                        Category
-                    </th>
+                        <th width="80">
+                            Image
+                        </th>
 
-                   <th width="130">
-                    Price
-                    </th>
+                        <th>
+                            Product
+                        </th>
 
-                    <th width="100">
-                        Stock
-                    </th>
+                        <th width="180">
+                            Category
+                        </th>
 
-                    <th width="110">
-                        Status
-                    </th>
+                        <th width="130">
+                            Price
+                        </th>
 
-                    <th width="170">
-                        Action
-                    </th>
+                        <th width="100">
+                            Stock
+                        </th>
 
-                </tr>
+                        <th width="110">
+                            Status
+                        </th>
 
-            </thead>
+                        <th width="170">
+                            Action
+                        </th>
 
-            <tbody id="productTable">
+                    </tr>
 
-                <tr>
+                </thead>
 
-                    <td
-                        colspan="8"
-                        class="text-center py-5">
 
-                        <div>
+                <tbody id="productTable">
 
-                            <i class="fa-solid fa-box-open fa-3x text-secondary mb-3"></i>
 
-                        </div>
+                    <!-- EMPTY STATE -->
 
-                        <strong>
+                    <tr>
 
-                            No Products Found
+                        <td
+                            colspan="8"
+                            class="text-center">
 
-                        </strong>
+                            <div class="product-empty">
 
-                        <br>
 
-                        <small class="text-muted">
+                                <div class="product-empty-icon">
 
-                            Click "Add Product" to create your first product.
+                                    <i class="fa-solid fa-box-open"></i>
 
-                        </small>
+                                </div>
 
-                    </td>
 
-                </tr>
+                                <strong>
 
-            </tbody>
+                                    No Products Found
 
-        </table>
+                                </strong>
 
-    </div>
 
-    <div class="card-footer bg-white">
+                                <div class="small text-muted mt-1">
 
-        <div class="row align-items-center">
+                                    Click
+                                    "Add Product"
+                                    to create your first product.
 
-            <div class="col-md-6">
+                                </div>
 
-                Showing
 
-                <strong>0</strong>
+                            </div>
 
-                to
+                        </td>
 
-                <strong>0</strong>
+                    </tr>
 
-                of
 
-                <strong id="footerTotalProducts">
+                </tbody>
 
-                    0
 
-                </strong>
+            </table>
 
-                Products
+        </div>
 
-            </div>
 
-            <div class="col-md-6">
+        <!-- ==================================================
+             FOOTER
+             ================================================== -->
 
-                <nav class="float-md-end">
+        <div class="card-footer bg-white">
 
-                    <ul class="pagination pagination-sm mb-0">
+            <div class="row align-items-center">
 
-                        <li class="page-item disabled">
+                <div class="col-md-6">
 
-                            <a class="page-link">
+                    Showing
 
-                                Previous
+                    <strong>
+                        0
+                    </strong>
 
-                            </a>
+                    to
 
-                        </li>
+                    <strong>
+                        0
+                    </strong>
 
-                        <li class="page-item active">
+                    of
 
-                            <a class="page-link">
+                    <strong id="footerTotalProducts">
+                        0
+                    </strong>
 
-                                1
+                    Products
 
-                            </a>
+                </div>
 
-                        </li>
 
-                        <li class="page-item disabled">
+                <div class="col-md-6">
 
-                            <a class="page-link">
+                    <nav class="float-md-end">
 
-                                Next
+                        <ul class="pagination pagination-sm mb-0">
 
-                            </a>
 
-                        </li>
+                            <li class="page-item disabled">
 
-                    </ul>
+                                <a
+                                    class="page-link"
+                                    href="#">
 
-                </nav>
+                                    Previous
+
+                                </a>
+
+                            </li>
+
+
+                            <li class="page-item active">
+
+                                <a
+                                    class="page-link"
+                                    href="#">
+
+                                    1
+
+                                </a>
+
+                            </li>
+
+
+                            <li class="page-item disabled">
+
+                                <a
+                                    class="page-link"
+                                    href="#">
+
+                                    Next
+
+                                </a>
+
+                            </li>
+
+
+                        </ul>
+
+                    </nav>
+
+                </div>
 
             </div>
 
         </div>
 
+
     </div>
+
 
 </div>
 
-<!-- ==========================================
+
+<!-- ==========================================================
      PRODUCT MODAL
-========================================== -->
+     ========================================================== -->
 
 <div
     class="modal fade"
@@ -359,11 +414,17 @@
     tabindex="-1"
     aria-hidden="true">
 
-    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+
+    <div
+        class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+
 
         <div class="modal-content">
 
-            <!-- MODAL HEADER -->
+
+            <!-- ==================================================
+                 MODAL HEADER
+                 ================================================== -->
 
             <div class="modal-header bg-danger text-white">
 
@@ -377,29 +438,52 @@
 
                 </h5>
 
+
                 <button
                     type="button"
                     class="btn-close btn-close-white"
-                    data-bs-dismiss="modal">
+                    data-bs-dismiss="modal"
+                    aria-label="Close">
                 </button>
 
             </div>
 
-            <!-- MODAL BODY -->
+
+            <!-- ==================================================
+                 MODAL BODY
+                 ================================================== -->
 
             <div class="modal-body">
 
+
+                <!-- ==================================================
+                     BASIC PRODUCT INFORMATION
+                     ================================================== -->
+
+                <div class="product-section-title">
+
+                    <i class="fa-solid fa-circle-info"></i>
+
+                    Product Information
+
+                </div>
+
+
                 <div class="row g-3">
+
 
                     <!-- PRODUCT CODE -->
 
                     <div class="col-md-3">
 
-                        <label class="form-label">
+                        <label
+                            class="form-label"
+                            for="productCode">
 
                             Product Code
 
                         </label>
+
 
                         <input
                             type="text"
@@ -409,15 +493,19 @@
 
                     </div>
 
+
                     <!-- PRODUCT NAME -->
 
                     <div class="col-md-5">
 
-                        <label class="form-label">
+                        <label
+                            class="form-label"
+                            for="productName">
 
                             Product Name
 
                         </label>
+
 
                         <input
                             type="text"
@@ -427,15 +515,19 @@
 
                     </div>
 
+
                     <!-- CATEGORY -->
 
                     <div class="col-md-4">
 
-                        <label class="form-label">
+                        <label
+                            class="form-label"
+                            for="productCategory">
 
                             Category
 
                         </label>
+
 
                         <select
                             id="productCategory"
@@ -451,15 +543,19 @@
 
                     </div>
 
+
                     <!-- DESCRIPTION -->
 
                     <div class="col-12">
 
-                        <label class="form-label">
+                        <label
+                            class="form-label"
+                            for="productDescription">
 
                             Description
 
                         </label>
+
 
                         <textarea
                             id="productDescription"
@@ -469,533 +565,658 @@
 
                     </div>
 
+
                 </div>
 
-           <!-- ==========================================
-     PRICING & INVENTORY
-========================================== -->
 
-<hr class="my-4">
+                <!-- ==================================================
+                     PRICING & INVENTORY
+                     ================================================== -->
 
-<h5 class="fw-bold text-danger mb-3">
+                <hr class="my-4">
 
-    <i class="fa-solid fa-money-bill-wave"></i>
 
-    Pricing & Inventory
+                <div class="product-section-title">
 
-</h5>
+                    <i class="fa-solid fa-money-bill-wave"></i>
 
-<div class="row g-3">
+                    Pricing & Inventory
 
-    <!-- COST PRICE -->
+                </div>
 
-    <div class="col-md-3">
 
-        <label class="form-label">
+                <div class="row g-3">
 
-            Cost Price
 
-        </label>
+                    <!-- COST PRICE -->
 
-        <div class="input-group">
+                    <div class="col-md-3">
 
-            <span class="input-group-text">
+                        <label
+                            class="form-label"
+                            for="costPrice">
 
-                ₱
+                            Cost Price
 
-            </span>
+                        </label>
 
-            <input
-                type="number"
-                id="costPrice"
-                class="form-control"
-                min="0"
-                step="0.01"
-                placeholder="0.00">
+
+                        <div class="input-group">
+
+                            <span class="input-group-text">
+
+                                ₱
+
+                            </span>
+
+
+                            <input
+                                type="number"
+                                id="costPrice"
+                                class="form-control"
+                                min="0"
+                                step="0.01"
+                                placeholder="0.00">
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- SELLING PRICE -->
+
+                    <div class="col-md-3">
+
+                        <label
+                            class="form-label"
+                            for="sellingPrice">
+
+                            Selling Price
+
+                        </label>
+
+
+                        <div class="input-group">
+
+                            <span class="input-group-text">
+
+                                ₱
+
+                            </span>
+
+
+                            <input
+                                type="number"
+                                id="sellingPrice"
+                                class="form-control"
+                                min="0"
+                                step="0.01"
+                                placeholder="0.00">
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- OPENING STOCK -->
+
+                    <div class="col-md-2">
+
+                        <label
+                            class="form-label"
+                            for="openingStock">
+
+                            Opening Stock
+
+                        </label>
+
+
+                        <input
+                            type="number"
+                            id="openingStock"
+                            class="form-control"
+                            min="0"
+                            value="0">
+
+                    </div>
+
+
+                    <!-- CURRENT STOCK -->
+
+                    <div class="col-md-2">
+
+                        <label
+                            class="form-label"
+                            for="currentStock">
+
+                            Current Stock
+
+                        </label>
+
+
+                        <input
+                            type="number"
+                            id="currentStock"
+                            class="form-control"
+                            value="0"
+                            readonly>
+
+                    </div>
+
+
+                    <!-- REORDER LEVEL -->
+
+                    <div class="col-md-2">
+
+                        <label
+                            class="form-label"
+                            for="reorderLevel">
+
+                            Reorder Level
+
+                        </label>
+
+
+                        <input
+                            type="number"
+                            id="reorderLevel"
+                            class="form-control"
+                            min="0"
+                            value="10">
+
+                    </div>
+
+
+                    <!-- UNIT -->
+
+                    <div class="col-md-4">
+
+                        <label
+                            class="form-label"
+                            for="productUnit">
+
+                            Unit
+
+                        </label>
+
+
+                        <select
+                            id="productUnit"
+                            class="form-select">
+
+                            <option value="Piece">
+                                Piece
+                            </option>
+
+                            <option value="Serving">
+                                Serving
+                            </option>
+
+                            <option value="Order">
+                                Order
+                            </option>
+
+                            <option value="Bowl">
+                                Bowl
+                            </option>
+
+                            <option value="Plate">
+                                Plate
+                            </option>
+
+                            <option value="Cup">
+                                Cup
+                            </option>
+
+                            <option value="Glass">
+                                Glass
+                            </option>
+
+                            <option value="Bottle">
+                                Bottle
+                            </option>
+
+                            <option value="Pack">
+                                Pack
+                            </option>
+
+                            <option value="Tray">
+                                Tray
+                            </option>
+
+                            <option value="Box">
+                                Box
+                            </option>
+
+                            <option value="Kilo">
+                                Kilo
+                            </option>
+
+                            <option value="Gram">
+                                Gram
+                            </option>
+
+                            <option value="Liter">
+                                Liter
+                            </option>
+
+                            <option value="Milliliter">
+                                Milliliter
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- ==================================================
+                     PRODUCT IMAGE
+                     ================================================== -->
+
+                <hr class="my-4">
+
+
+                <div class="product-section-title">
+
+                    <i class="fa-solid fa-image"></i>
+
+                    Product Image
+
+                </div>
+
+
+                <div class="row g-3">
+
+
+                    <!-- IMAGE FILE -->
+
+                    <div class="col-lg-6">
+
+                        <label
+                            class="form-label"
+                            for="productImageFile">
+
+                            Upload Product Image
+
+                        </label>
+
+
+                        <input
+                            type="file"
+                            id="productImageFile"
+                            class="form-control"
+                            accept="image/jpeg,image/png,image/webp">
+
+
+                        <small class="text-muted">
+
+                            JPG, PNG and WEBP supported.
+                            Maximum 10MB.
+
+                        </small>
+
+                    </div>
+
+
+                    <!-- IMAGE URL -->
+
+                    <div class="col-lg-6">
+
+                        <label
+                            class="form-label"
+                            for="productImageURL">
+
+                            Product Image URL
+
+                        </label>
+
+
+                        <input
+                            type="url"
+                            id="productImageURL"
+                            class="form-control"
+                            placeholder="https://example.com/image.jpg">
+
+
+                        <small class="text-muted">
+
+                            Paste a direct image URL.
+
+                        </small>
+
+                    </div>
+
+
+                    <!-- IMAGE PREVIEW -->
+
+                    <div class="col-lg-12">
+
+                        <label class="form-label">
+
+                            Image Preview
+
+                        </label>
+
+
+                        <div class="product-image-box">
+
+
+                            <img
+                                id="productImagePreview"
+                                src="assets/img/no-product.png"
+                                alt="Product Preview">
+
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- IMAGE ACTIONS -->
+
+                    <div class="col-lg-12">
+
+                        <div
+                            class="d-flex gap-2 justify-content-end flex-wrap">
+
+
+                            <button
+                                type="button"
+                                class="btn btn-outline-secondary"
+                                id="btnDefaultImage">
+
+                                <i class="fa-solid fa-image"></i>
+
+                                Default Image
+
+                            </button>
+
+
+                            <button
+                                type="button"
+                                class="btn btn-outline-danger"
+                                id="btnRemoveImage">
+
+                                <i class="fa-solid fa-trash"></i>
+
+                                Remove Image
+
+                            </button>
+
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- ==================================================
+                     PRODUCT SETTINGS
+                     ================================================== -->
+
+                <hr class="my-4">
+
+
+                <div class="product-section-title">
+
+                    <i class="fa-solid fa-sliders"></i>
+
+                    Product Settings
+
+                </div>
+
+
+                <div class="row g-3">
+
+
+                    <!-- SHOW POS -->
+
+                    <div class="col-lg-4">
+
+                        <div class="form-check form-switch">
+
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                id="showPOS"
+                                checked>
+
+
+                            <label
+                                class="form-check-label"
+                                for="showPOS">
+
+                                Show in POS
+
+                            </label>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- SHOW KITCHEN -->
+
+                    <div class="col-lg-4">
+
+                        <div class="form-check form-switch">
+
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                id="showKitchen"
+                                checked>
+
+
+                            <label
+                                class="form-check-label"
+                                for="showKitchen">
+
+                                Show in Kitchen Display
+
+                            </label>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- SHOW MENU -->
+
+                    <div class="col-lg-4">
+
+                        <div class="form-check form-switch">
+
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                id="showMenu"
+                                checked>
+
+
+                            <label
+                                class="form-check-label"
+                                for="showMenu">
+
+                                Show in QR Menu
+
+                            </label>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- INVENTORY TRACKING -->
+
+                    <div class="col-lg-4">
+
+                        <div class="form-check form-switch">
+
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                id="inventoryTracking"
+                                checked>
+
+
+                            <label
+                                class="form-check-label"
+                                for="inventoryTracking">
+
+                                Inventory Tracking
+
+                            </label>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- FEATURED -->
+
+                    <div class="col-lg-4">
+
+                        <div class="form-check form-switch">
+
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                id="featuredProduct">
+
+
+                            <label
+                                class="form-check-label"
+                                for="featuredProduct">
+
+                                Featured Product
+
+                            </label>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- BEST SELLER -->
+
+                    <div class="col-lg-4">
+
+                        <div class="form-check form-switch">
+
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                id="bestSeller">
+
+
+                            <label
+                                class="form-check-label"
+                                for="bestSeller">
+
+                                Best Seller
+
+                            </label>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- ==================================================
+                     STATUS
+                     ================================================== -->
+
+                <hr class="my-4">
+
+
+                <div class="row g-3">
+
+
+                    <div class="col-md-4">
+
+                        <label
+                            class="form-label"
+                            for="productStatus">
+
+                            Product Status
+
+                        </label>
+
+
+                        <select
+                            id="productStatus"
+                            class="form-select">
+
+                            <option value="Active">
+
+                                Active
+
+                            </option>
+
+                            <option value="Inactive">
+
+                                Inactive
+
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+            <!-- ==================================================
+                 MODAL FOOTER
+                 ================================================== -->
+
+            <div class="modal-footer">
+
+
+                <button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal">
+
+                    Cancel
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="btn btn-danger"
+                    id="btnSaveProduct">
+
+                    <i class="fa-solid fa-floppy-disk"></i>
+
+                    <span id="btnSaveProductText">
+
+                        Save Product
+
+                    </span>
+
+                </button>
+
+
+            </div>
+
 
         </div>
 
     </div>
 
-    <!-- SELLING PRICE -->
-
-    <div class="col-md-3">
-
-        <label class="form-label">
-
-            Selling Price
-
-        </label>
-
-        <div class="input-group">
-
-            <span class="input-group-text">
-
-                ₱
-
-            </span>
-
-            <input
-                type="number"
-                id="sellingPrice"
-                class="form-control"
-                min="0"
-                step="0.01"
-                placeholder="0.00">
-
-        </div>
-
-    </div>
-
-    <!-- OPENING STOCK -->
-
-    <div class="col-md-2">
-
-        <label class="form-label">
-
-            Opening Stock
-
-        </label>
-
-        <input
-            type="number"
-            id="openingStock"
-            class="form-control"
-            min="0"
-            value="0">
-
-    </div>
-
-    <!-- CURRENT STOCK -->
-
-    <div class="col-md-2">
-
-        <label class="form-label">
-
-            Current Stock
-
-        </label>
-
-        <input
-            type="number"
-            id="currentStock"
-            class="form-control"
-            value="0"
-            readonly>
-
-    </div>
-
-    <!-- REORDER LEVEL -->
-
-    <div class="col-md-2">
-
-        <label class="form-label">
-
-            Reorder Level
-
-        </label>
-
-        <input
-            type="number"
-            id="reorderLevel"
-            class="form-control"
-            min="0"
-            value="10">
-
-    </div>
-
-    <!-- UNIT -->
-
-    <div class="col-md-4">
-
-        <label class="form-label">
-
-            Unit
-
-        </label>
-
-        <select
-            id="productUnit"
-            class="form-select">
-
-            <option value="Piece">Piece</option>
-            <option value="Serving">Serving</option>
-            <option value="Order">Order</option>
-            <option value="Bowl">Bowl</option>
-            <option value="Plate">Plate</option>
-            <option value="Cup">Cup</option>
-            <option value="Glass">Glass</option>
-            <option value="Bottle">Bottle</option>
-            <option value="Pack">Pack</option>
-            <option value="Tray">Tray</option>
-            <option value="Box">Box</option>
-            <option value="Kilo">Kilo</option>
-            <option value="Gram">Gram</option>
-            <option value="Liter">Liter</option>
-            <option value="Milliliter">Milliliter</option>
-
-        </select>
-
-    </div>
-
-</div>
-
-<!-- ==========================================
-     PRODUCT IMAGE
-========================================== -->
-
-<hr class="my-4">
-
-<h5 class="fw-bold text-danger">
-
-    <i class="fa-solid fa-image"></i>
-
-    Product Image
-
-</h5>
-
-<div class="row g-3 mt-1">
-
-    <!-- IMAGE UPLOAD -->
-
-    <div class="col-lg-6">
-
-        <label class="form-label">
-
-            Upload Product Image
-
-        </label>
-
-        <input
-            type="file"
-            id="productImageFile"
-            class="form-control"
-            accept="image/*">
-
-        <small class="text-muted">
-
-            JPG, PNG and WEBP supported.
-
-        </small>
-
-    </div>
-
-    <!-- IMAGE URL -->
-
-    <div class="col-lg-6">
-
-        <label class="form-label">
-
-            Product Image URL
-
-        </label>
-
-        <input
-            type="url"
-            id="productImageURL"
-            class="form-control"
-            placeholder="https://example.com/image.jpg">
-
-        <small class="text-muted">
-
-            Paste a direct image URL.
-
-        </small>
-
-    </div>
-
-    <!-- IMAGE PREVIEW -->
-
-    <div class="col-lg-12">
-
-        <label class="form-label">
-
-            Image Preview
-
-        </label>
-
-        <div class="border rounded p-3 text-center bg-light">
-
-            <img
-
-                id="productImagePreview"
-
-                src="https://placehold.co/300x220?text=No+Image"
-
-                class="img-fluid rounded"
-
-                style="max-height:220px;">
-
-        </div>
-
-    </div>
-
-    <!-- IMAGE BUTTONS -->
-
-    <div class="col-lg-12 text-end">
-
-        <button
-
-            type="button"
-
-            class="btn btn-outline-secondary"
-
-            id="btnDefaultImage">
-
-            <i class="fa-solid fa-image"></i>
-
-            Default Image
-
-        </button>
-
-        <button
-
-            type="button"
-
-            class="btn btn-outline-danger"
-
-            id="btnRemoveImage">
-
-            <i class="fa-solid fa-trash"></i>
-
-            Remove Image
-
-        </button>
-
-    </div>
-
-</div>
-
-<!-- ==========================================
-     PRODUCT SETTINGS
-========================================== -->
-
-<hr class="my-4">
-
-<h5 class="fw-bold text-danger">
-
-    <i class="fa-solid fa-sliders"></i>
-
-    Product Settings
-
-</h5>
-
-<div class="row g-3 mt-1">
-
-    <!-- SHOW IN POS -->
-
-    <div class="col-lg-4">
-
-        <div class="form-check form-switch">
-
-            <input
-                class="form-check-input"
-                type="checkbox"
-                id="showPOS"
-                checked>
-
-            <label
-                class="form-check-label"
-                for="showPOS">
-
-                Show in POS
-
-            </label>
-
-        </div>
-
-    </div>
-
-    <!-- SHOW IN KITCHEN -->
-
-    <div class="col-lg-4">
-
-        <div class="form-check form-switch">
-
-            <input
-                class="form-check-input"
-                type="checkbox"
-                id="showKitchen"
-                checked>
-
-            <label
-                class="form-check-label"
-                for="showKitchen">
-
-                Show in Kitchen Display
-
-            </label>
-
-        </div>
-
-    </div>
-
-    <!-- SHOW IN QR MENU -->
-
-    <div class="col-lg-4">
-
-        <div class="form-check form-switch">
-
-            <input
-                class="form-check-input"
-                type="checkbox"
-                id="showMenu"
-                checked>
-
-            <label
-                class="form-check-label"
-                for="showMenu">
-
-                Show in QR Menu
-
-            </label>
-
-        </div>
-
-    </div>
-
-    <!-- INVENTORY TRACKING -->
-
-    <div class="col-lg-4">
-
-        <div class="form-check form-switch">
-
-            <input
-                class="form-check-input"
-                type="checkbox"
-                id="inventoryTracking"
-                checked>
-
-            <label
-                class="form-check-label"
-                for="inventoryTracking">
-
-                Inventory Tracking
-
-            </label>
-
-        </div>
-
-    </div>
-
-    <!-- FEATURED PRODUCT -->
-
-    <div class="col-lg-4">
-
-        <div class="form-check form-switch">
-
-            <input
-                class="form-check-input"
-                type="checkbox"
-                id="featuredProduct">
-
-            <label
-                class="form-check-label"
-                for="featuredProduct">
-
-                Featured Product
-
-            </label>
-
-        </div>
-
-    </div>
-
-    <!-- BEST SELLER -->
-
-    <div class="col-lg-4">
-
-        <div class="form-check form-switch">
-
-            <input
-                class="form-check-input"
-                type="checkbox"
-                id="bestSeller">
-
-            <label
-                class="form-check-label"
-                for="bestSeller">
-
-                Best Seller
-
-            </label>
-
-        </div>
-
-    </div>
-
-</div>
-
-<hr class="my-4">
-
-<div class="row g-3">
-
-    <!-- STATUS -->
-
-    <div class="col-md-4">
-
-        <label class="form-label">
-
-            Product Status
-
-        </label>
-
-        <select
-            id="productStatus"
-            class="form-select">
-
-            <option value="Active">
-
-                Active
-
-            </option>
-
-            <option value="Inactive">
-
-                Inactive
-
-            </option>
-
-        </select>
-
-    </div>
-
-</div>
-
-<!-- ==========================================
-     MODAL FOOTER
-========================================== -->
-
-<div class="modal-footer">
-
-    <button
-        type="button"
-        class="btn btn-secondary"
-        data-bs-dismiss="modal">
-
-        Cancel
-
-    </button>
-
-    <button
-        type="button"
-        class="btn btn-danger"
-        id="btnSaveProduct">
-
-        <i class="fa-solid fa-floppy-disk"></i>
-
-        <span id="btnSaveProductText">
-
-            Save Product
-
-        </span>
-
-    </button>
-
-</div>
-        </div>
-
-    </div>
-
-</div>
 </div>
