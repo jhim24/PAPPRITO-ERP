@@ -1,30 +1,27 @@
 // ==========================================================
 // PAPPRITO ERP
-// CATEGORY MASTER ENGINE V1
+// CATEGORY MASTER
+// COMPLETE JAVASCRIPT RESET
 // File: assets/js/category/category.js
 //
 // FEATURES:
-// - Load Categories
-// - Firebase Realtime Database
+// - Load categories from Firebase
+// - Add category
+// - Edit category
+// - Delete category
 // - Search
-// - Status Filter
-// - Add Category
-// - Edit Category
-// - Save Category
-// - Update Category
-// - Delete Category
-// - Custom Modal
-// - X Button
-// - Cancel Button
-// - ESC Close
-// - Overlay Close
-// - Icon Preview
-// - Color Preview
-// - Auto Category Code
-// - Statistics
-// - Product Count
-// - Export CSV
+// - Status filter
 // - Refresh
+// - Export CSV
+// - Custom modal
+// - X button
+// - Cancel button
+// - Save / Update
+// - Icon preview
+// - Color preview
+// - Statistics
+// - Pagination
+// - Mobile friendly
 // ==========================================================
 
 "use strict";
@@ -34,35 +31,59 @@
 // GLOBAL STATE
 // ==========================================================
 
-let categoryData = {};
+let categoryData = [];
+
+let filteredCategories = [];
 
 let editingCategoryId = null;
 
-let categoryInitialized = false;
+let categoryCurrentPage = 1;
+
+const CATEGORY_PAGE_SIZE = 10;
+
+let categoryEventsBound = false;
 
 
 // ==========================================================
-// FIREBASE CHECK
+// FIREBASE REFERENCE
 // ==========================================================
 
-function categoryFirebaseReady() {
+function getCategoryDatabase() {
 
-    return (
+    if (
         typeof db !== "undefined" &&
-        db !== null &&
-        typeof db.ref === "function"
-    );
+        db
+    ) {
 
-}
+        return db;
+
+    }
 
 
-// ==========================================================
-// ELEMENT HELPER
-// ==========================================================
+    if (
+        typeof firebase !== "undefined" &&
+        typeof firebase.database === "function"
+    ) {
 
-function categoryElement(id) {
+        try {
 
-    return document.getElementById(id);
+            return firebase.database();
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "Firebase Database Error:",
+                error
+            );
+
+        }
+
+    }
+
+
+    return null;
 
 }
 
@@ -90,20 +111,9 @@ function initializeCategoryPage() {
     );
 
 
-    if (categoryInitialized) {
+    categoryCurrentPage = 1;
 
-        console.log(
-            "Category page already initialized."
-        );
-
-        loadCategories();
-
-        return;
-
-    }
-
-
-    categoryInitialized = true;
+    editingCategoryId = null;
 
 
     bindCategoryEvents();
@@ -114,11 +124,6 @@ function initializeCategoryPage() {
 
     loadCategories();
 
-
-    console.log(
-        "Category Master initialized."
-    );
-
 }
 
 
@@ -128,12 +133,29 @@ function initializeCategoryPage() {
 
 function bindCategoryEvents() {
 
-    // ======================================================
-    // ADD BUTTON
-    // ======================================================
+    const page =
+        document.getElementById(
+            "categoryPage"
+        );
+
+
+    if (!page) {
+
+        console.error(
+            "Category page not found."
+        );
+
+        return;
+
+    }
+
+
+    // ------------------------------------------------------
+    // ADD
+    // ------------------------------------------------------
 
     const addButton =
-        categoryElement(
+        document.getElementById(
             "btnAddCategory"
         );
 
@@ -145,29 +167,7 @@ function bindCategoryEvents() {
 
                 event.preventDefault();
 
-                openAddCategoryModal();
-
-            };
-
-    }
-
-
-    // ======================================================
-    // EMPTY ADD BUTTON
-    // ======================================================
-
-    const emptyAddButton =
-        categoryElement(
-            "btnEmptyAddCategory"
-        );
-
-
-    if (emptyAddButton) {
-
-        emptyAddButton.onclick =
-            function(event) {
-
-                event.preventDefault();
+                event.stopPropagation();
 
                 openAddCategoryModal();
 
@@ -176,12 +176,12 @@ function bindCategoryEvents() {
     }
 
 
-    // ======================================================
-    // CLOSE X
-    // ======================================================
+    // ------------------------------------------------------
+    // CLOSE MODAL
+    // ------------------------------------------------------
 
     const closeButton =
-        categoryElement(
+        document.getElementById(
             "btnCloseCategoryModal"
         );
 
@@ -193,6 +193,8 @@ function bindCategoryEvents() {
 
                 event.preventDefault();
 
+                event.stopPropagation();
+
                 closeCategoryModal();
 
             };
@@ -200,12 +202,12 @@ function bindCategoryEvents() {
     }
 
 
-    // ======================================================
+    // ------------------------------------------------------
     // CANCEL
-    // ======================================================
+    // ------------------------------------------------------
 
     const cancelButton =
-        categoryElement(
+        document.getElementById(
             "btnCancelCategory"
         );
 
@@ -217,6 +219,8 @@ function bindCategoryEvents() {
 
                 event.preventDefault();
 
+                event.stopPropagation();
+
                 closeCategoryModal();
 
             };
@@ -224,12 +228,12 @@ function bindCategoryEvents() {
     }
 
 
-    // ======================================================
+    // ------------------------------------------------------
     // SAVE
-    // ======================================================
+    // ------------------------------------------------------
 
     const saveButton =
-        categoryElement(
+        document.getElementById(
             "btnSaveCategory"
         );
 
@@ -241,29 +245,7 @@ function bindCategoryEvents() {
 
                 event.preventDefault();
 
-                saveCategory();
-
-            };
-
-    }
-
-
-    // ======================================================
-    // FORM SUBMIT
-    // ======================================================
-
-    const form =
-        categoryElement(
-            "categoryForm"
-        );
-
-
-    if (form) {
-
-        form.onsubmit =
-            function(event) {
-
-                event.preventDefault();
+                event.stopPropagation();
 
                 saveCategory();
 
@@ -272,57 +254,65 @@ function bindCategoryEvents() {
     }
 
 
-    // ======================================================
+    // ------------------------------------------------------
     // SEARCH
-    // ======================================================
+    // ------------------------------------------------------
 
     const search =
-        categoryElement(
+        document.getElementById(
             "categorySearch"
         );
 
 
     if (search) {
 
-        search.oninput =
+        search.addEventListener(
+            "input",
             function() {
 
-                renderCategories();
+                categoryCurrentPage = 1;
 
-            };
+                filterCategories();
+
+            }
+        );
 
     }
 
 
-    // ======================================================
+    // ------------------------------------------------------
     // STATUS FILTER
-    // ======================================================
+    // ------------------------------------------------------
 
     const statusFilter =
-        categoryElement(
+        document.getElementById(
             "categoryStatusFilter"
         );
 
 
     if (statusFilter) {
 
-        statusFilter.onchange =
+        statusFilter.addEventListener(
+            "change",
             function() {
 
-                renderCategories();
+                categoryCurrentPage = 1;
 
-            };
+                filterCategories();
+
+            }
+        );
 
     }
 
 
-    // ======================================================
+    // ------------------------------------------------------
     // REFRESH
-    // ======================================================
+    // ------------------------------------------------------
 
     const refreshButton =
-        categoryElement(
-            "btnRefreshCategory"
+        document.getElementById(
+            "btnRefreshCategories"
         );
 
 
@@ -333,20 +323,22 @@ function bindCategoryEvents() {
 
                 event.preventDefault();
 
-                loadCategories();
+                event.stopPropagation();
+
+                loadCategories(true);
 
             };
 
     }
 
 
-    // ======================================================
+    // ------------------------------------------------------
     // EXPORT
-    // ======================================================
+    // ------------------------------------------------------
 
     const exportButton =
-        categoryElement(
-            "btnExportCategory"
+        document.getElementById(
+            "btnExportCategories"
         );
 
 
@@ -357,6 +349,8 @@ function bindCategoryEvents() {
 
                 event.preventDefault();
 
+                event.stopPropagation();
+
                 exportCategories();
 
             };
@@ -364,99 +358,80 @@ function bindCategoryEvents() {
     }
 
 
-    // ======================================================
-    // ICON INPUT
-    // ======================================================
+    // ------------------------------------------------------
+    // ICON
+    // ------------------------------------------------------
 
     const iconInput =
-        categoryElement(
+        document.getElementById(
             "categoryIcon"
         );
 
 
     if (iconInput) {
 
-        iconInput.oninput =
-            function() {
-
-                updateCategoryIconPreview();
-
-            };
-
-        iconInput.onchange =
-            function() {
-
-                updateCategoryIconPreview();
-
-            };
+        iconInput.addEventListener(
+            "input",
+            updateCategoryIconPreview
+        );
 
     }
 
 
-    // ======================================================
-    // COLOR INPUT
-    // ======================================================
+    // ------------------------------------------------------
+    // COLOR PICKER
+    // ------------------------------------------------------
 
     const colorInput =
-        categoryElement(
+        document.getElementById(
             "categoryColor"
         );
 
 
     if (colorInput) {
 
-        colorInput.oninput =
+        colorInput.addEventListener(
+            "input",
             function() {
 
                 updateCategoryColorPreview();
 
-            };
-
-        colorInput.onchange =
-            function() {
-
-                updateCategoryColorPreview();
-
-            };
+            }
+        );
 
     }
 
 
-    // ======================================================
+    // ------------------------------------------------------
     // COLOR TEXT
-    // ======================================================
+    // ------------------------------------------------------
 
     const colorText =
-        categoryElement(
-            "categoryColorText"
+        document.getElementById(
+            "categoryColorValue"
         );
 
 
     if (colorText) {
 
-        colorText.oninput =
+        colorText.addEventListener(
+            "input",
             function() {
 
-                const color =
+                const value =
                     colorText.value.trim();
 
 
                 if (
                     /^#[0-9A-Fa-f]{6}$/.test(
-                        color
+                        value
                     )
                 ) {
-
-                    const colorInput =
-                        categoryElement(
-                            "categoryColor"
-                        );
-
 
                     if (colorInput) {
 
                         colorInput.value =
-                            color;
+                            value;
 
                     }
 
@@ -465,27 +440,18 @@ function bindCategoryEvents() {
 
                 }
 
-            };
+            }
+        );
 
     }
 
 
-    // ======================================================
-    // ESCAPE KEY
-    // ======================================================
-
-    document.addEventListener(
-        "keydown",
-        categoryEscapeHandler
-    );
-
-
-    // ======================================================
-    // OVERLAY
-    // ======================================================
+    // ------------------------------------------------------
+    // MODAL BACKDROP
+    // ------------------------------------------------------
 
     const modal =
-        categoryElement(
+        document.getElementById(
             "categoryModal"
         );
 
@@ -497,9 +463,7 @@ function bindCategoryEvents() {
             function(event) {
 
                 if (
-                    event.target === modal ||
-                    event.target.dataset.categoryClose ===
-                    "true"
+                    event.target === modal
                 ) {
 
                     closeCategoryModal();
@@ -511,6 +475,24 @@ function bindCategoryEvents() {
 
     }
 
+
+    // ------------------------------------------------------
+    // ESC KEY
+    // ------------------------------------------------------
+
+    document.addEventListener(
+        "keydown",
+        categoryEscapeHandler
+    );
+
+
+    categoryEventsBound = true;
+
+
+    console.log(
+        "Category events bound."
+    );
+
 }
 
 
@@ -520,21 +502,23 @@ function bindCategoryEvents() {
 
 function categoryEscapeHandler(event) {
 
-    const modal =
-        categoryElement(
-            "categoryModal"
-        );
-
-
-    if (!modal) {
+    if (
+        event.key !== "Escape"
+    ) {
 
         return;
 
     }
 
 
+    const modal =
+        document.getElementById(
+            "categoryModal"
+        );
+
+
     if (
-        event.key === "Escape" &&
+        modal &&
         modal.classList.contains("show")
     ) {
 
@@ -549,15 +533,15 @@ function categoryEscapeHandler(event) {
 // LOAD CATEGORIES
 // ==========================================================
 
-async function loadCategories() {
+async function loadCategories(showRefresh = false) {
 
-    if (!categoryFirebaseReady()) {
+    const database =
+        getCategoryDatabase();
 
-        console.error(
-            "Firebase Database is not initialized."
-        );
 
-        showCategoryError(
+    if (!database) {
+
+        renderCategoryError(
             "Firebase Database is not initialized."
         );
 
@@ -566,43 +550,125 @@ async function loadCategories() {
     }
 
 
-    showCategoryLoading();
+    const tableBody =
+        document.getElementById(
+            "categoryTableBody"
+        );
+
+
+    if (tableBody) {
+
+        tableBody.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="7"
+                    class="category-loading"
+                >
+
+                    <div class="spinner"></div>
+
+                    <div>
+
+                        Loading categories...
+
+                    </div>
+
+                </td>
+
+            </tr>
+
+        `;
+
+    }
+
+
+    if (showRefresh) {
+
+        const button =
+            document.getElementById(
+                "btnRefreshCategories"
+            );
+
+
+        if (button) {
+
+            button.disabled = true;
+
+        }
+
+    }
 
 
     try {
 
         const snapshot =
-            await db
+            await database
                 .ref("categories")
                 .once("value");
 
 
-        categoryData = {};
+        const data =
+            snapshot.val() || {};
 
 
-        if (snapshot.exists()) {
-
-            snapshot.forEach(
-                function(child) {
-
-                    categoryData[
-                        child.key
-                    ] = child.val() || {};
-
-                }
+        categoryData =
+            normalizeCategories(
+                data
             );
 
-        }
+
+        categoryData.sort(
+            function(a, b) {
+
+                const orderA =
+                    Number(
+                        a.displayOrder || 0
+                    );
 
 
-        renderCategories();
+                const orderB =
+                    Number(
+                        b.displayOrder || 0
+                    );
 
-        updateCategoryStatistics();
+
+                if (
+                    orderA !== orderB
+                ) {
+
+                    return orderA - orderB;
+
+                }
+
+
+                return String(
+                    a.name || ""
+                ).localeCompare(
+                    String(
+                        b.name || ""
+                    )
+                );
+
+            }
+        );
+
+
+        updateStatistics();
+
+        filterCategories();
+
+        showCategoryAlert(
+            "Categories loaded successfully.",
+            "success",
+            1800
+        );
 
 
         console.log(
             "Categories loaded:",
-            Object.keys(categoryData).length
+            categoryData.length
         );
 
     }
@@ -615,14 +681,30 @@ async function loadCategories() {
         );
 
 
-        categoryData = {};
-
-        renderCategories();
-
-        showCategoryError(
+        renderCategoryError(
             error.message ||
             "Unable to load categories."
         );
+
+    }
+
+    finally {
+
+        if (showRefresh) {
+
+            const button =
+                document.getElementById(
+                    "btnRefreshCategories"
+                );
+
+
+            if (button) {
+
+                button.disabled = false;
+
+            }
+
+        }
 
     }
 
@@ -630,20 +712,183 @@ async function loadCategories() {
 
 
 // ==========================================================
-// RENDER CATEGORIES
+// NORMALIZE DATA
 // ==========================================================
 
-function renderCategories() {
+function normalizeCategories(data) {
 
-    const tbody =
-        categoryElement(
-            "categoryTableBody"
+    const result = [];
+
+
+    if (
+        !data ||
+        typeof data !== "object"
+    ) {
+
+        return result;
+
+    }
+
+
+    Object.keys(data).forEach(
+        function(id) {
+
+            const item =
+                data[id] || {};
+
+
+            result.push({
+
+                id: id,
+
+                code:
+                    item.code ||
+                    "",
+
+                name:
+                    item.name ||
+                    "",
+
+                description:
+                    item.description ||
+                    "",
+
+                icon:
+                    item.icon ||
+                    "fa-utensils",
+
+                color:
+                    item.color ||
+                    "#C8102E",
+
+                displayOrder:
+                    Number(
+                        item.displayOrder || 1
+                    ),
+
+                status:
+                    item.status ||
+                    "Active",
+
+                productCount:
+                    Number(
+                        item.productCount ||
+                        item.productsCount ||
+                        0
+                    ),
+
+                createdAt:
+                    item.createdAt ||
+                    "",
+
+                updatedAt:
+                    item.updatedAt ||
+                    ""
+
+            });
+
+        }
+    );
+
+
+    return result;
+
+}
+
+
+// ==========================================================
+// FILTER
+// ==========================================================
+
+function filterCategories() {
+
+    const searchInput =
+        document.getElementById(
+            "categorySearch"
         );
 
 
-    const empty =
-        categoryElement(
-            "categoryEmpty"
+    const statusInput =
+        document.getElementById(
+            "categoryStatusFilter"
+        );
+
+
+    const search =
+        (
+            searchInput?.value ||
+            ""
+        )
+        .trim()
+        .toLowerCase();
+
+
+    const status =
+        statusInput?.value ||
+        "all";
+
+
+    filteredCategories =
+        categoryData.filter(
+            function(category) {
+
+                const text = (
+
+                    String(
+                        category.code || ""
+                    ) +
+                    " " +
+                    String(
+                        category.name || ""
+                    ) +
+                    " " +
+                    String(
+                        category.description || ""
+                    )
+
+                ).toLowerCase();
+
+
+                const matchesSearch =
+                    !search ||
+                    text.includes(search);
+
+
+                const matchesStatus =
+                    status === "all" ||
+                    String(
+                        category.status
+                    ).toLowerCase() ===
+                    String(
+                        status
+                    ).toLowerCase();
+
+
+                return (
+                    matchesSearch &&
+                    matchesStatus
+                );
+
+            }
+        );
+
+
+    renderCategoryTable();
+
+    renderCategoryPagination();
+
+}
+
+
+// ==========================================================
+// RENDER TABLE
+// ==========================================================
+
+function renderCategoryTable() {
+
+    const tbody =
+        document.getElementById(
+            "categoryTableBody"
         );
 
 
@@ -654,230 +899,142 @@ function renderCategories() {
     }
 
 
-    const searchElement =
-        categoryElement(
-            "categorySearch"
-        );
+    const total =
+        filteredCategories.length;
 
 
-    const filterElement =
-        categoryElement(
-            "categoryStatusFilter"
-        );
+    if (!total) {
+
+        tbody.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="7"
+                    class="category-empty"
+                >
+
+                    <div
+                        class="category-empty-icon"
+                    >
+
+                        <i class="fa-solid fa-tags"></i>
+
+                    </div>
 
 
-    const search =
-        (
-            searchElement?.value ||
-            ""
-        )
-        .trim()
-        .toLowerCase();
+                    <h4>
+
+                        No Categories Found
+
+                    </h4>
 
 
-    const statusFilter =
-        filterElement?.value ||
-        "";
+                    <p>
+
+                        Try another search or add
+                        a new category.
+
+                    </p>
+
+                </td>
+
+            </tr>
+
+        `;
 
 
-    const categories =
-        Object.entries(
-            categoryData
-        )
-        .map(
-            function(entry) {
-
-                return {
-
-                    id: entry[0],
-
-                    ...(
-                        entry[1] || {}
-                    )
-
-                };
-
-            }
-        )
-        .filter(
-            function(category) {
-
-                const name =
-                    String(
-                        category.name ||
-                        ""
-                    ).toLowerCase();
-
-
-                const code =
-                    String(
-                        category.code ||
-                        ""
-                    ).toLowerCase();
-
-
-                const description =
-                    String(
-                        category.description ||
-                        ""
-                    ).toLowerCase();
-
-
-                const matchesSearch =
-                    !search ||
-                    name.includes(search) ||
-                    code.includes(search) ||
-                    description.includes(search);
-
-
-                const matchesStatus =
-                    !statusFilter ||
-                    String(
-                        category.status ||
-                        "Active"
-                    ) === statusFilter;
-
-
-                return (
-                    matchesSearch &&
-                    matchesStatus
-                );
-
-            }
-        )
-        .sort(
-            function(a, b) {
-
-                return (
-                    Number(
-                        a.displayOrder || 999999
-                    ) -
-                    Number(
-                        b.displayOrder || 999999
-                    )
-                );
-
-            }
-        );
-
-
-    // ======================================================
-    // EMPTY
-    // ======================================================
-
-    if (
-        categories.length === 0
-    ) {
-
-        tbody.innerHTML = "";
-
-        if (empty) {
-
-            empty.style.display =
-                "flex";
-
-        }
-
-        updateCategoryTotal(0);
+        updateListCount();
 
         return;
 
     }
 
 
-    if (empty) {
+    const start =
+        (
+            categoryCurrentPage - 1
+        ) *
+        CATEGORY_PAGE_SIZE;
 
-        empty.style.display =
-            "none";
 
-    }
+    const end =
+        Math.min(
+            start +
+            CATEGORY_PAGE_SIZE,
+            total
+        );
 
 
-    // ======================================================
-    // TABLE
-    // ======================================================
+    const pageItems =
+        filteredCategories.slice(
+            start,
+            end
+        );
+
 
     tbody.innerHTML =
-        categories
+        pageItems
             .map(
-                function(category) {
-
-                    return buildCategoryRow(
-                        category
-                    );
-
-                }
+                renderCategoryRow
             )
             .join("");
 
 
-    updateCategoryTotal(
-        categories.length
-    );
+    updateListCount();
 
 }
 
 
 // ==========================================================
-// BUILD CATEGORY ROW
+// RENDER ROW
 // ==========================================================
 
-function buildCategoryRow(category) {
+function renderCategoryRow(category) {
 
     const id =
-        escapeCategoryHTML(
+        escapeHTML(
             category.id
         );
 
 
     const code =
-        escapeCategoryHTML(
+        escapeHTML(
             category.code ||
             "-"
         );
 
 
     const name =
-        escapeCategoryHTML(
+        escapeHTML(
             category.name ||
             "Unnamed Category"
         );
 
 
     const description =
-        escapeCategoryHTML(
+        escapeHTML(
             category.description ||
-            "—"
+            "-"
         );
 
 
     const icon =
-        normalizeCategoryIcon(
+        sanitizeIcon(
             category.icon
         );
 
 
     const color =
-        category.color ||
-        "#C8102E";
-
-
-    const status =
-        category.status ||
-        "Active";
-
-
-    const order =
-        Number(
-            category.displayOrder ||
-            1
+        sanitizeColor(
+            category.color
         );
 
 
-    const productCount =
-        Number(
-            category.productCount ||
-            0
+    const status =
+        String(
+            category.status ||
+            "Active"
         );
 
 
@@ -886,6 +1043,18 @@ function buildCategoryRow(category) {
         "active"
             ? "active"
             : "inactive";
+
+
+    const productCount =
+        Number(
+            category.productCount || 0
+        );
+
+
+    const order =
+        Number(
+            category.displayOrder || 1
+        );
 
 
     return `
@@ -905,37 +1074,31 @@ function buildCategoryRow(category) {
 
             <td>
 
-                <div class="category-name">
+                <div class="category-name-cell">
 
                     <div
-                        class="category-name-icon"
+                        class="category-icon"
                         style="
-                            background:
-                            ${escapeCategoryHTML(
-                                hexToRGBA(
-                                    color,
-                                    .10
-                                )
+                            background:${hexToRGBA(
+                                color,
+                                .10
                             )};
-
-                            color:
-                            ${escapeCategoryHTML(
-                                color
-                            )};
+                            color:${color};
                         "
                     >
 
                         <i
-                            class="fa-solid ${icon}">
-                        </i>
+                            class="fa-solid ${icon}"
+                        ></i>
 
                     </div>
 
-                    <div>
+
+                    <span class="category-name">
 
                         ${name}
 
-                    </div>
+                    </span>
 
                 </div>
 
@@ -944,7 +1107,10 @@ function buildCategoryRow(category) {
 
             <td>
 
-                <div class="category-description">
+                <div
+                    class="category-description"
+                    title="${description}"
+                >
 
                     ${description}
 
@@ -956,7 +1122,8 @@ function buildCategoryRow(category) {
             <td>
 
                 <span
-                    class="category-product-count">
+                    class="category-product-count"
+                >
 
                     ${productCount}
 
@@ -968,11 +1135,15 @@ function buildCategoryRow(category) {
             <td>
 
                 <span
-                    class="category-status ${statusClass}">
+                    class="
+                        category-status
+                        ${statusClass}
+                    "
+                >
 
-                    ${escapeCategoryHTML(
-                        status
-                    )}
+                    <i class="fa-solid fa-circle"></i>
+
+                    ${escapeHTML(status)}
 
                 </span>
 
@@ -994,36 +1165,42 @@ function buildCategoryRow(category) {
 
                 <div class="category-actions">
 
+
                     <button
                         type="button"
-                        class="category-action-btn edit"
+                        class="
+                            category-action-button
+                            category-edit-button
+                        "
                         title="Edit Category"
-                        onclick="
-                            editCategory('${id}')
-                        "
+                        data-action="edit"
+                        data-id="${id}"
                     >
 
                         <i
-                            class="fa-solid fa-pen-to-square">
-                        </i>
+                            class="fa-solid fa-pen"
+                        ></i>
 
                     </button>
 
 
                     <button
                         type="button"
-                        class="category-action-btn delete"
-                        title="Delete Category"
-                        onclick="
-                            deleteCategory('${id}')
+                        class="
+                            category-action-button
+                            category-delete-button
                         "
+                        title="Delete Category"
+                        data-action="delete"
+                        data-id="${id}"
                     >
 
                         <i
-                            class="fa-solid fa-trash">
-                        </i>
+                            class="fa-solid fa-trash"
+                        ></i>
 
                     </button>
+
 
                 </div>
 
@@ -1037,33 +1214,96 @@ function buildCategoryRow(category) {
 
 
 // ==========================================================
+// TABLE ACTIONS
+// ==========================================================
+
+document.addEventListener(
+    "click",
+    function(event) {
+
+        const button =
+            event.target.closest(
+                "[data-action]"
+            );
+
+
+        if (!button) {
+
+            return;
+
+        }
+
+
+        const action =
+            button.dataset.action;
+
+
+        const id =
+            button.dataset.id;
+
+
+        if (!id) {
+
+            return;
+
+        }
+
+
+        if (
+            action === "edit"
+        ) {
+
+            editCategory(id);
+
+        }
+
+
+        if (
+            action === "delete"
+        ) {
+
+            deleteCategory(id);
+
+        }
+
+    }
+);
+
+
+// ==========================================================
 // OPEN ADD MODAL
 // ==========================================================
 
-async function openAddCategoryModal() {
+function openAddCategoryModal() {
 
-    editingCategoryId = null;
+    editingCategoryId =
+        null;
 
 
     resetCategoryForm();
 
 
     const title =
-        categoryElement(
+        document.getElementById(
             "categoryModalTitle"
         );
 
 
     if (title) {
 
-        title.textContent =
-            "Add Category";
+        title.innerHTML = `
+
+            <i class="fa-solid fa-plus"></i>
+
+            Add Category
+
+        `;
 
     }
 
 
     const saveText =
-        categoryElement(
+        document.getElementById(
             "btnSaveText"
         );
 
@@ -1076,22 +1316,8 @@ async function openAddCategoryModal() {
     }
 
 
-    const code =
-        categoryElement(
-            "categoryCode"
-        );
-
-
-    if (code) {
-
-        code.value =
-            await generateCategoryCode();
-
-    }
-
-
     const modal =
-        categoryElement(
+        document.getElementById(
             "categoryModal"
         );
 
@@ -1114,34 +1340,28 @@ async function openAddCategoryModal() {
     );
 
 
-    document.body.classList.add(
-        "category-modal-open"
-    );
+    document.body.style.overflow =
+        "hidden";
 
 
     setTimeout(
         function() {
 
-            const name =
-                categoryElement(
+            const input =
+                document.getElementById(
                     "categoryName"
                 );
 
 
-            if (name) {
+            if (input) {
 
-                name.focus();
+                input.focus();
 
             }
 
         },
         100
     );
-
-
-    updateCategoryIconPreview();
-
-    updateCategoryColorPreview();
 
 }
 
@@ -1152,32 +1372,26 @@ async function openAddCategoryModal() {
 
 async function editCategory(categoryId) {
 
-    if (!categoryId) {
-
-        return;
-
-    }
-
-
     const category =
-        categoryData[categoryId];
+        categoryData.find(
+            function(item) {
+
+                return String(
+                    item.id
+                ) ===
+                String(
+                    categoryId
+                );
+
+            }
+        );
 
 
     if (!category) {
 
-        await loadCategories();
-
-    }
-
-
-    const currentCategory =
-        categoryData[categoryId];
-
-
-    if (!currentCategory) {
-
-        alert(
-            "Category not found."
+        showCategoryAlert(
+            "Category not found.",
+            "error"
         );
 
         return;
@@ -1186,88 +1400,87 @@ async function editCategory(categoryId) {
 
 
     editingCategoryId =
-        categoryId;
+        category.id;
 
 
-    // ======================================================
-    // FILL FORM
-    // ======================================================
-
-    setCategoryValue(
+    setInputValue(
         "categoryCode",
-        currentCategory.code || ""
+        category.code
     );
 
 
-    setCategoryValue(
+    setInputValue(
         "categoryName",
-        currentCategory.name || ""
+        category.name
     );
 
 
-    setCategoryValue(
+    setInputValue(
         "categoryDescription",
-        currentCategory.description || ""
+        category.description
     );
 
 
-    setCategoryValue(
+    setInputValue(
         "categoryIcon",
-        currentCategory.icon ||
-        "fa-utensils"
+        category.icon
     );
 
 
-    setCategoryValue(
+    setInputValue(
         "categoryColor",
-        currentCategory.color ||
-        "#C8102E"
-    );
-
-
-    setCategoryValue(
-        "categoryColorText",
-        currentCategory.color ||
-        "#C8102E"
-    );
-
-
-    setCategoryValue(
-        "displayOrder",
-        Number(
-            currentCategory.displayOrder ||
-            1
+        sanitizeColor(
+            category.color
         )
     );
 
 
-    setCategoryValue(
-        "categoryStatus",
-        currentCategory.status ||
-        "Active"
+    setInputValue(
+        "categoryColorValue",
+        sanitizeColor(
+            category.color
+        )
     );
 
 
-    // ======================================================
-    // TITLE
-    // ======================================================
+    setInputValue(
+        "displayOrder",
+        category.displayOrder || 1
+    );
+
+
+    setInputValue(
+        "categoryStatus",
+        category.status || "Active"
+    );
+
+
+    updateCategoryIconPreview();
+
+    updateCategoryColorPreview();
+
 
     const title =
-        categoryElement(
+        document.getElementById(
             "categoryModalTitle"
         );
 
 
     if (title) {
 
-        title.textContent =
-            "Edit Category";
+        title.innerHTML = `
+
+            <i class="fa-solid fa-pen-to-square"></i>
+
+            Edit Category
+
+        `;
 
     }
 
 
     const saveText =
-        categoryElement(
+        document.getElementById(
             "btnSaveText"
         );
 
@@ -1278,11 +1491,6 @@ async function editCategory(categoryId) {
             "Update Category";
 
     }
-
-
-    updateCategoryIconPreview();
-
-    updateCategoryColorPreview();
 
 
     openCategoryModal();
@@ -1297,16 +1505,12 @@ async function editCategory(categoryId) {
 function openCategoryModal() {
 
     const modal =
-        categoryElement(
+        document.getElementById(
             "categoryModal"
         );
 
 
     if (!modal) {
-
-        console.error(
-            "Category modal not found."
-        );
 
         return;
 
@@ -1324,9 +1528,8 @@ function openCategoryModal() {
     );
 
 
-    document.body.classList.add(
-        "category-modal-open"
-    );
+    document.body.style.overflow =
+        "hidden";
 
 }
 
@@ -1338,7 +1541,7 @@ function openCategoryModal() {
 function closeCategoryModal() {
 
     const modal =
-        categoryElement(
+        document.getElementById(
             "categoryModal"
         );
 
@@ -1361,9 +1564,8 @@ function closeCategoryModal() {
     );
 
 
-    document.body.classList.remove(
-        "category-modal-open"
-    );
+    document.body.style.overflow =
+        "";
 
 
     editingCategoryId =
@@ -1371,34 +1573,6 @@ function closeCategoryModal() {
 
 
     resetCategoryForm();
-
-
-    const title =
-        categoryElement(
-            "categoryModalTitle"
-        );
-
-
-    if (title) {
-
-        title.textContent =
-            "Add Category";
-
-    }
-
-
-    const saveText =
-        categoryElement(
-            "btnSaveText"
-        );
-
-
-    if (saveText) {
-
-        saveText.textContent =
-            "Save Category";
-
-    }
 
 }
 
@@ -1409,44 +1583,49 @@ function closeCategoryModal() {
 
 function resetCategoryForm() {
 
-    const form =
-        categoryElement(
-            "categoryForm"
-        );
+    setInputValue(
+        "categoryCode",
+        generateCategoryCode()
+    );
 
 
-    if (form) {
+    setInputValue(
+        "categoryName",
+        ""
+    );
 
-        form.reset();
 
-    }
+    setInputValue(
+        "categoryDescription",
+        ""
+    );
 
 
-    setCategoryValue(
+    setInputValue(
         "categoryIcon",
         "fa-utensils"
     );
 
 
-    setCategoryValue(
+    setInputValue(
         "categoryColor",
         "#C8102E"
     );
 
 
-    setCategoryValue(
-        "categoryColorText",
+    setInputValue(
+        "categoryColorValue",
         "#C8102E"
     );
 
 
-    setCategoryValue(
+    setInputValue(
         "displayOrder",
-        1
+        getNextDisplayOrder()
     );
 
 
-    setCategoryValue(
+    setInputValue(
         "categoryStatus",
         "Active"
     );
@@ -1465,10 +1644,15 @@ function resetCategoryForm() {
 
 async function saveCategory() {
 
-    if (!categoryFirebaseReady()) {
+    const database =
+        getCategoryDatabase();
 
-        alert(
-            "Firebase Database is not initialized."
+
+    if (!database) {
+
+        showCategoryAlert(
+            "Firebase Database is not initialized.",
+            "error"
         );
 
         return;
@@ -1476,31 +1660,23 @@ async function saveCategory() {
     }
 
 
-    const nameElement =
-        categoryElement(
-            "categoryName"
-        );
-
-
     const name =
-        (
-            nameElement?.value ||
-            ""
+        getInputValue(
+            "categoryName"
         ).trim();
 
 
     if (!name) {
 
-        alert(
-            "Please enter Category Name."
+        showCategoryAlert(
+            "Category name is required.",
+            "error"
         );
 
 
-        if (nameElement) {
-
-            nameElement.focus();
-
-        }
+        focusInput(
+            "categoryName"
+        );
 
 
         return;
@@ -1509,76 +1685,59 @@ async function saveCategory() {
 
 
     const code =
-        (
-            categoryElement(
-                "categoryCode"
-            )?.value ||
-            ""
+        getInputValue(
+            "categoryCode"
         ).trim();
 
 
     const description =
-        (
-            categoryElement(
-                "categoryDescription"
-            )?.value ||
-            ""
+        getInputValue(
+            "categoryDescription"
         ).trim();
 
 
     const icon =
-        normalizeCategoryIcon(
-            categoryElement(
+        normalizeIcon(
+            getInputValue(
                 "categoryIcon"
-            )?.value
+            )
         );
 
 
     const color =
-        categoryElement(
-            "categoryColor"
-        )?.value ||
-        "#C8102E";
+        sanitizeColor(
+            getInputValue(
+                "categoryColor"
+            )
+        );
 
 
     const displayOrder =
-        Number(
-            categoryElement(
-                "displayOrder"
-            )?.value ||
-            1
+        Math.max(
+            1,
+            Number(
+                getInputValue(
+                    "displayOrder"
+                ) || 1
+            )
         );
 
 
     const status =
-        categoryElement(
+        getInputValue(
             "categoryStatus"
-        )?.value ||
+        ) ||
         "Active";
 
 
-    // ======================================================
-    // DUPLICATE NAME CHECK
-    // ======================================================
-
     const duplicate =
-        Object.entries(
-            categoryData
-        )
-        .some(
-            function(entry) {
-
-                const id =
-                    entry[0];
-
-
-                const category =
-                    entry[1] || {};
-
+        categoryData.find(
+            function(item) {
 
                 if (
                     editingCategoryId &&
-                    id === editingCategoryId
+                    String(item.id) ===
+                    String(editingCategoryId)
                 ) {
 
                     return false;
@@ -1588,8 +1747,7 @@ async function saveCategory() {
 
                 return (
                     String(
-                        category.name ||
-                        ""
+                        item.name || ""
                     )
                     .trim()
                     .toLowerCase() ===
@@ -1602,8 +1760,9 @@ async function saveCategory() {
 
     if (duplicate) {
 
-        alert(
-            "A category with this name already exists."
+        showCategoryAlert(
+            "A category with this name already exists.",
+            "error"
         );
 
         return;
@@ -1612,23 +1771,28 @@ async function saveCategory() {
 
 
     const saveButton =
-        categoryElement(
+        document.getElementById(
             "btnSaveCategory"
-        );
-
-
-    const saveText =
-        categoryElement(
-            "btnSaveText"
         );
 
 
     if (saveButton) {
 
-        saveButton.disabled =
-            true;
+        saveButton.disabled = true;
 
     }
+
+
+    const saveText =
+        document.getElementById(
+            "btnSaveText"
+        );
+
+
+    const originalText =
+        saveText
+            ? saveText.textContent
+            : "Save Category";
 
 
     if (saveText) {
@@ -1643,11 +1807,15 @@ async function saveCategory() {
 
     try {
 
-        const category = {
+        const now =
+            new Date().toISOString();
+
+
+        const data = {
 
             code:
                 code ||
-                await generateCategoryCode(),
+                generateCategoryCode(),
 
             name:
                 name,
@@ -1669,75 +1837,68 @@ async function saveCategory() {
 
             productCount:
                 editingCategoryId
-                    ? Number(
-                        categoryData[
-                            editingCategoryId
-                        ]?.productCount ||
-                        0
+                    ? getExistingProductCount(
+                        editingCategoryId
                     )
                     : 0,
 
             updatedAt:
-                firebase.database.ServerValue
-                .TIMESTAMP
+                now
 
         };
 
 
-        // ==================================================
-        // UPDATE
-        // ==================================================
+        if (
+            editingCategoryId
+        ) {
 
-        if (editingCategoryId) {
-
-            await db
+            await database
                 .ref(
                     "categories/" +
                     editingCategoryId
                 )
                 .update(
-                    category
+                    data
                 );
 
 
-            alert(
-                "Category updated successfully."
+            showCategoryAlert(
+                "Category updated successfully.",
+                "success"
             );
 
         }
 
-        // ==================================================
-        // NEW
-        // ==================================================
-
         else {
 
-            category.createdAt =
-                firebase.database.ServerValue
-                .TIMESTAMP;
+            data.createdAt =
+                now;
 
 
             const newRef =
-                db
+                database
                     .ref("categories")
                     .push();
 
 
             await newRef.set(
-                category
+                data
             );
 
 
-            alert(
-                "Category saved successfully."
+            showCategoryAlert(
+                "Category added successfully.",
+                "success"
             );
 
         }
 
 
+        closeCategoryModal();
+
+
         await loadCategories();
 
-        closeCategoryModal();
 
     }
 
@@ -1749,12 +1910,10 @@ async function saveCategory() {
         );
 
 
-        alert(
-            "Unable to save category.\n\n" +
-            (
-                error.message ||
-                error
-            )
+        showCategoryAlert(
+            error.message ||
+            "Unable to save category.",
+            "error"
         );
 
     }
@@ -1763,8 +1922,7 @@ async function saveCategory() {
 
         if (saveButton) {
 
-            saveButton.disabled =
-                false;
+            saveButton.disabled = false;
 
         }
 
@@ -1772,9 +1930,7 @@ async function saveCategory() {
         if (saveText) {
 
             saveText.textContent =
-                editingCategoryId
-                    ? "Update Category"
-                    : "Save Category";
+                originalText;
 
         }
 
@@ -1789,21 +1945,26 @@ async function saveCategory() {
 
 async function deleteCategory(categoryId) {
 
-    if (!categoryId) {
-
-        return;
-
-    }
-
-
     const category =
-        categoryData[categoryId];
+        categoryData.find(
+            function(item) {
+
+                return String(
+                    item.id
+                ) ===
+                String(
+                    categoryId
+                );
+
+            }
+        );
 
 
     if (!category) {
 
-        alert(
-            "Category not found."
+        showCategoryAlert(
+            "Category not found.",
+            "error"
         );
 
         return;
@@ -1811,15 +1972,10 @@ async function deleteCategory(categoryId) {
     }
 
 
-    const name =
-        category.name ||
-        "this category";
-
-
     const confirmed =
         window.confirm(
             "Delete category \"" +
-            name +
+            category.name +
             "\"?\n\n" +
             "This action cannot be undone."
         );
@@ -1832,10 +1988,15 @@ async function deleteCategory(categoryId) {
     }
 
 
-    if (!categoryFirebaseReady()) {
+    const database =
+        getCategoryDatabase();
 
-        alert(
-            "Firebase Database is not initialized."
+
+    if (!database) {
+
+        showCategoryAlert(
+            "Firebase Database is not initialized.",
+            "error"
         );
 
         return;
@@ -1845,7 +2006,7 @@ async function deleteCategory(categoryId) {
 
     try {
 
-        await db
+        await database
             .ref(
                 "categories/" +
                 categoryId
@@ -1853,19 +2014,13 @@ async function deleteCategory(categoryId) {
             .remove();
 
 
-        delete categoryData[
-            categoryId
-        ];
-
-
-        renderCategories();
-
-        updateCategoryStatistics();
-
-
-        alert(
-            "Category deleted successfully."
+        showCategoryAlert(
+            "Category deleted successfully.",
+            "success"
         );
+
+
+        await loadCategories();
 
     }
 
@@ -1877,12 +2032,10 @@ async function deleteCategory(categoryId) {
         );
 
 
-        alert(
-            "Unable to delete category.\n\n" +
-            (
-                error.message ||
-                error
-            )
+        showCategoryAlert(
+            error.message ||
+            "Unable to delete category.",
+            "error"
         );
 
     }
@@ -1894,142 +2047,123 @@ async function deleteCategory(categoryId) {
 // GENERATE CATEGORY CODE
 // ==========================================================
 
-async function generateCategoryCode() {
+function generateCategoryCode() {
 
-    const numbers =
-        Object.values(
-            categoryData
-        )
-        .map(
-            function(category) {
+    let maxNumber = 0;
 
-                const code =
-                    String(
-                        category.code ||
-                        ""
+
+    categoryData.forEach(
+        function(category) {
+
+            const code =
+                String(
+                    category.code || ""
+                );
+
+
+            const match =
+                code.match(
+                    /(\d+)$/
+                );
+
+
+            if (match) {
+
+                maxNumber =
+                    Math.max(
+                        maxNumber,
+                        Number(
+                            match[1]
+                        )
                     );
-
-
-                const match =
-                    code.match(
-                        /CAT-(\d+)/i
-                    );
-
-
-                return match
-                    ? Number(match[1])
-                    : 0;
 
             }
-        );
 
-
-    const highest =
-        numbers.length
-            ? Math.max(...numbers)
-            : 0;
+        }
+    );
 
 
     const next =
-        highest + 1;
+        maxNumber + 1;
 
 
     return (
         "CAT-" +
-        String(next).padStart(
-            3,
-            "0"
-        )
+        String(next)
+            .padStart(
+                4,
+                "0"
+            )
     );
 
 }
 
 
 // ==========================================================
-// UPDATE STATISTICS
+// NEXT DISPLAY ORDER
 // ==========================================================
 
-function updateCategoryStatistics() {
+function getNextDisplayOrder() {
 
-    const categories =
-        Object.values(
-            categoryData
-        );
+    if (
+        !categoryData.length
+    ) {
+
+        return 1;
+
+    }
 
 
-    const total =
-        categories.length;
+    const orders =
+        categoryData.map(
+            function(item) {
 
-
-    const active =
-        categories.filter(
-            function(category) {
-
-                return (
-                    String(
-                        category.status ||
-                        "Active"
-                    ).toLowerCase() ===
-                    "active"
+                return Number(
+                    item.displayOrder || 0
                 );
 
             }
-        ).length;
-
-
-    const products =
-        categories.reduce(
-            function(total, category) {
-
-                return (
-                    total +
-                    Number(
-                        category.productCount ||
-                        0
-                    )
-                );
-
-            },
-            0
         );
 
 
-    setCategoryText(
-        "totalCategories",
-        total
-    );
-
-
-    setCategoryText(
-        "activeCategories",
-        active
-    );
-
-
-    setCategoryText(
-        "categoryProductCount",
-        products
-    );
-
-
-    setCategoryText(
-        "categoryTotal",
-        total
+    return (
+        Math.max(
+            ...orders,
+            0
+        ) + 1
     );
 
 }
 
 
 // ==========================================================
-// UPDATE TOTAL
+// PRODUCT COUNT
 // ==========================================================
 
-function updateCategoryTotal(total) {
+function getExistingProductCount(
+    categoryId
+) {
 
-    setCategoryText(
-        "categoryTotal",
-        total
-    );
+    const category =
+        categoryData.find(
+            function(item) {
+
+                return String(
+                    item.id
+                ) ===
+                String(
+                    categoryId
+                );
+
+            }
+        );
+
+
+    return category
+        ? Number(
+            category.productCount || 0
+        )
+        : 0;
 
 }
 
@@ -2041,14 +2175,14 @@ function updateCategoryTotal(total) {
 function updateCategoryIconPreview() {
 
     const input =
-        categoryElement(
+        document.getElementById(
             "categoryIcon"
         );
 
 
     const preview =
-        categoryElement(
-            "iconPreview"
+        document.getElementById(
+            "categoryIconPreview"
         );
 
 
@@ -2060,14 +2194,19 @@ function updateCategoryIconPreview() {
 
 
     const icon =
-        normalizeCategoryIcon(
-            input?.value
+        normalizeIcon(
+            input?.value ||
+            "fa-utensils"
         );
 
 
-    preview.className =
-        "fa-solid " +
-        icon;
+    preview.innerHTML = `
+
+        <i
+            class="fa-solid ${escapeHTML(icon)}"
+        ></i>
+
+    `;
 
 }
 
@@ -2079,20 +2218,30 @@ function updateCategoryIconPreview() {
 function updateCategoryColorPreview() {
 
     const colorInput =
-        categoryElement(
+        document.getElementById(
             "categoryColor"
         );
 
 
     const colorText =
-        categoryElement(
-            "categoryColorText"
+        document.getElementById(
+            "categoryColorValue"
         );
 
 
     const color =
-        colorInput?.value ||
-        "#C8102E";
+        sanitizeColor(
+            colorInput?.value ||
+            "#C8102E"
+        );
+
+
+    if (colorInput) {
+
+        colorInput.value =
+            color;
+
+    }
 
 
     if (colorText) {
@@ -2104,38 +2253,25 @@ function updateCategoryColorPreview() {
 
 
     const preview =
-        categoryElement(
+        document.getElementById(
             "categoryIconPreview"
         );
 
 
     if (preview) {
 
-        preview.style.background =
-            hexToRGBA(
-                color,
-                .08
+        const icon =
+            preview.querySelector(
+                "i"
             );
 
-        preview.style.borderColor =
-            hexToRGBA(
-                color,
-                .25
-            );
 
-    }
+        if (icon) {
 
+            icon.style.color =
+                color;
 
-    const icon =
-        categoryElement(
-            "iconPreview"
-        );
-
-
-    if (icon) {
-
-        icon.style.color =
-            color;
+        }
 
     }
 
@@ -2143,87 +2279,347 @@ function updateCategoryColorPreview() {
 
 
 // ==========================================================
-// HEX TO RGBA
+// UPDATE STATISTICS
 // ==========================================================
 
-function hexToRGBA(
-    hex,
-    alpha
-) {
+function updateStatistics() {
 
-    let value =
-        String(
-            hex ||
-            "#C8102E"
-        )
-        .replace(
-            "#",
-            ""
+    const total =
+        categoryData.length;
+
+
+    const active =
+        categoryData.filter(
+            function(item) {
+
+                return String(
+                    item.status
+                ).toLowerCase() ===
+                "active";
+
+            }
+        ).length;
+
+
+    const products =
+        categoryData.reduce(
+            function(total, item) {
+
+                return (
+                    total +
+                    Number(
+                        item.productCount || 0
+                    )
+                );
+
+            },
+            0
         );
 
 
-    if (value.length === 3) {
+    setText(
+        "totalCategories",
+        total
+    );
 
-        value =
-            value
-            .split("")
-            .map(
-                function(char) {
 
-                    return char + char;
+    setText(
+        "activeCategories",
+        active
+    );
 
-                }
-            )
-            .join("");
+
+    setText(
+        "assignedProducts",
+        products
+    );
+
+}
+
+
+// ==========================================================
+// LIST COUNT
+// ==========================================================
+
+function updateListCount() {
+
+    const element =
+        document.getElementById(
+            "categoryListCount"
+        );
+
+
+    if (!element) {
+
+        return;
 
     }
 
 
-    const number =
-        parseInt(
-            value,
-            16
+    element.textContent =
+        "Total: " +
+        filteredCategories.length;
+
+}
+
+
+// ==========================================================
+// PAGINATION
+// ==========================================================
+
+function renderCategoryPagination() {
+
+    const container =
+        document.getElementById(
+            "categoryPaginationButtons"
+        );
+
+
+    const info =
+        document.getElementById(
+            "categoryPaginationInfo"
+        );
+
+
+    if (!container) {
+
+        return;
+
+    }
+
+
+    const total =
+        filteredCategories.length;
+
+
+    const totalPages =
+        Math.max(
+            1,
+            Math.ceil(
+                total /
+                CATEGORY_PAGE_SIZE
+            )
         );
 
 
     if (
-        Number.isNaN(number)
+        categoryCurrentPage >
+        totalPages
     ) {
 
-        return (
-            "rgba(200,16,46," +
-            alpha +
-            ")"
-        );
+        categoryCurrentPage =
+            totalPages;
 
     }
 
 
-    const r =
-        (number >> 16) & 255;
+    const start =
+        total === 0
+            ? 0
+            : (
+                (
+                    categoryCurrentPage -
+                    1
+                ) *
+                CATEGORY_PAGE_SIZE
+            ) + 1;
 
 
-    const g =
-        (number >> 8) & 255;
+    const end =
+        Math.min(
+            categoryCurrentPage *
+            CATEGORY_PAGE_SIZE,
+            total
+        );
 
 
-    const b =
-        number & 255;
+    if (info) {
+
+        info.textContent =
+            "Showing " +
+            start +
+            " to " +
+            end +
+            " of " +
+            total +
+            " Categories";
+
+    }
 
 
-    return (
-        "rgba(" +
-        r +
-        "," +
-        g +
-        "," +
-        b +
-        "," +
-        alpha +
-        ")"
-    );
+    if (
+        totalPages <= 1
+    ) {
+
+        container.innerHTML = "";
+
+        return;
+
+    }
+
+
+    let html = "";
+
+
+    html += `
+
+        <button
+            type="button"
+            class="category-page-button"
+            data-page-action="prev"
+            ${categoryCurrentPage === 1
+                ? "disabled"
+                : ""}
+        >
+
+            <i class="fa-solid fa-chevron-left"></i>
+
+        </button>
+
+    `;
+
+
+    for (
+        let page = 1;
+        page <= totalPages;
+        page++
+    ) {
+
+        html += `
+
+            <button
+                type="button"
+                class="
+                    category-page-button
+                    ${
+                        page ===
+                        categoryCurrentPage
+                            ? "active"
+                            : ""
+                    }
+                "
+                data-page="${page}"
+            >
+
+                ${page}
+
+            </button>
+
+        `;
+
+    }
+
+
+    html += `
+
+        <button
+            type="button"
+            class="category-page-button"
+            data-page-action="next"
+            ${
+                categoryCurrentPage ===
+                totalPages
+                    ? "disabled"
+                    : ""
+            }
+        >
+
+            <i class="fa-solid fa-chevron-right"></i>
+
+        </button>
+
+    `;
+
+
+    container.innerHTML =
+        html;
 
 }
+
+
+// ==========================================================
+// PAGINATION CLICK
+// ==========================================================
+
+document.addEventListener(
+    "click",
+    function(event) {
+
+        const button =
+            event.target.closest(
+                "[data-page], [data-page-action]"
+            );
+
+
+        if (!button) {
+
+            return;
+
+        }
+
+
+        const page =
+            button.dataset.page;
+
+
+        const action =
+            button.dataset.pageAction;
+
+
+        if (page) {
+
+            categoryCurrentPage =
+                Number(page);
+
+            renderCategoryTable();
+
+            renderCategoryPagination();
+
+        }
+
+
+        if (
+            action === "prev" &&
+            categoryCurrentPage > 1
+        ) {
+
+            categoryCurrentPage--;
+
+            renderCategoryTable();
+
+            renderCategoryPagination();
+
+        }
+
+
+        if (
+            action === "next"
+        ) {
+
+            const totalPages =
+                Math.ceil(
+                    filteredCategories.length /
+                    CATEGORY_PAGE_SIZE
+                );
+
+
+            if (
+                categoryCurrentPage <
+                totalPages
+            ) {
+
+                categoryCurrentPage++;
+
+                renderCategoryTable();
+
+                renderCategoryPagination();
+
+            }
+
+        }
+
+    }
+);
 
 
 // ==========================================================
@@ -2232,34 +2628,13 @@ function hexToRGBA(
 
 function exportCategories() {
 
-    const categories =
-        Object.entries(
-            categoryData
-        )
-        .map(
-            function(entry) {
-
-                return {
-
-                    id:
-                        entry[0],
-
-                    ...(
-                        entry[1] || {}
-                    )
-
-                };
-
-            }
-        );
-
-
     if (
-        categories.length === 0
+        !filteredCategories.length
     ) {
 
-        alert(
-            "There are no categories to export."
+        showCategoryAlert(
+            "There are no categories to export.",
+            "error"
         );
 
         return;
@@ -2267,95 +2642,76 @@ function exportCategories() {
     }
 
 
-    const headers = [
+    const rows = [
 
-        "Category Code",
-
-        "Category Name",
-
-        "Description",
-
-        "Products",
-
-        "Status",
-
-        "Display Order"
+        [
+            "Code",
+            "Category Name",
+            "Description",
+            "Products",
+            "Status",
+            "Display Order"
+        ]
 
     ];
 
 
-    const rows =
-        categories.map(
-            function(category) {
+    filteredCategories.forEach(
+        function(category) {
 
-                return [
+            rows.push([
 
-                    category.code || "",
+                category.code || "",
 
-                    category.name || "",
+                category.name || "",
 
-                    category.description || "",
+                category.description || "",
 
-                    Number(
-                        category.productCount ||
-                        0
-                    ),
+                category.productCount || 0,
 
-                    category.status ||
-                    "Active",
+                category.status || "",
 
-                    Number(
-                        category.displayOrder ||
-                        1
-                    )
+                category.displayOrder || 1
 
-                ];
-
-            }
-        );
-
-
-    const csv = [
-
-        headers,
-
-        ...rows
-
-    ]
-    .map(
-        function(row) {
-
-            return row
-                .map(
-                    function(value) {
-
-                        return (
-                            '"' +
-                            String(
-                                value
-                            )
-                            .replace(
-                                /"/g,
-                                '""'
-                            ) +
-                            '"'
-                        );
-
-                    }
-                )
-                .join(",");
+            ]);
 
         }
-    )
-    .join("\n");
+    );
+
+
+    const csv =
+        rows
+            .map(
+                function(row) {
+
+                    return row
+                        .map(
+                            function(value) {
+
+                                return (
+                                    '"' +
+                                    String(
+                                        value
+                                    )
+                                    .replace(
+                                        /"/g,
+                                        '""'
+                                    ) +
+                                    '"'
+                                );
+
+                            }
+                        )
+                        .join(",");
+
+                }
+            )
+            .join("\n");
 
 
     const blob =
         new Blob(
-            [
-                "\uFEFF" +
-                csv
-            ],
+            [csv],
             {
                 type:
                     "text/csv;charset=utf-8;"
@@ -2380,9 +2736,7 @@ function exportCategories() {
 
 
     link.download =
-        "PAPPRITO-Categories-" +
-        getDateStamp() +
-        ".csv";
+        "papprito-categories.csv";
 
 
     document.body.appendChild(
@@ -2393,103 +2747,18 @@ function exportCategories() {
     link.click();
 
 
-    document.body.removeChild(
-        link
-    );
+    link.remove();
 
 
     URL.revokeObjectURL(
         url
     );
 
-}
 
-
-// ==========================================================
-// DATE STAMP
-// ==========================================================
-
-function getDateStamp() {
-
-    const date =
-        new Date();
-
-
-    return (
-        date.getFullYear() +
-        "-" +
-        String(
-            date.getMonth() + 1
-        ).padStart(
-            2,
-            "0"
-        ) +
-        "-" +
-        String(
-            date.getDate()
-        ).padStart(
-            2,
-            "0"
-        )
+    showCategoryAlert(
+        "Category list exported successfully.",
+        "success"
     );
-
-}
-
-
-// ==========================================================
-// SHOW LOADING
-// ==========================================================
-
-function showCategoryLoading() {
-
-    const tbody =
-        categoryElement(
-            "categoryTableBody"
-        );
-
-
-    const empty =
-        categoryElement(
-            "categoryEmpty"
-        );
-
-
-    if (empty) {
-
-        empty.style.display =
-            "none";
-
-    }
-
-
-    if (!tbody) {
-
-        return;
-
-    }
-
-
-    tbody.innerHTML = `
-
-        <tr>
-
-            <td
-                colspan="7"
-                class="category-loading">
-
-                <div
-                    class="category-spinner">
-                </div>
-
-                <span>
-                    Loading categories...
-                </span>
-
-            </td>
-
-        </tr>
-
-    `;
 
 }
 
@@ -2498,12 +2767,12 @@ function showCategoryLoading() {
 // ERROR
 // ==========================================================
 
-function showCategoryError(
+function renderCategoryError(
     message
 ) {
 
     const tbody =
-        categoryElement(
+        document.getElementById(
             "categoryTableBody"
         );
 
@@ -2521,35 +2790,37 @@ function showCategoryError(
 
             <td
                 colspan="7"
-                style="
-                    padding:40px;
-                    text-align:center;
-                    color:#C8102E;
-                "
+                class="category-empty"
             >
 
-                <i
-                    class="fa-solid
-                           fa-circle-exclamation"
-                    style="
-                        font-size:28px;
-                        margin-bottom:10px;
-                    "
-                ></i>
+                <div
+                    class="category-empty-icon"
+                >
 
-                <div>
-
-                    Unable to load categories.
+                    <i
+                        class="
+                            fa-solid
+                            fa-triangle-exclamation
+                        "
+                    ></i>
 
                 </div>
 
-                <small>
 
-                    ${escapeCategoryHTML(
+                <h4>
+
+                    Unable to Load Categories
+
+                </h4>
+
+
+                <p>
+
+                    ${escapeHTML(
                         message
                     )}
 
-                </small>
+                </p>
 
             </td>
 
@@ -2561,22 +2832,89 @@ function showCategoryError(
 
 
 // ==========================================================
-// SET VALUE
+// ALERT
 // ==========================================================
 
-function setCategoryValue(
-    id,
-    value
+function showCategoryAlert(
+    message,
+    type = "success",
+    duration = 3000
 ) {
 
-    const element =
-        categoryElement(id);
+    const alert =
+        document.getElementById(
+            "categoryAlert"
+        );
 
 
-    if (element) {
+    const icon =
+        document.getElementById(
+            "categoryAlertIcon"
+        );
 
-        element.value =
-            value;
+
+    const text =
+        document.getElementById(
+            "categoryAlertMessage"
+        );
+
+
+    if (
+        !alert ||
+        !icon ||
+        !text
+    ) {
+
+        console.log(
+            "Category Alert:",
+            message
+        );
+
+        return;
+
+    }
+
+
+    alert.className =
+        "category-alert " +
+        (
+            type === "error"
+                ? "error"
+                : "success"
+        );
+
+
+    icon.className =
+        type === "error"
+            ? "fa-solid fa-circle-exclamation"
+            : "fa-solid fa-circle-check";
+
+
+    text.textContent =
+        message;
+
+
+    alert.style.display =
+        "flex";
+
+
+    if (duration > 0) {
+
+        clearTimeout(
+            alert._hideTimer
+        );
+
+
+        alert._hideTimer =
+            setTimeout(
+                function() {
+
+                    alert.style.display =
+                        "none";
+
+                },
+                duration
+            );
 
     }
 
@@ -2584,16 +2922,54 @@ function setCategoryValue(
 
 
 // ==========================================================
-// SET TEXT
+// HELPERS
 // ==========================================================
 
-function setCategoryText(
+function getInputValue(id) {
+
+    const element =
+        document.getElementById(
+            id
+        );
+
+
+    return element
+        ? element.value
+        : "";
+
+}
+
+
+function setInputValue(
     id,
     value
 ) {
 
     const element =
-        categoryElement(id);
+        document.getElementById(
+            id
+        );
+
+
+    if (element) {
+
+        element.value =
+            value ?? "";
+
+    }
+
+}
+
+
+function setText(
+    id,
+    value
+) {
+
+    const element =
+        document.getElementById(
+            id
+        );
 
 
     if (element) {
@@ -2606,11 +2982,35 @@ function setCategoryText(
 }
 
 
+function focusInput(id) {
+
+    const element =
+        document.getElementById(
+            id
+        );
+
+
+    if (element) {
+
+        setTimeout(
+            function() {
+
+                element.focus();
+
+            },
+            50
+        );
+
+    }
+
+}
+
+
 // ==========================================================
 // NORMALIZE ICON
 // ==========================================================
 
-function normalizeCategoryIcon(
+function normalizeIcon(
     icon
 ) {
 
@@ -2618,8 +3018,7 @@ function normalizeCategoryIcon(
         String(
             icon ||
             "fa-utensils"
-        )
-        .trim();
+        ).trim();
 
 
     value =
@@ -2629,7 +3028,18 @@ function normalizeCategoryIcon(
         );
 
 
-    if (!value.startsWith("fa-")) {
+    value =
+        value.replace(
+            /^fa-/i,
+            "fa-"
+        );
+
+
+    if (
+        !value.startsWith(
+            "fa-"
+        )
+    ) {
 
         value =
             "fa-" +
@@ -2643,11 +3053,113 @@ function normalizeCategoryIcon(
 }
 
 
+function sanitizeIcon(
+    icon
+) {
+
+    return normalizeIcon(
+        icon
+    )
+    .replace(
+        /[^a-zA-Z0-9_-]/g,
+        ""
+    );
+
+}
+
+
 // ==========================================================
-// ESCAPE HTML
+// COLOR
 // ==========================================================
 
-function escapeCategoryHTML(
+function sanitizeColor(
+    color
+) {
+
+    const value =
+        String(
+            color ||
+            "#C8102E"
+        ).trim();
+
+
+    if (
+        /^#[0-9A-Fa-f]{6}$/.test(
+            value
+        )
+    ) {
+
+        return value;
+
+    }
+
+
+    return "#C8102E";
+
+}
+
+
+function hexToRGBA(
+    hex,
+    alpha
+) {
+
+    const value =
+        sanitizeColor(
+            hex
+        );
+
+
+    const r =
+        parseInt(
+            value.substring(
+                1,
+                3
+            ),
+            16
+        );
+
+
+    const g =
+        parseInt(
+            value.substring(
+                3,
+                5
+            ),
+            16
+        );
+
+
+    const b =
+        parseInt(
+            value.substring(
+                5,
+                7
+            ),
+            16
+        );
+
+
+    return (
+        "rgba(" +
+        r +
+        "," +
+        g +
+        "," +
+        b +
+        "," +
+        alpha +
+        ")"
+    );
+
+}
+
+
+// ==========================================================
+// HTML ESCAPE
+// ==========================================================
+
+function escapeHTML(
     value
 ) {
 
@@ -2685,46 +3197,59 @@ function escapeCategoryHTML(
 window.initializeCategoryPage =
     initializeCategoryPage;
 
+
 window.loadCategories =
     loadCategories;
 
-window.renderCategories =
-    renderCategories;
 
 window.openAddCategoryModal =
     openAddCategoryModal;
 
+
 window.openCategoryModal =
     openCategoryModal;
+
 
 window.closeCategoryModal =
     closeCategoryModal;
 
-window.resetCategoryForm =
-    resetCategoryForm;
-
-window.saveCategory =
-    saveCategory;
 
 window.editCategory =
     editCategory;
 
+
 window.deleteCategory =
     deleteCategory;
+
+
+window.saveCategory =
+    saveCategory;
+
+
+window.resetCategoryForm =
+    resetCategoryForm;
+
 
 window.generateCategoryCode =
     generateCategoryCode;
 
+
 window.updateCategoryIconPreview =
     updateCategoryIconPreview;
 
+
 window.updateCategoryColorPreview =
     updateCategoryColorPreview;
+
 
 window.exportCategories =
     exportCategories;
 
 
+window.filterCategories =
+    filterCategories;
+
+
 console.log(
-    "PAPPRITO Category Master Engine V1 loaded."
+    "PAPPRITO Category Master - Complete V1 loaded."
 );
