@@ -1,17 +1,14 @@
 /* ==========================================================
    PAPPRITO ERP
-   SIDEBAR V2
-   Desktop + Mobile Responsive
-========================================================== */
-
-* {
-    box-sizing: border-box;
-}
+   SIDEBAR V3
+   PREMIUM RED + YELLOW
+   DESKTOP + MOBILE
+   ========================================================== */
 
 
 /* ==========================================================
-   SIDEBAR CONTAINER
-========================================================== */
+   SIDEBAR
+   ========================================================== */
 
 #sidebar {
 
@@ -20,117 +17,82 @@
     top: 0;
     left: 0;
 
-    width: 260px;
+    width: var(--sidebar-width, 270px);
+
     height: 100vh;
 
     z-index: 2000;
 
-    background: #ffffff;
+    background: #FFFFFF;
 
-    border-right: 1px solid #e5e7eb;
+    border-right: 1px solid #E5E7EB;
 
     overflow-y: auto;
     overflow-x: hidden;
 
     transition:
-        transform 0.28s ease,
-        box-shadow 0.28s ease;
+        transform .28s ease,
+        box-shadow .28s ease;
+
+    box-shadow:
+        3px 0 18px
+        rgba(0, 0, 0, .06);
 
 }
 
 
 /* ==========================================================
-   SIDEBAR CONTENT
-========================================================== */
+   SIDEBAR INNER
+   ========================================================== */
 
 #sidebar .sidebar {
 
     width: 100%;
+
     min-height: 100%;
 
-    background: #ffffff;
+    background: #FFFFFF;
 
 }
 
 
 /* ==========================================================
-   DESKTOP
-========================================================== */
+   DESKTOP LAYOUT
+   ========================================================== */
 
 @media (min-width: 993px) {
 
     #sidebar {
 
-        transform: translateX(0);
-
-        box-shadow:
-            2px 0 12px
-            rgba(0,0,0,0.08);
-
-    }
-
-}
-
-
-/* ==========================================================
-   MOBILE
-========================================================== */
-
-@media (max-width: 992px) {
-
-    #sidebar {
-
-        width: 280px;
-
-        max-width: 85vw;
-
-        transform:
-            translateX(-105%);
-
-        box-shadow: none;
-
-    }
-
-
-    /* OPEN */
-
-    #sidebar.show {
-
         transform:
             translateX(0);
 
-        box-shadow:
-            8px 0 30px
-            rgba(0,0,0,0.25);
+    }
+
+
+    /*
+       IMPORTANT
+
+       Sidebar is fixed, therefore main-wrapper
+       must reserve the sidebar space.
+    */
+
+    .main-wrapper {
+
+        width:
+            calc(
+                100% - var(--sidebar-width, 270px)
+            );
+
+        margin-left:
+            var(--sidebar-width, 270px);
 
     }
 
 
-    /* BODY WHEN SIDEBAR OPEN */
+    #content {
 
-    body.sidebar-open {
-
-        overflow: hidden;
-
-    }
-
-
-    /* ======================================================
-       OVERLAY
-    ====================================================== */
-
-    body.sidebar-open::before {
-
-        content: "";
-
-        position: fixed;
-
-        inset: 0;
-
-        background:
-            rgba(0,0,0,0.45);
-
-        z-index: 1900;
+        width: 100%;
 
     }
 
@@ -139,7 +101,7 @@
 
 /* ==========================================================
    SIDEBAR LINKS
-========================================================== */
+   ========================================================== */
 
 #sidebar a {
 
@@ -149,80 +111,316 @@
 
     gap: 12px;
 
-    width: 100%;
+    width: calc(100% - 20px);
 
-    padding: 12px 16px;
+    margin:
+        2px 10px;
 
-    color: #1f2937;
+    padding:
+        11px 14px;
 
-    text-decoration: none;
+    color:
+        #1F2937;
 
-    border-radius: 8px;
+    text-decoration:
+        none;
+
+    border-radius:
+        10px;
 
     transition:
-        background 0.2s ease,
-        color 0.2s ease;
+        background .2s ease,
+        color .2s ease,
+        transform .2s ease;
 
 }
 
 
+/* ==========================================================
+   LINK HOVER
+   ========================================================== */
+
 #sidebar a:hover {
 
-    background: #f3f4f6;
+    background:
+        #FFF4F6;
 
-    color: #C8102E;
+    color:
+        #C8102E;
+
+}
+
+
+/* ==========================================================
+   ACTIVE LINK
+   ========================================================== */
+
+#sidebar a.active {
+
+    color:
+        #FFFFFF;
+
+    background:
+        linear-gradient(
+            135deg,
+            #C8102E,
+            #E51B3E
+        );
+
+    box-shadow:
+        0 5px 14px
+        rgba(200, 16, 46, .20);
+
+}
+
+
+#sidebar a.active i {
+
+    color:
+        #FFC72C;
+
+}
+
+
+/* ==========================================================
+   SIDEBAR ICON
+   ========================================================== */
+
+#sidebar a i {
+
+    width:
+        20px;
+
+    min-width:
+        20px;
+
+    text-align:
+        center;
+
+    font-size:
+        15px;
+
+    transition:
+        .2s ease;
 
 }
 
 
 /* ==========================================================
    SIDEBAR BUTTONS
-========================================================== */
+   ========================================================== */
 
 #sidebar button {
 
-    cursor: pointer;
+    cursor:
+        pointer;
+
+    font-family:
+        inherit;
 
 }
 
 
 /* ==========================================================
-   MOBILE NAVBAR
-========================================================== */
+   SIDEBAR SECTION TITLES
+   ========================================================== */
+
+#sidebar .sidebar-section-title {
+
+    padding:
+        16px 18px 7px;
+
+    color:
+        #9AA1AC;
+
+    font-size:
+        10px;
+
+    font-weight:
+        800;
+
+    letter-spacing:
+        .8px;
+
+    text-transform:
+        uppercase;
+
+}
+
+
+/* ==========================================================
+   MOBILE
+   ========================================================== */
 
 @media (max-width: 992px) {
+
+    #sidebar {
+
+        width:
+            min(
+                280px,
+                85vw
+            );
+
+        max-width:
+            85vw;
+
+        transform:
+            translateX(-105%);
+
+        box-shadow:
+            none;
+
+    }
+
+
+    /* ------------------------------------------------------
+       OPEN
+    ------------------------------------------------------ */
+
+    #sidebar.show {
+
+        transform:
+            translateX(0);
+
+        box-shadow:
+            10px 0 35px
+            rgba(0, 0, 0, .25);
+
+    }
+
+
+    /* ------------------------------------------------------
+       MAIN MUST BE FULL WIDTH ON MOBILE
+    ------------------------------------------------------ */
+
+    .main-wrapper {
+
+        width:
+            100%;
+
+        margin-left:
+            0;
+
+    }
+
+
+    #content {
+
+        width:
+            100%;
+
+        min-width:
+            0;
+
+    }
+
+
+    /* ------------------------------------------------------
+       BODY LOCK WHEN SIDEBAR OPEN
+    ------------------------------------------------------ */
+
+    body.sidebar-open {
+
+        overflow:
+            hidden;
+
+    }
+
+
+    /* ------------------------------------------------------
+       OVERLAY
+    ------------------------------------------------------ */
+
+    body.sidebar-open::before {
+
+        content:
+            "";
+
+        position:
+            fixed;
+
+        inset:
+            0;
+
+        background:
+            rgba(0, 0, 0, .45);
+
+        z-index:
+            1900;
+
+        cursor:
+            pointer;
+
+    }
+
+
+    /* ------------------------------------------------------
+       MOBILE TOGGLE
+    ------------------------------------------------------ */
 
     #sidebarToggle,
     .sidebar-toggle {
 
-        display: flex;
+        display:
+            flex;
 
-        align-items: center;
-        justify-content: center;
+        align-items:
+            center;
 
-        width: 46px;
-        height: 46px;
+        justify-content:
+            center;
 
-        border: none;
+        width:
+            44px;
 
-        border-radius: 10px;
+        height:
+            44px;
 
-        background: #C8102E;
+        padding:
+            0;
 
-        color: #ffffff;
+        border:
+            none;
 
-        font-size: 20px;
+        border-radius:
+            10px;
 
-        cursor: pointer;
+        background:
+            #C8102E;
 
-        position: relative;
+        color:
+            #FFFFFF;
 
-        z-index: 3000;
+        font-size:
+            19px;
 
-        touch-action: manipulation;
+        cursor:
+            pointer;
+
+        position:
+            relative;
+
+        z-index:
+            3000;
+
+        touch-action:
+            manipulation;
 
         -webkit-tap-highlight-color:
             transparent;
+
+        transition:
+            .2s ease;
+
+    }
+
+
+    #sidebarToggle:hover,
+    .sidebar-toggle:hover {
+
+        background:
+            #9E0B23;
 
     }
 
@@ -230,7 +428,8 @@
     #sidebarToggle:active,
     .sidebar-toggle:active {
 
-        transform: scale(0.96);
+        transform:
+            scale(.95);
 
     }
 
@@ -238,15 +437,16 @@
 
 
 /* ==========================================================
-   DESKTOP HAMBURGER
-========================================================== */
+   DESKTOP TOGGLE HIDDEN
+   ========================================================== */
 
 @media (min-width: 993px) {
 
     #sidebarToggle,
     .sidebar-toggle {
 
-        display: none;
+        display:
+            none;
 
     }
 
@@ -254,27 +454,156 @@
 
 
 /* ==========================================================
-   SCROLLBAR
-========================================================== */
+   SIDEBAR SCROLLBAR
+   ========================================================== */
 
 #sidebar::-webkit-scrollbar {
 
-    width: 6px;
-
-}
-
-
-#sidebar::-webkit-scrollbar-thumb {
-
-    background: #d1d5db;
-
-    border-radius: 10px;
+    width:
+        6px;
 
 }
 
 
 #sidebar::-webkit-scrollbar-track {
 
-    background: transparent;
+    background:
+        transparent;
+
+}
+
+
+#sidebar::-webkit-scrollbar-thumb {
+
+    background:
+        #D1D5DB;
+
+    border-radius:
+        20px;
+
+}
+
+
+#sidebar::-webkit-scrollbar-thumb:hover {
+
+    background:
+        #B7BDC7;
+
+}
+
+
+/* ==========================================================
+   SIDEBAR LOGO
+   ========================================================== */
+
+#sidebar img {
+
+    max-width:
+        100%;
+
+}
+
+
+/* ==========================================================
+   SIDEBAR LOGO IMAGE
+   ========================================================== */
+
+#sidebar .sidebar-logo {
+
+    width:
+        52px;
+
+    height:
+        52px;
+
+    object-fit:
+        contain;
+
+    margin:
+        0 auto;
+
+}
+
+
+/* ==========================================================
+   SIDEBAR BRAND
+   ========================================================== */
+
+#sidebar .sidebar-brand {
+
+    padding:
+        22px 18px 18px;
+
+    text-align:
+        center;
+
+    border-bottom:
+        1px solid #F0F1F3;
+
+}
+
+
+#sidebar .sidebar-brand-name {
+
+    margin-top:
+        8px;
+
+    color:
+        #C8102E;
+
+    font-size:
+        20px;
+
+    font-weight:
+        800;
+
+}
+
+
+#sidebar .sidebar-brand-subtitle {
+
+    margin-top:
+        2px;
+
+    color:
+        #8A929F;
+
+    font-size:
+        10px;
+
+}
+
+
+/* ==========================================================
+   MOBILE SIDEBAR BRAND
+   ========================================================== */
+
+@media (max-width: 992px) {
+
+    #sidebar .sidebar-brand {
+
+        padding-top:
+            18px;
+
+    }
+
+}
+
+
+/* ==========================================================
+   SMALL MOBILE
+   ========================================================== */
+
+@media (max-width: 576px) {
+
+    #sidebar {
+
+        width:
+            280px;
+
+        max-width:
+            88vw;
+
+    }
 
 }
