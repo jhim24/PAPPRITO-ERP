@@ -1,19 +1,20 @@
 // ==========================================================
 // PAPPRITO ERP
-// APP / NAVIGATION ENGINE V3
+// APP / NAVIGATION ENGINE V4
 // File : assets/js/app.js
 //
 // MAIN FUNCTIONS:
 // - Component Loader
 // - Page Loader
+// - Dashboard Engine Loader
 // - Product Engine Loader
 // - Category Engine Loader
 // - Mobile Sidebar
 // - Page Navigation
 //
 // IMPORTANT:
-// Product and Category modules are loaded dynamically
-// before their pages are initialized.
+// Dashboard, Product and Category modules are loaded
+// dynamically before their pages are initialized.
 // ==========================================================
 
 "use strict";
@@ -23,8 +24,22 @@
 // GLOBAL VARIABLES
 // ==========================================================
 
+let dashboardScriptsLoaded = false;
+
 let productScriptsLoaded = false;
+
 let categoryScriptsLoaded = false;
+
+
+// ==========================================================
+// DASHBOARD SCRIPTS
+// ==========================================================
+
+const dashboardScripts = [
+
+    "assets/js/dashboard/dashboard.js"
+
+];
 
 
 // ==========================================================
@@ -85,6 +100,7 @@ async function loadComponent(
         const response =
             await fetch(file);
 
+
         if (!response.ok) {
 
             throw new Error(
@@ -94,11 +110,14 @@ async function loadComponent(
 
         }
 
+
         const html =
             await response.text();
 
+
         const element =
             document.getElementById(id);
+
 
         if (!element) {
 
@@ -111,8 +130,10 @@ async function loadComponent(
 
         }
 
+
         element.innerHTML =
             html;
+
 
         return true;
 
@@ -136,7 +157,9 @@ async function loadComponent(
 // LOAD JAVASCRIPT FILE
 // ==========================================================
 
-function loadScript(src) {
+function loadScript(
+    src
+) {
 
     return new Promise(
         function(
@@ -168,6 +191,7 @@ function loadScript(src) {
             script.src =
                 src;
 
+
             script.dataset.pappritoScript =
                 src;
 
@@ -179,6 +203,7 @@ function loadScript(src) {
                         "Loaded:",
                         src
                     );
+
 
                     resolve();
 
@@ -192,6 +217,7 @@ function loadScript(src) {
                         "Failed to load:",
                         src
                     );
+
 
                     reject(
                         new Error(
@@ -226,11 +252,13 @@ async function loadScriptGroup(
         "=========================================="
     );
 
+
     console.log(
         "LOADING " +
         groupName +
         " ENGINES..."
     );
+
 
     console.log(
         "=========================================="
@@ -253,6 +281,49 @@ async function loadScriptGroup(
         groupName +
         " ENGINES LOADED."
     );
+
+}
+
+
+// ==========================================================
+// LOAD DASHBOARD SCRIPTS
+// ==========================================================
+
+async function loadDashboardScripts() {
+
+    if (
+        dashboardScriptsLoaded
+    ) {
+
+        return;
+
+    }
+
+
+    try {
+
+        await loadScriptGroup(
+            dashboardScripts,
+            "DASHBOARD"
+        );
+
+
+        dashboardScriptsLoaded =
+            true;
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Dashboard Script Loading Error:",
+            error
+        );
+
+
+        throw error;
+
+    }
 
 }
 
@@ -291,6 +362,7 @@ async function loadProductScripts() {
             "Product Script Loading Error:",
             error
         );
+
 
         throw error;
 
@@ -333,6 +405,7 @@ async function loadCategoryScripts() {
             "Category Script Loading Error:",
             error
         );
+
 
         throw error;
 
@@ -421,12 +494,61 @@ async function loadPage(
 
             case "pages/dashboard.html":
 
-                if (
-                    typeof loadDashboard ===
-                    "function"
-                ) {
+                console.log(
+                    "=== PREMIUM DASHBOARD PAGE ==="
+                );
 
-                    loadDashboard();
+
+                try {
+
+                    // ------------------------------------------
+                    // LOAD DASHBOARD ENGINE
+                    // ------------------------------------------
+
+                    await loadDashboardScripts();
+
+
+                    // ------------------------------------------
+                    // INITIALIZE DASHBOARD
+                    // ------------------------------------------
+
+                    if (
+                        typeof initializeDashboard ===
+                        "function"
+                    ) {
+
+                        initializeDashboard();
+
+                    }
+
+                    else {
+
+                        console.error(
+                            "initializeDashboard() not found."
+                        );
+
+                    }
+
+
+                    console.log(
+                        "Premium Dashboard initialized successfully."
+                    );
+
+                }
+
+                catch (error) {
+
+                    console.error(
+                        "Dashboard Page Initialization Error:",
+                        error
+                    );
+
+
+                    showModuleError(
+                        content,
+                        "Dashboard Module",
+                        error
+                    );
 
                 }
 
@@ -507,16 +629,8 @@ async function loadPage(
 
                 try {
 
-                    // ------------------------------------------
-                    // LOAD ALL CATEGORY ENGINES FIRST
-                    // ------------------------------------------
-
                     await loadCategoryScripts();
 
-
-                    // ------------------------------------------
-                    // LOAD CATEGORY TABLE
-                    // ------------------------------------------
 
                     if (
                         typeof loadCategories ===
@@ -536,10 +650,6 @@ async function loadPage(
                     }
 
 
-                    // ------------------------------------------
-                    // CATEGORY PAGE INITIALIZER
-                    // ------------------------------------------
-
                     if (
                         typeof initializeCategoryPage ===
                         "function"
@@ -549,10 +659,6 @@ async function loadPage(
 
                     }
 
-
-                    // ------------------------------------------
-                    // CATEGORY SAVE
-                    // ------------------------------------------
 
                     if (
                         typeof initializeCategorySave ===
@@ -564,10 +670,6 @@ async function loadPage(
                     }
 
 
-                    // ------------------------------------------
-                    // ICON PREVIEW
-                    // ------------------------------------------
-
                     if (
                         typeof initializeCategoryPreview ===
                         "function"
@@ -578,10 +680,6 @@ async function loadPage(
                     }
 
 
-                    // ------------------------------------------
-                    // CATEGORY CODE
-                    // ------------------------------------------
-
                     if (
                         typeof generateCategoryCode ===
                         "function"
@@ -591,10 +689,6 @@ async function loadPage(
 
                     }
 
-
-                    // ------------------------------------------
-                    // CATEGORY DROPDOWN
-                    // ------------------------------------------
 
                     if (
                         typeof loadAllCategoryDropdowns ===
@@ -1592,14 +1686,14 @@ document.addEventListener(
             "=========================================="
         );
 
+
         console.log(
             "PAPPRITO ERP INITIALIZING..."
         );
 
+
         console.log(
             "=========================================="
-
-
         );
 
 
@@ -1670,13 +1764,14 @@ document.addEventListener(
             "=========================================="
         );
 
+
         console.log(
             "PAPPRITO ERP READY."
         );
 
+
         console.log(
             "=========================================="
-
         );
 
     }
@@ -1692,6 +1787,12 @@ window.loadComponent =
 
 window.loadScript =
     loadScript;
+
+window.loadScriptGroup =
+    loadScriptGroup;
+
+window.loadDashboardScripts =
+    loadDashboardScripts;
 
 window.loadProductScripts =
     loadProductScripts;
@@ -1771,6 +1872,7 @@ window.openCompanyProfile =
 window.logoutERP =
     logoutERP;
 
+
 console.log(
-    "PAPPRITO ERP app.js V3 loaded."
+    "PAPPRITO ERP app.js V4 loaded."
 );
