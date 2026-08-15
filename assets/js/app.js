@@ -69,21 +69,7 @@ const productScripts = [
 
 const categoryScripts = [
 
-    "assets/js/category/category-load.js",
-
-    "assets/js/category/category-dropdown.js",
-
-    "assets/js/category/category-search.js",
-
-    "assets/js/category/category-save.js",
-
-    "assets/js/category/category-edit.js",
-
-    "assets/js/category/category-delete.js",
-
-    "assets/js/category/category-export.js",
-
-    "assets/js/category/category-modal.js"
+    "assets/js/category/category.js"
 
 ];
 // ==========================================================
