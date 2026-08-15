@@ -1,6 +1,6 @@
 // ==========================================================
 // PAPPRITO ERP
-// CATEGORY EDIT ENGINE V2
+// CATEGORY EDIT ENGINE V3
 // File : assets/js/category/category-edit.js
 //
 // FUNCTIONS:
@@ -8,10 +8,20 @@
 // - Load Category Data
 // - Populate Modal
 // - Preserve Category ID
-// - Update Category
+// - Open Edit Modal
+// - Cancel Edit
+// - Check Edit Mode
 // ==========================================================
 
 "use strict";
+
+
+// ==========================================================
+// GLOBAL EDIT STATE
+// ==========================================================
+
+window.editingCategoryId =
+    window.editingCategoryId || null;
 
 
 // ==========================================================
@@ -26,15 +36,27 @@ async function editCategory(categoryId) {
             "Category ID is missing."
         );
 
+        alert(
+            "Unable to edit category. Category ID is missing."
+        );
+
         return;
 
     }
 
 
+    // ======================================================
+    // FIREBASE CHECK
+    // ======================================================
+
     if (
         typeof db === "undefined" ||
         !db
     ) {
+
+        console.error(
+            "Firebase Database is not initialized."
+        );
 
         alert(
             "Firebase Database is not initialized."
@@ -48,10 +70,14 @@ async function editCategory(categoryId) {
     try {
 
         console.log(
-            "Editing category:",
+            "Loading category:",
             categoryId
         );
 
+
+        // ==================================================
+        // LOAD CATEGORY
+        // ==================================================
 
         const snapshot =
             await db
@@ -80,10 +106,10 @@ async function editCategory(categoryId) {
 
 
         // ==================================================
-        // SAVE EDIT ID
+        // SET EDIT MODE
         // ==================================================
 
-        editingCategoryId =
+        window.editingCategoryId =
             categoryId;
 
 
@@ -193,8 +219,7 @@ async function editCategory(categoryId) {
 
             displayOrder.value =
                 Number(
-                    category.displayOrder ||
-                    1
+                    category.displayOrder || 1
                 );
 
         }
@@ -234,7 +259,7 @@ async function editCategory(categoryId) {
 
 
         // ==================================================
-        // MODAL TITLE
+        // UPDATE MODAL TITLE
         // ==================================================
 
         const title =
@@ -257,7 +282,7 @@ async function editCategory(categoryId) {
 
 
         // ==================================================
-        // SAVE BUTTON
+        // UPDATE SAVE BUTTON TEXT
         // ==================================================
 
         const buttonText =
@@ -284,26 +309,48 @@ async function editCategory(categoryId) {
             );
 
 
-        if (
-            modalElement &&
-            typeof bootstrap !==
-            "undefined"
-        ) {
+        if (!modalElement) {
 
-            const modal =
-                bootstrap.Modal
-                    .getOrCreateInstance(
-                        modalElement
-                    );
+            console.error(
+                "Category modal not found."
+            );
 
-
-            modal.show();
+            return;
 
         }
 
 
+        if (
+            typeof bootstrap ===
+            "undefined"
+        ) {
+
+            console.error(
+                "Bootstrap is not loaded."
+            );
+
+            alert(
+                "Bootstrap is not loaded."
+            );
+
+            return;
+
+        }
+
+
+        const modal =
+            bootstrap.Modal
+                .getOrCreateInstance(
+                    modalElement
+                );
+
+
+        modal.show();
+
+
         console.log(
-            "Category loaded for editing."
+            "Category loaded for editing:",
+            category
         );
 
     }
@@ -330,14 +377,18 @@ async function editCategory(categoryId) {
 
 
 // ==========================================================
-// CANCEL EDIT
+// CANCEL CATEGORY EDIT
 // ==========================================================
 
 function cancelCategoryEdit() {
 
-    editingCategoryId =
+    window.editingCategoryId =
         null;
 
+
+    // ======================================================
+    // RESET FORM
+    // ======================================================
 
     if (
         typeof resetCategoryForm ===
@@ -349,12 +400,34 @@ function cancelCategoryEdit() {
     }
 
 
+    // ======================================================
+    // CLOSE MODAL
+    // ======================================================
+
+    const modalElement =
+        document.getElementById(
+            "categoryModal"
+        );
+
+
     if (
-        typeof closeCategoryModal ===
-        "function"
+        modalElement &&
+        typeof bootstrap !==
+        "undefined"
     ) {
 
-        closeCategoryModal();
+        const modal =
+            bootstrap.Modal
+                .getInstance(
+                    modalElement
+                );
+
+
+        if (modal) {
+
+            modal.hide();
+
+        }
 
     }
 
@@ -368,8 +441,67 @@ function cancelCategoryEdit() {
 function isCategoryEditMode() {
 
     return Boolean(
-        editingCategoryId
+        window.editingCategoryId
     );
+
+}
+
+
+// ==========================================================
+// GET EDITING CATEGORY ID
+// ==========================================================
+
+function getEditingCategoryId() {
+
+    return (
+        window.editingCategoryId ||
+        null
+    );
+
+}
+
+
+// ==========================================================
+// EXIT EDIT MODE
+// ==========================================================
+
+function exitCategoryEditMode() {
+
+    window.editingCategoryId =
+        null;
+
+
+    const title =
+        document.getElementById(
+            "categoryModalTitle"
+        );
+
+
+    if (title) {
+
+        title.innerHTML = `
+
+            <i class="fa-solid fa-tags"></i>
+
+            Add Category
+
+        `;
+
+    }
+
+
+    const buttonText =
+        document.getElementById(
+            "btnSaveText"
+        );
+
+
+    if (buttonText) {
+
+        buttonText.textContent =
+            "Save Category";
+
+    }
 
 }
 
@@ -387,7 +519,17 @@ window.cancelCategoryEdit =
 window.isCategoryEditMode =
     isCategoryEditMode;
 
+window.getEditingCategoryId =
+    getEditingCategoryId;
+
+window.exitCategoryEditMode =
+    exitCategoryEditMode;
+
+
+// ==========================================================
+// READY
+// ==========================================================
 
 console.log(
-    "PAPPRITO Category Edit Engine V2 loaded."
+    "PAPPRITO Category Edit Engine V3 loaded."
 );
