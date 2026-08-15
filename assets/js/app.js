@@ -1,38 +1,33 @@
 // ==========================================================
 // PAPPRITO ERP
-// APP / NAVIGATION ENGINE V4
+// APP / NAVIGATION ENGINE V5
 // File : assets/js/app.js
 //
 // MAIN FUNCTIONS:
 // - Component Loader
 // - Page Loader
-// - Dashboard Engine Loader
-// - Product Engine Loader
-// - Category Engine Loader
+// - Dashboard Loader
+// - Product Loader
+// - Category Loader
 // - Mobile Sidebar
 // - Page Navigation
-//
-// IMPORTANT:
-// Dashboard, Product and Category modules are loaded
-// dynamically before their pages are initialized.
+// - Safe Script Loading
 // ==========================================================
 
 "use strict";
 
 
 // ==========================================================
-// GLOBAL VARIABLES
+// GLOBAL STATE
 // ==========================================================
 
 let dashboardScriptsLoaded = false;
-
 let productScriptsLoaded = false;
-
 let categoryScriptsLoaded = false;
 
 
 // ==========================================================
-// DASHBOARD SCRIPTS
+// SCRIPT GROUPS
 // ==========================================================
 
 const dashboardScripts = [
@@ -41,10 +36,6 @@ const dashboardScripts = [
 
 ];
 
-
-// ==========================================================
-// PRODUCT SCRIPTS
-// ==========================================================
 
 const productScripts = [
 
@@ -63,47 +54,40 @@ const productScripts = [
 ];
 
 
-// ==========================================================
-// CATEGORY SCRIPTS
-// ==========================================================
-
 const categoryScripts = [
 
     "assets/js/category/category.js"
 
 ];
+
+
 // ==========================================================
 // LOAD HTML COMPONENT
 // ==========================================================
 
-async function loadComponent(
-    id,
-    file
-) {
+async function loadComponent(id, file) {
 
     try {
 
-        const response =
-            await fetch(file);
-
+        const response = await fetch(
+            file,
+            {
+                cache: "no-cache"
+            }
+        );
 
         if (!response.ok) {
 
             throw new Error(
-                "Unable to load: " +
-                file
+                "Unable to load component: " + file
             );
 
         }
 
-
-        const html =
-            await response.text();
-
+        const html = await response.text();
 
         const element =
             document.getElementById(id);
-
 
         if (!element) {
 
@@ -116,10 +100,7 @@ async function loadComponent(
 
         }
 
-
-        element.innerHTML =
-            html;
-
+        element.innerHTML = html;
 
         return true;
 
@@ -128,7 +109,7 @@ async function loadComponent(
     catch (error) {
 
         console.error(
-            "Component Error:",
+            "Component Loading Error:",
             error
         );
 
@@ -140,24 +121,18 @@ async function loadComponent(
 
 
 // ==========================================================
-// LOAD JAVASCRIPT FILE
+// LOAD JAVASCRIPT
 // ==========================================================
 
-function loadScript(
-    src
-) {
+function loadScript(src) {
 
     return new Promise(
-        function(
-            resolve,
-            reject
-        ) {
+        function(resolve, reject) {
 
             const existing =
                 document.querySelector(
                     `script[data-papprito-script="${src}"]`
                 );
-
 
             if (existing) {
 
@@ -167,57 +142,42 @@ function loadScript(
 
             }
 
-
             const script =
-                document.createElement(
-                    "script"
+                document.createElement("script");
+
+            script.src = src;
+
+            script.dataset.pappritoScript = src;
+
+            script.async = false;
+
+            script.onload = function() {
+
+                console.log(
+                    "PAPPRITO JS Loaded:",
+                    src
                 );
 
+                resolve();
 
-            script.src =
-                src;
+            };
 
+            script.onerror = function() {
 
-            script.dataset.pappritoScript =
-                src;
+                console.error(
+                    "PAPPRITO JS FAILED:",
+                    src
+                );
 
+                reject(
+                    new Error(
+                        "Unable to load script: " + src
+                    )
+                );
 
-            script.onload =
-                function() {
+            };
 
-                    console.log(
-                        "Loaded:",
-                        src
-                    );
-
-
-                    resolve();
-
-                };
-
-
-            script.onerror =
-                function() {
-
-                    console.error(
-                        "Failed to load:",
-                        src
-                    );
-
-
-                    reject(
-                        new Error(
-                            "Unable to load " +
-                            src
-                        )
-                    );
-
-                };
-
-
-            document.body.appendChild(
-                script
-            );
+            document.body.appendChild(script);
 
         }
     );
@@ -238,13 +198,9 @@ async function loadScriptGroup(
         "=========================================="
     );
 
-
     console.log(
-        "LOADING " +
-        groupName +
-        " ENGINES..."
+        "LOADING " + groupName + " MODULE"
     );
-
 
     console.log(
         "=========================================="
@@ -255,147 +211,166 @@ async function loadScriptGroup(
         const script of scripts
     ) {
 
-        await loadScript(
-            script
-        );
+        try {
+
+            await loadScript(script);
+
+        }
+
+        catch (error) {
+
+            console.error(
+                groupName +
+                " script error:",
+                error
+            );
+
+            throw error;
+
+        }
 
     }
 
 
     console.log(
-        "ALL " +
         groupName +
-        " ENGINES LOADED."
+        " MODULE LOADED."
     );
 
 }
 
 
 // ==========================================================
-// LOAD DASHBOARD SCRIPTS
+// DASHBOARD
 // ==========================================================
 
 async function loadDashboardScripts() {
 
-    if (
-        dashboardScriptsLoaded
-    ) {
+    if (dashboardScriptsLoaded) {
 
         return;
 
     }
 
+    await loadScriptGroup(
+        dashboardScripts,
+        "DASHBOARD"
+    );
 
-    try {
-
-        await loadScriptGroup(
-            dashboardScripts,
-            "DASHBOARD"
-        );
-
-
-        dashboardScriptsLoaded =
-            true;
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Dashboard Script Loading Error:",
-            error
-        );
-
-
-        throw error;
-
-    }
+    dashboardScriptsLoaded = true;
 
 }
 
 
 // ==========================================================
-// LOAD PRODUCT SCRIPTS
+// PRODUCTS
 // ==========================================================
 
 async function loadProductScripts() {
 
-    if (
-        productScriptsLoaded
-    ) {
+    if (productScriptsLoaded) {
 
         return;
 
     }
 
+    await loadScriptGroup(
+        productScripts,
+        "PRODUCT"
+    );
 
-    try {
-
-        await loadScriptGroup(
-            productScripts,
-            "PRODUCT"
-        );
-
-
-        productScriptsLoaded =
-            true;
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Product Script Loading Error:",
-            error
-        );
-
-
-        throw error;
-
-    }
+    productScriptsLoaded = true;
 
 }
 
 
 // ==========================================================
-// LOAD CATEGORY SCRIPTS
+// CATEGORY
 // ==========================================================
 
 async function loadCategoryScripts() {
 
-    if (
-        categoryScriptsLoaded
-    ) {
+    if (categoryScriptsLoaded) {
 
         return;
 
     }
 
+    await loadScriptGroup(
+        categoryScripts,
+        "CATEGORY"
+    );
 
-    try {
+    categoryScriptsLoaded = true;
 
-        await loadScriptGroup(
-            categoryScripts,
-            "CATEGORY"
-        );
+}
 
 
-        categoryScriptsLoaded =
-            true;
+// ==========================================================
+// HTML ESCAPE
+// ==========================================================
+
+function escapeAppHTML(value) {
+
+    return String(
+        value ?? ""
+    )
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
+}
+
+
+// ==========================================================
+// MODULE ERROR
+// ==========================================================
+
+function showModuleError(
+    container,
+    moduleName,
+    error
+) {
+
+    if (!container) {
+
+        return;
 
     }
 
-    catch (error) {
+    container.innerHTML += `
 
-        console.error(
-            "Category Script Loading Error:",
-            error
-        );
+        <div class="alert alert-danger m-3">
 
+            <div class="d-flex align-items-start gap-3">
 
-        throw error;
+                <i class="fa-solid fa-circle-exclamation
+                          fs-4"></i>
 
-    }
+                <div>
+
+                    <strong>
+                        ${escapeAppHTML(moduleName)}
+                        Error
+                    </strong>
+
+                    <div class="mt-2">
+
+                        ${escapeAppHTML(
+                            error?.message || error
+                        )}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    `;
 
 }
 
@@ -404,20 +379,38 @@ async function loadCategoryScripts() {
 // LOAD PAGE
 // ==========================================================
 
-async function loadPage(
-    page
-) {
+async function loadPage(page) {
+
+    const content =
+        document.getElementById("content");
+
+
+    if (!content) {
+
+        console.error(
+            "#content container not found."
+        );
+
+        return;
+
+    }
+
 
     try {
 
         console.log(
-            "Loading page:",
+            "PAPPRITO loading page:",
             page
         );
 
 
         const response =
-            await fetch(page);
+            await fetch(
+                page,
+                {
+                    cache: "no-cache"
+                }
+            );
 
 
         if (!response.ok) {
@@ -434,31 +427,15 @@ async function loadPage(
             await response.text();
 
 
-        const content =
-            document.getElementById(
-                "content"
-            );
+        // ==================================================
+        // INSERT PAGE
+        // ==================================================
 
-
-        if (!content) {
-
-            throw new Error(
-                "#content container not found."
-            );
-
-        }
+        content.innerHTML = html;
 
 
         // ==================================================
-        // LOAD HTML
-        // ==================================================
-
-        content.innerHTML =
-            html;
-
-
-        // ==================================================
-        // SAVE CURRENT PAGE
+        // SAVE PAGE
         // ==================================================
 
         localStorage.setItem(
@@ -468,7 +445,7 @@ async function loadPage(
 
 
         // ==================================================
-        // PAGE MODULES
+        // PAGE INITIALIZATION
         // ==================================================
 
         switch (page) {
@@ -480,63 +457,9 @@ async function loadPage(
 
             case "pages/dashboard.html":
 
-                console.log(
-                    "=== PREMIUM DASHBOARD PAGE ==="
+                await initializeDashboardModule(
+                    content
                 );
-
-
-                try {
-
-                    // ------------------------------------------
-                    // LOAD DASHBOARD ENGINE
-                    // ------------------------------------------
-
-                    await loadDashboardScripts();
-
-
-                    // ------------------------------------------
-                    // INITIALIZE DASHBOARD
-                    // ------------------------------------------
-
-                    if (
-                        typeof initializeDashboard ===
-                        "function"
-                    ) {
-
-                        initializeDashboard();
-
-                    }
-
-                    else {
-
-                        console.error(
-                            "initializeDashboard() not found."
-                        );
-
-                    }
-
-
-                    console.log(
-                        "Premium Dashboard initialized successfully."
-                    );
-
-                }
-
-                catch (error) {
-
-                    console.error(
-                        "Dashboard Page Initialization Error:",
-                        error
-                    );
-
-
-                    showModuleError(
-                        content,
-                        "Dashboard Module",
-                        error
-                    );
-
-                }
 
                 break;
 
@@ -547,57 +470,9 @@ async function loadPage(
 
             case "pages/products.html":
 
-                console.log(
-                    "=== PRODUCTS PAGE ==="
+                await initializeProductModule(
+                    content
                 );
-
-
-                try {
-
-                    await loadProductScripts();
-
-
-                    if (
-                        typeof initializeProductPage ===
-                        "function"
-                    ) {
-
-                        initializeProductPage();
-
-                    }
-
-
-                    if (
-                        typeof startProductListener ===
-                        "function"
-                    ) {
-
-                        startProductListener();
-
-                    }
-
-
-                    console.log(
-                        "Product Master initialized successfully."
-                    );
-
-                }
-
-                catch (error) {
-
-                    console.error(
-                        "Product Page Initialization Error:",
-                        error
-                    );
-
-
-                    showModuleError(
-                        content,
-                        "Product Module",
-                        error
-                    );
-
-                }
 
                 break;
 
@@ -608,105 +483,9 @@ async function loadPage(
 
             case "pages/categories.html":
 
-                console.log(
-                    "=== CATEGORY MASTER PAGE ==="
+                await initializeCategoryModule(
+                    content
                 );
-
-
-                try {
-
-                    await loadCategoryScripts();
-
-
-                    if (
-                        typeof loadCategories ===
-                        "function"
-                    ) {
-
-                        loadCategories();
-
-                    }
-
-                    else {
-
-                        console.error(
-                            "loadCategories() not found."
-                        );
-
-                    }
-
-
-                    if (
-                        typeof initializeCategoryPage ===
-                        "function"
-                    ) {
-
-                        initializeCategoryPage();
-
-                    }
-
-
-                    if (
-                        typeof initializeCategorySave ===
-                        "function"
-                    ) {
-
-                        initializeCategorySave();
-
-                    }
-
-
-                    if (
-                        typeof initializeCategoryPreview ===
-                        "function"
-                    ) {
-
-                        initializeCategoryPreview();
-
-                    }
-
-
-                    if (
-                        typeof generateCategoryCode ===
-                        "function"
-                    ) {
-
-                        generateCategoryCode();
-
-                    }
-
-
-                    if (
-                        typeof loadAllCategoryDropdowns ===
-                        "function"
-                    ) {
-
-                        loadAllCategoryDropdowns();
-
-                    }
-
-
-                    console.log(
-                        "Category Master initialized successfully."
-                    );
-
-                }
-
-                catch (error) {
-
-                    console.error(
-                        "Category Page Initialization Error:",
-                        error
-                    );
-
-
-                    showModuleError(
-                        content,
-                        "Category Module",
-                        error
-                    );
-
-                }
 
                 break;
 
@@ -717,14 +496,9 @@ async function loadPage(
 
             case "pages/receiving-orders.html":
 
-                if (
-                    typeof initializeReceivingOrders ===
-                    "function"
-                ) {
-
-                    initializeReceivingOrders();
-
-                }
+                safeInitialize(
+                    "initializeReceivingOrders"
+                );
 
                 break;
 
@@ -735,14 +509,9 @@ async function loadPage(
 
             case "pages/kitchen.html":
 
-                if (
-                    typeof initializeKitchen ===
-                    "function"
-                ) {
-
-                    initializeKitchen();
-
-                }
+                safeInitialize(
+                    "initializeKitchen"
+                );
 
                 break;
 
@@ -753,14 +522,9 @@ async function loadPage(
 
             case "pages/tables.html":
 
-                if (
-                    typeof initializeTables ===
-                    "function"
-                ) {
-
-                    initializeTables();
-
-                }
+                safeInitialize(
+                    "initializeTables"
+                );
 
                 break;
 
@@ -771,14 +535,9 @@ async function loadPage(
 
             case "pages/inventory.html":
 
-                if (
-                    typeof initializeInventory ===
-                    "function"
-                ) {
-
-                    initializeInventory();
-
-                }
+                safeInitialize(
+                    "initializeInventory"
+                );
 
                 break;
 
@@ -789,14 +548,9 @@ async function loadPage(
 
             case "pages/stock-in.html":
 
-                if (
-                    typeof initializeStockIn ===
-                    "function"
-                ) {
-
-                    initializeStockIn();
-
-                }
+                safeInitialize(
+                    "initializeStockIn"
+                );
 
                 break;
 
@@ -807,14 +561,9 @@ async function loadPage(
 
             case "pages/stock-out.html":
 
-                if (
-                    typeof initializeStockOut ===
-                    "function"
-                ) {
-
-                    initializeStockOut();
-
-                }
+                safeInitialize(
+                    "initializeStockOut"
+                );
 
                 break;
 
@@ -825,14 +574,9 @@ async function loadPage(
 
             case "pages/purchase-orders.html":
 
-                if (
-                    typeof initializePurchaseOrders ===
-                    "function"
-                ) {
-
-                    initializePurchaseOrders();
-
-                }
+                safeInitialize(
+                    "initializePurchaseOrders"
+                );
 
                 break;
 
@@ -843,14 +587,9 @@ async function loadPage(
 
             case "pages/suppliers.html":
 
-                if (
-                    typeof initializeSuppliers ===
-                    "function"
-                ) {
-
-                    initializeSuppliers();
-
-                }
+                safeInitialize(
+                    "initializeSuppliers"
+                );
 
                 break;
 
@@ -861,14 +600,9 @@ async function loadPage(
 
             case "pages/customers.html":
 
-                if (
-                    typeof initializeCustomers ===
-                    "function"
-                ) {
-
-                    initializeCustomers();
-
-                }
+                safeInitialize(
+                    "initializeCustomers"
+                );
 
                 break;
 
@@ -879,14 +613,9 @@ async function loadPage(
 
             case "pages/sales.html":
 
-                if (
-                    typeof initializeSales ===
-                    "function"
-                ) {
-
-                    initializeSales();
-
-                }
+                safeInitialize(
+                    "initializeSales"
+                );
 
                 break;
 
@@ -897,14 +626,9 @@ async function loadPage(
 
             case "pages/reports.html":
 
-                if (
-                    typeof initializeReports ===
-                    "function"
-                ) {
-
-                    initializeReports();
-
-                }
+                safeInitialize(
+                    "initializeReports"
+                );
 
                 break;
 
@@ -915,14 +639,9 @@ async function loadPage(
 
             case "pages/employees.html":
 
-                if (
-                    typeof initializeEmployees ===
-                    "function"
-                ) {
-
-                    initializeEmployees();
-
-                }
+                safeInitialize(
+                    "initializeEmployees"
+                );
 
                 break;
 
@@ -933,14 +652,9 @@ async function loadPage(
 
             case "pages/attendance.html":
 
-                if (
-                    typeof initializeAttendance ===
-                    "function"
-                ) {
-
-                    initializeAttendance();
-
-                }
+                safeInitialize(
+                    "initializeAttendance"
+                );
 
                 break;
 
@@ -951,14 +665,9 @@ async function loadPage(
 
             case "pages/payroll.html":
 
-                if (
-                    typeof initializePayroll ===
-                    "function"
-                ) {
-
-                    initializePayroll();
-
-                }
+                safeInitialize(
+                    "initializePayroll"
+                );
 
                 break;
 
@@ -969,14 +678,9 @@ async function loadPage(
 
             case "pages/settings.html":
 
-                if (
-                    typeof initializeSettings ===
-                    "function"
-                ) {
-
-                    initializeSettings();
-
-                }
+                safeInitialize(
+                    "initializeSettings"
+                );
 
                 break;
 
@@ -987,14 +691,9 @@ async function loadPage(
 
             case "pages/company-profile.html":
 
-                if (
-                    typeof initializeCompanyProfile ===
-                    "function"
-                ) {
-
-                    initializeCompanyProfile();
-
-                }
+                safeInitialize(
+                    "initializeCompanyProfile"
+                );
 
                 break;
 
@@ -1006,7 +705,7 @@ async function loadPage(
             default:
 
                 console.log(
-                    "Page loaded without specific module:",
+                    "No specific initializer:",
                     page
                 );
 
@@ -1016,7 +715,7 @@ async function loadPage(
 
 
         console.log(
-            "Page loaded successfully:",
+            "PAPPRITO page loaded:",
             page
         );
 
@@ -1025,126 +724,357 @@ async function loadPage(
     catch (error) {
 
         console.error(
-            "Load Page Error:",
+            "Page Loading Error:",
             error
         );
 
 
-        const content =
-            document.getElementById(
-                "content"
-            );
+        content.innerHTML = `
 
+            <div class="container-fluid p-4">
 
-        if (content) {
+                <div class="alert alert-danger">
 
-            content.innerHTML = `
+                    <h4 class="alert-heading">
 
-                <div class="container-fluid p-5">
+                        <i class="fa-solid fa-triangle-exclamation">
+                        </i>
 
-                    <div class="alert alert-danger">
+                        Page Loading Error
 
-                        <h4>
-                            Page Not Found
-                        </h4>
+                    </h4>
 
-                        <p>
+                    <hr>
+
+                    <p class="mb-2">
+
+                        Unable to load:
+
+                        <strong>
                             ${escapeAppHTML(page)}
-                        </p>
+                        </strong>
 
-                        <hr>
+                    </p>
 
-                        <small>
-                            ${escapeAppHTML(
-                                error.message
-                            )}
-                        </small>
+                    <small>
 
-                    </div>
+                        ${escapeAppHTML(
+                            error.message
+                        )}
+
+                    </small>
 
                 </div>
 
-            `;
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+// ==========================================================
+// SAFE INITIALIZER
+// ==========================================================
+
+function safeInitialize(functionName) {
+
+    try {
+
+        if (
+            typeof window[functionName] ===
+            "function"
+        ) {
+
+            window[functionName]();
+
+            console.log(
+                functionName +
+                "() initialized."
+            );
+
+        }
+
+        else {
+
+            console.warn(
+                functionName +
+                "() not found."
+            );
 
         }
 
     }
 
-}
+    catch (error) {
 
-
-// ==========================================================
-// MODULE ERROR DISPLAY
-// ==========================================================
-
-function showModuleError(
-    container,
-    moduleName,
-    error
-) {
-
-    if (!container) {
-
-        return;
+        console.error(
+            functionName +
+            "() error:",
+            error
+        );
 
     }
 
+}
 
-    container.innerHTML += `
 
-        <div class="alert alert-danger m-3">
+// ==========================================================
+// DASHBOARD INITIALIZATION
+// ==========================================================
 
-            <strong>
-                ${escapeAppHTML(
-                    moduleName
-                )} Error
-            </strong>
+async function initializeDashboardModule(
+    content
+) {
 
-            <br><br>
+    try {
 
-            ${escapeAppHTML(
-                error.message ||
-                error
-            )}
+        await loadDashboardScripts();
 
-        </div>
 
-    `;
+        if (
+            typeof initializeDashboard ===
+            "function"
+        ) {
+
+            initializeDashboard();
+
+        }
+
+        else {
+
+            console.warn(
+                "initializeDashboard() not found."
+            );
+
+        }
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Dashboard Module Error:",
+            error
+        );
+
+        showModuleError(
+            content,
+            "Dashboard",
+            error
+        );
+
+    }
 
 }
 
 
 // ==========================================================
-// HTML ESCAPE
+// PRODUCT INITIALIZATION
 // ==========================================================
 
-function escapeAppHTML(
-    value
+async function initializeProductModule(
+    content
 ) {
 
-    return String(
-        value ?? ""
-    )
-    .replace(
-        /&/g,
-        "&amp;"
-    )
-    .replace(
-        /</g,
-        "&lt;"
-    )
-    .replace(
-        />/g,
-        "&gt;"
-    )
-    .replace(
-        /"/g,
-        "&quot;"
-    )
-    .replace(
-        /'/g,
-        "&#039;"
-    );
+    try {
+
+        console.log(
+            "=========================================="
+        );
+
+        console.log(
+            "INITIALIZING PRODUCT MASTER"
+        );
+
+        console.log(
+            "=========================================="
+        );
+
+
+        // ==================================================
+        // LOAD ALL PRODUCT SCRIPTS FIRST
+        // ==================================================
+
+        await loadProductScripts();
+
+
+        // ==================================================
+        // INITIALIZE PRODUCT PAGE
+        // ==================================================
+
+        if (
+            typeof initializeProductPage ===
+            "function"
+        ) {
+
+            initializeProductPage();
+
+        }
+
+        else {
+
+            console.warn(
+                "initializeProductPage() not found."
+            );
+
+        }
+
+
+        // ==================================================
+        // START FIREBASE LISTENER
+        // ==================================================
+
+        if (
+            typeof startProductListener ===
+            "function"
+        ) {
+
+            startProductListener();
+
+        }
+
+        else {
+
+            console.warn(
+                "startProductListener() not found."
+            );
+
+        }
+
+
+        console.log(
+            "Product Master initialized."
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Product Module Error:",
+            error
+        );
+
+        showModuleError(
+            content,
+            "Product",
+            error
+        );
+
+    }
+
+}
+
+
+// ==========================================================
+// CATEGORY INITIALIZATION
+// ==========================================================
+
+async function initializeCategoryModule(
+    content
+) {
+
+    try {
+
+        console.log(
+            "=========================================="
+        );
+
+        console.log(
+            "INITIALIZING CATEGORY MASTER"
+        );
+
+        console.log(
+            "=========================================="
+        );
+
+
+        await loadCategoryScripts();
+
+
+        if (
+            typeof loadCategories ===
+            "function"
+        ) {
+
+            loadCategories();
+
+        }
+
+
+        if (
+            typeof initializeCategoryPage ===
+            "function"
+        ) {
+
+            initializeCategoryPage();
+
+        }
+
+
+        if (
+            typeof initializeCategorySave ===
+            "function"
+        ) {
+
+            initializeCategorySave();
+
+        }
+
+
+        if (
+            typeof initializeCategoryPreview ===
+            "function"
+        ) {
+
+            initializeCategoryPreview();
+
+        }
+
+
+        if (
+            typeof generateCategoryCode ===
+            "function"
+        ) {
+
+            generateCategoryCode();
+
+        }
+
+
+        if (
+            typeof loadAllCategoryDropdowns ===
+            "function"
+        ) {
+
+            loadAllCategoryDropdowns();
+
+        }
+
+
+        console.log(
+            "Category Master initialized."
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Category Module Error:",
+            error
+        );
+
+        showModuleError(
+            content,
+            "Category",
+            error
+        );
+
+    }
 
 }
 
@@ -1376,11 +1306,13 @@ function openCompanyProfile() {
 
 function logoutERP() {
 
-    if (
-        !confirm(
+    const confirmed =
+        window.confirm(
             "Are you sure you want to logout?"
-        )
-    ) {
+        );
+
+
+    if (!confirmed) {
 
         return;
 
@@ -1409,7 +1341,7 @@ function toggleSidebar() {
     if (!sidebar) {
 
         console.warn(
-            "Sidebar element not found."
+            "Sidebar not found."
         );
 
         return;
@@ -1425,13 +1357,7 @@ function toggleSidebar() {
 
     if (isOpen) {
 
-        sidebar.classList.remove(
-            "show"
-        );
-
-        document.body.classList.remove(
-            "sidebar-open"
-        );
+        closeSidebarMobile();
 
     }
 
@@ -1445,23 +1371,21 @@ function toggleSidebar() {
             "sidebar-open"
         );
 
-    }
+
+        const button =
+            document.getElementById(
+                "sidebarToggle"
+            );
 
 
-    const button =
-        document.getElementById(
-            "sidebarToggle"
-        );
+        if (button) {
 
+            button.setAttribute(
+                "aria-expanded",
+                "true"
+            );
 
-    if (button) {
-
-        button.setAttribute(
-            "aria-expanded",
-            isOpen
-                ? "false"
-                : "true"
-        );
+        }
 
     }
 
@@ -1469,7 +1393,7 @@ function toggleSidebar() {
 
 
 // ==========================================================
-// CLOSE MOBILE SIDEBAR
+// CLOSE SIDEBAR
 // ==========================================================
 
 function closeSidebarMobile() {
@@ -1513,7 +1437,7 @@ function closeSidebarMobile() {
 
 
 // ==========================================================
-// MOBILE HAMBURGER
+// SIDEBAR TOGGLE CLICK
 // ==========================================================
 
 document.addEventListener(
@@ -1537,6 +1461,7 @@ document.addEventListener(
 
         event.stopPropagation();
 
+
         toggleSidebar();
 
     },
@@ -1545,42 +1470,7 @@ document.addEventListener(
 
 
 // ==========================================================
-// MOBILE TOUCH
-// ==========================================================
-
-document.addEventListener(
-    "touchend",
-    function(event) {
-
-        const button =
-            event.target.closest(
-                "#sidebarToggle, .sidebar-toggle"
-            );
-
-
-        if (!button) {
-
-            return;
-
-        }
-
-
-        event.preventDefault();
-
-        event.stopPropagation();
-
-        toggleSidebar();
-
-    },
-    {
-        capture: true,
-        passive: false
-    }
-);
-
-
-// ==========================================================
-// CLOSE SIDEBAR AFTER MENU CLICK
+// SIDEBAR MENU CLICK
 // ==========================================================
 
 document.addEventListener(
@@ -1610,7 +1500,7 @@ document.addEventListener(
                     closeSidebarMobile();
 
                 },
-                100
+                150
             );
 
         }
@@ -1620,7 +1510,7 @@ document.addEventListener(
 
 
 // ==========================================================
-// CLOSE WITH ESC
+// ESCAPE
 // ==========================================================
 
 document.addEventListener(
@@ -1628,8 +1518,7 @@ document.addEventListener(
     function(event) {
 
         if (
-            event.key ===
-            "Escape"
+            event.key === "Escape"
         ) {
 
             closeSidebarMobile();
@@ -1641,7 +1530,7 @@ document.addEventListener(
 
 
 // ==========================================================
-// CLOSE ON DESKTOP RESIZE
+// RESIZE
 // ==========================================================
 
 window.addEventListener(
@@ -1672,11 +1561,9 @@ document.addEventListener(
             "=========================================="
         );
 
-
         console.log(
             "PAPPRITO ERP INITIALIZING..."
         );
-
 
         console.log(
             "=========================================="
@@ -1684,7 +1571,7 @@ document.addEventListener(
 
 
         // ==================================================
-        // LOAD SIDEBAR
+        // SIDEBAR
         // ==================================================
 
         await loadComponent(
@@ -1694,7 +1581,7 @@ document.addEventListener(
 
 
         // ==================================================
-        // LOAD NAVBAR
+        // NAVBAR
         // ==================================================
 
         await loadComponent(
@@ -1704,7 +1591,7 @@ document.addEventListener(
 
 
         // ==================================================
-        // INITIALIZE NAVBAR
+        // NAVBAR INITIALIZER
         // ==================================================
 
         if (
@@ -1712,7 +1599,20 @@ document.addEventListener(
             "function"
         ) {
 
-            initializeNavbar();
+            try {
+
+                initializeNavbar();
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Navbar initialization error:",
+                    error
+                );
+
+            }
 
         }
 
@@ -1727,34 +1627,23 @@ document.addEventListener(
             );
 
 
-        if (
-            savedPage
-        ) {
+        const firstPage =
+            savedPage ||
+            "pages/dashboard.html";
 
-            await loadPage(
-                savedPage
-            );
 
-        }
-
-        else {
-
-            await loadPage(
-                "pages/dashboard.html"
-            );
-
-        }
+        await loadPage(
+            firstPage
+        );
 
 
         console.log(
             "=========================================="
         );
 
-
         console.log(
-            "PAPPRITO ERP READY."
+            "PAPPRITO ERP READY"
         );
-
 
         console.log(
             "=========================================="
@@ -1788,6 +1677,18 @@ window.loadCategoryScripts =
 
 window.loadPage =
     loadPage;
+
+window.safeInitialize =
+    safeInitialize;
+
+window.initializeDashboardModule =
+    initializeDashboardModule;
+
+window.initializeProductModule =
+    initializeProductModule;
+
+window.initializeCategoryModule =
+    initializeCategoryModule;
 
 window.toggleSidebar =
     toggleSidebar;
@@ -1860,5 +1761,5 @@ window.logoutERP =
 
 
 console.log(
-    "PAPPRITO ERP app.js V4 loaded."
+    "PAPPRITO ERP app.js V5 loaded."
 );
