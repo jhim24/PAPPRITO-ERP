@@ -1,273 +1,310 @@
-<!-- ==========================================
-     PAPPRITO ERP
-     CATEGORY MASTER
-========================================== -->
+<!DOCTYPE html>
+<html lang="en">
 
-<div class="container-fluid py-4">
+<head>
 
-    <!-- PAGE HEADER -->
+    <meta charset="UTF-8">
 
-    <div class="row align-items-center mb-4">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
 
-        <div class="col-lg-6">
+    <title>Categories | PAPPRITO ERP</title>
 
-            <h2 class="fw-bold mb-1">
+</head>
 
-                <i class="fa-solid fa-tags text-danger"></i>
 
-                Category Master
+<body>
 
-            </h2>
 
-            <p class="text-muted mb-0">
+<div class="category-page">
 
-                Manage all product categories used in PAPPRITO Menu, POS,
-                Kitchen Display and Inventory.
 
-            </p>
+    <!-- ======================================================
+         PAGE HEADER
+    ====================================================== -->
+
+    <section class="category-hero">
+
+        <div class="category-hero-left">
+
+            <div class="category-hero-icon">
+
+                <i class="fa-solid fa-tags"></i>
+
+            </div>
+
+            <div>
+
+                <span class="category-kicker">
+                    MASTER FILES
+                </span>
+
+                <h1>
+                    Category Master
+                </h1>
+
+                <p>
+                    Manage product categories used throughout
+                    PAPPRITO ERP, POS, Menu and Inventory.
+                </p>
+
+            </div>
 
         </div>
 
-        <div class="col-lg-6 text-lg-end mt-3 mt-lg-0">
 
         <button
-    type="button"
-    class="btn btn-danger"
-    onclick="openAddCategory()">
+            type="button"
+            id="btnAddCategory"
+            class="category-primary-btn">
 
-    <i class="fa-solid fa-plus"></i>
+            <i class="fa-solid fa-plus"></i>
 
-    Add Category
+            <span>
+                Add Category
+            </span>
 
-</button>
+        </button>
 
-        </div>
+    </section>
 
-    </div>
 
-    <!-- TOOLBAR -->
 
-    <div class="card shadow-sm border-0 mb-4">
+    <!-- ======================================================
+         STAT CARDS
+    ====================================================== -->
 
-        <div class="card-body">
+    <section class="category-stats">
 
-            <div class="row g-3">
 
-                <div class="col-lg-4">
+        <div class="category-stat-card">
 
-                    <div class="input-group">
+            <div class="stat-icon red">
 
-                        <span class="input-group-text">
+                <i class="fa-solid fa-tags"></i>
 
-                            <i class="fa-solid fa-magnifying-glass"></i>
+            </div>
 
-                        </span>
+            <div>
 
-                        <input
+                <span>
+                    Total Categories
+                </span>
 
-                            type="text"
-
-                            class="form-control"
-
-                            id="searchCategory"
-
-                            placeholder="Search Category">
-
-                    </div>
-
-                </div>
-
-                <div class="col-lg-2">
-
-                    <select
-
-                        class="form-select"
-
-                        id="filterStatus">
-
-                        <option value="">
-
-                            All Status
-
-                        </option>
-
-                        <option value="Active">
-
-                            Active
-
-                        </option>
-
-                        <option value="Inactive">
-
-                            Inactive
-
-                        </option>
-
-                    </select>
-
-                </div>
-
-                <div class="col-lg-6 text-lg-end">
-
-                    <button
-
-                        class="btn btn-success"
-
-                        id="btnExport">
-
-                        <i class="fa-solid fa-file-excel"></i>
-
-                        Export
-
-                    </button>
-
-                    <button
-
-                        class="btn btn-primary"
-
-                        id="btnRefresh">
-
-                        <i class="fa-solid fa-rotate"></i>
-
-                        Refresh
-
-                    </button>
-
-                </div>
+                <strong id="totalCategories">
+                    0
+                </strong>
 
             </div>
 
         </div>
 
-    </div>
 
-    <!-- TABLE -->
+        <div class="category-stat-card">
 
-    <div class="card shadow-sm border-0">
+            <div class="stat-icon yellow">
 
-        <div class="card-header bg-white">
+                <i class="fa-solid fa-circle-check"></i>
 
-            <div class="row">
+            </div>
 
-                <div class="col">
+            <div>
 
-                    <strong>
+                <span>
+                    Active
+                </span>
 
-                        Category List
-
-                    </strong>
-
-                </div>
-
-                <div class="col text-end">
-
-                    Total :
-
-                    <span
-
-                        id="totalCategories"
-
-                        class="fw-bold text-danger">
-
-                        0
-
-                    </span>
-
-                </div>
+                <strong id="activeCategories">
+                    0
+                </strong>
 
             </div>
 
         </div>
 
-        <div class="table-responsive">
 
-            <table
+        <div class="category-stat-card">
 
-                class="table table-hover align-middle mb-0">
+            <div class="stat-icon dark">
 
-                <thead class="table-light">
+                <i class="fa-solid fa-box-open"></i>
+
+            </div>
+
+            <div>
+
+                <span>
+                    Products Assigned
+                </span>
+
+                <strong id="categoryProductCount">
+                    0
+                </strong>
+
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- ======================================================
+         FILTER BAR
+    ====================================================== -->
+
+    <section class="category-toolbar">
+
+        <div class="category-search">
+
+            <i class="fa-solid fa-magnifying-glass"></i>
+
+            <input
+                type="text"
+                id="categorySearch"
+                placeholder="Search category...">
+
+        </div>
+
+
+        <select
+            id="categoryStatusFilter"
+            class="category-select">
+
+            <option value="">
+                All Status
+            </option>
+
+            <option value="Active">
+                Active
+            </option>
+
+            <option value="Inactive">
+                Inactive
+            </option>
+
+        </select>
+
+
+        <button
+            type="button"
+            id="btnExportCategory"
+            class="category-export-btn">
+
+            <i class="fa-solid fa-file-excel"></i>
+
+            Export
+
+        </button>
+
+
+        <button
+            type="button"
+            id="btnRefreshCategory"
+            class="category-refresh-btn">
+
+            <i class="fa-solid fa-rotate"></i>
+
+            Refresh
+
+        </button>
+
+    </section>
+
+
+
+    <!-- ======================================================
+         TABLE PANEL
+    ====================================================== -->
+
+    <section class="category-panel">
+
+
+        <div class="category-panel-header">
+
+            <div>
+
+                <span class="category-kicker">
+                    CATEGORY LIST
+                </span>
+
+                <h2>
+                    Categories
+                </h2>
+
+            </div>
+
+
+            <div class="category-total">
+
+                Total:
+
+                <strong id="categoryTotal">
+                    0
+                </strong>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="category-table-wrapper">
+
+            <table class="category-table">
+
+                <thead>
 
                     <tr>
 
-                        <th width="110">
-
+                        <th>
                             Code
-
-                        </th>
-
-                        <th width="80">
-
-                            Icon
-
                         </th>
 
                         <th>
-
                             Category
-
                         </th>
 
                         <th>
-
                             Description
-
                         </th>
 
-                        <th width="120">
-
+                        <th>
                             Products
-
                         </th>
 
-                        <th width="120">
-
+                        <th>
                             Status
-
                         </th>
 
-                        <th width="170">
+                        <th>
+                            Order
+                        </th>
 
+                        <th class="action-column">
                             Action
-
                         </th>
 
                     </tr>
 
                 </thead>
 
-                <tbody id="categoryTable">
+
+                <tbody id="categoryTableBody">
 
                     <tr>
 
                         <td
-
                             colspan="7"
+                            class="category-loading">
 
-                            class="text-center py-5">
+                            <div class="category-spinner"></div>
 
-                            <div>
-
-                                <i
-
-                                    class="fa-solid fa-folder-open fa-3x text-secondary mb-3">
-
-                                </i>
-
-                            </div>
-
-                            <strong>
-
-                                No Categories Found
-
-                            </strong>
-
-                            <br>
-
-                            <small class="text-muted">
-
-                                Click "Add Category" to create your first category.
-
-                            </small>
+                            <span>
+                                Loading categories...
+                            </span>
 
                         </td>
 
@@ -279,308 +316,282 @@
 
         </div>
 
-        <div class="card-footer bg-white">
 
-            <div class="row align-items-center">
+        <!-- EMPTY -->
 
-                <div class="col-md-6">
+        <div
+            id="categoryEmpty"
+            class="category-empty"
+            style="display:none;">
 
-                    Showing
+            <div class="empty-icon">
 
-                    <strong>
+                <i class="fa-solid fa-folder-open"></i>
 
-                        0
+            </div>
 
-                    </strong>
+            <h3>
+                No Categories Found
+            </h3>
 
-                    to
+            <p>
+                Create your first product category.
+            </p>
 
-                    <strong>
+            <button
+                type="button"
+                id="btnEmptyAddCategory"
+                class="category-primary-btn">
 
-                        0
+                <i class="fa-solid fa-plus"></i>
 
-                    </strong>
+                Add Category
 
-                    of
+            </button>
 
-                    <strong id="footerTotal">
+        </div>
 
-                        0
 
-                    </strong>
+    </section>
 
-                    Categories
+</div>
+
+
+
+<!-- ==========================================================
+     CATEGORY MODAL
+     CUSTOM MODAL
+     NO BOOTSTRAP MODAL REQUIRED
+========================================================== -->
+
+<div
+    id="categoryModal"
+    class="category-modal"
+    aria-hidden="true">
+
+
+    <div
+        class="category-modal-overlay"
+        data-category-close="true">
+    </div>
+
+
+    <div
+        class="category-modal-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="categoryModalTitle">
+
+
+        <!-- HEADER -->
+
+        <div class="category-modal-header">
+
+            <div class="category-modal-title">
+
+                <div class="category-modal-title-icon">
+
+                    <i class="fa-solid fa-tags"></i>
 
                 </div>
 
-                <div class="col-md-6">
+                <div>
 
-                    <nav class="float-md-end">
+                    <span>
+                        CATEGORY MANAGEMENT
+                    </span>
 
-                        <ul class="pagination pagination-sm mb-0">
-
-                            <li class="page-item disabled">
-
-                                <a class="page-link">
-
-                                    Previous
-
-                                </a>
-
-                            </li>
-
-                            <li class="page-item active">
-
-                                <a class="page-link">
-
-                                    1
-
-                                </a>
-
-                            </li>
-
-                            <li class="page-item disabled">
-
-                                <a class="page-link">
-
-                                    Next
-
-                                </a>
-
-                            </li>
-
-                        </ul>
-
-                    </nav>
+                    <h2 id="categoryModalTitle">
+                        Add Category
+                    </h2>
 
                 </div>
 
             </div>
 
+
+            <button
+                type="button"
+                id="btnCloseCategoryModal"
+                class="category-modal-close"
+                aria-label="Close">
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
         </div>
 
-    </div>
 
-    <!-- ==========================================
-         CATEGORY MODAL
-    ========================================== -->
 
-    <div
+        <!-- BODY -->
 
-        class="modal fade"
+        <form
+            id="categoryForm"
+            autocomplete="off">
 
-        id="categoryModal"
 
-        tabindex="-1"
+            <div class="category-modal-body">
 
-        aria-hidden="true">
 
-        <div class="modal-dialog modal-lg modal-dialog-centered">
+                <!-- ==========================================
+                     BASIC INFORMATION
+                =========================================== -->
 
-            <div class="modal-content">
+                <div class="category-form-section">
 
-                <div class="modal-header bg-danger text-white">
+                    <div class="category-section-title">
 
-                   <h5
+                        <i class="fa-solid fa-circle-info"></i>
 
-class="modal-title"
+                        <span>
+                            Category Information
+                        </span>
 
-id="categoryModalTitle">
+                    </div>
 
-<i class="fa-solid fa-tags"></i>
 
-Add Category
+                    <div class="category-form-grid">
 
-</h5>
 
-                    <button
+                        <div class="category-field">
 
-                        type="button"
-
-                        class="btn-close btn-close-white"
-
-                        data-bs-dismiss="modal">
-
-                    </button>
-
-                </div>
-
-                <div class="modal-body">
-
-                    <div class="row g-3">
-
-                        <div class="col-md-4">
-
-                            <label class="form-label">
+                            <label for="categoryCode">
 
                                 Category Code
 
                             </label>
 
                             <input
-
                                 type="text"
-
                                 id="categoryCode"
-
-                                class="form-control"
-
                                 readonly>
 
                         </div>
 
-                        <div class="col-md-8">
 
-                            <label class="form-label">
+                        <div class="category-field">
+
+                            <label for="categoryName">
 
                                 Category Name
+                                <span>*</span>
 
                             </label>
 
                             <input
-
                                 type="text"
-
                                 id="categoryName"
-
-                                class="form-control"
-
-                                placeholder="Enter Category Name">
+                                placeholder="Enter Category Name"
+                                maxlength="100"
+                                required>
 
                         </div>
 
-                        <div class="col-md-12">
 
-                            <label class="form-label">
+                        <div class="category-field full">
+
+                            <label for="categoryDescription">
 
                                 Description
 
                             </label>
 
-                           <textarea
-
-id="categoryDescription"
-
-class="form-control"
-
-rows="3"
-
-placeholder="Category Description"></textarea>
+                            <textarea
+                                id="categoryDescription"
+                                rows="4"
+                                maxlength="500"
+                                placeholder="Category Description">
+                            </textarea>
 
                         </div>
 
-                        <div class="col-md-4">
+                    </div>
 
-                            <label class="form-label">
+                </div>
 
-                                Icon
+
+
+                <!-- ==========================================
+                     APPEARANCE
+                =========================================== -->
+
+                <div class="category-form-section">
+
+                    <div class="category-section-title">
+
+                        <i class="fa-solid fa-palette"></i>
+
+                        <span>
+                            Appearance
+                        </span>
+
+                    </div>
+
+
+                    <div class="category-form-grid">
+
+
+                        <div class="category-field">
+
+                            <label for="categoryIcon">
+
+                                Font Awesome Icon
 
                             </label>
 
-                           <input
+                            <input
+                                type="text"
+                                id="categoryIcon"
+                                value="fa-utensils"
+                                placeholder="fa-utensils">
 
-type="text"
-
-id="categoryIcon"
-
-class="form-control"
-
-placeholder="fa-utensils"
-
-value="fa-utensils">
+                            <small>
+                                Example: fa-utensils
+                            </small>
 
                         </div>
 
-                        <div class="col-md-4">
 
-                            <label class="form-label">
+                        <div class="category-field">
+
+                            <label for="categoryColor">
 
                                 Theme Color
 
                             </label>
 
-                            <input
+                            <div class="color-input-wrap">
 
-                                type="color"
+                                <input
+                                    type="color"
+                                    id="categoryColor"
+                                    value="#C8102E">
 
-                                id="categoryColor"
+                                <input
+                                    type="text"
+                                    id="categoryColorText"
+                                    value="#C8102E"
+                                    maxlength="7">
 
-                                class="form-control form-control-color"
-
-                                value="#C8102E">
-
-                        </div>
-
-                        <div class="col-md-4">
-
-                            <label class="form-label">
-
-                                Display Order
-
-                            </label>
-
-                            <input
-
-                                type="number"
-
-                                id="displayOrder"
-
-                                class="form-control"
-
-                                value="1">
+                            </div>
 
                         </div>
 
-                        <div class="col-md-6">
 
-                            <label class="form-label">
+                        <div class="category-field full">
 
-                                Status
-
-                            </label>
-
-                            <select
-
-                                id="categoryStatus"
-
-                                class="form-select">
-
-                                <option value="Active">
-
-                                    Active
-
-                                </option>
-
-                                <option value="Inactive">
-
-                                    Inactive
-
-                                </option>
-
-                            </select>
-
-                        </div>
-
-                        <div class="col-md-6">
-
-                            <label class="form-label">
-
+                            <label>
                                 Icon Preview
-
                             </label>
 
                             <div
-
-                                class="border rounded p-3 text-center">
+                                id="categoryIconPreview"
+                                class="category-icon-preview">
 
                                 <i
-
                                     id="iconPreview"
-
-                                    class="fa-solid fa-utensils"
-
-                                    style="font-size:32px;color:#C8102E;">
-
+                                    class="fa-solid fa-utensils">
                                 </i>
 
                             </div>
@@ -591,46 +602,117 @@ value="fa-utensils">
 
                 </div>
 
-              <div class="modal-footer">
 
-    <button
 
-        type="button"
+                <!-- ==========================================
+                     DISPLAY SETTINGS
+                =========================================== -->
 
-        class="btn btn-secondary"
+                <div class="category-form-section">
 
-        data-bs-dismiss="modal">
+                    <div class="category-section-title">
 
-        Cancel
+                        <i class="fa-solid fa-sliders"></i>
 
-    </button>
+                        <span>
+                            Display Settings
+                        </span>
 
-    <button
+                    </div>
 
-        type="button"
 
-        class="btn btn-danger"
+                    <div class="category-form-grid">
 
-        id="btnSaveCategory">
 
-        <i class="fa-solid fa-floppy-disk"></i>
+                        <div class="category-field">
 
-        <span id="btnSaveText">
+                            <label for="displayOrder">
 
-            Save Category
+                                Display Order
 
-        </span>
+                            </label>
 
-    </button>
+                            <input
+                                type="number"
+                                id="displayOrder"
+                                min="1"
+                                value="1">
 
-</div>
+                        </div>
+
+
+                        <div class="category-field">
+
+                            <label for="categoryStatus">
+
+                                Status
+
+                            </label>
+
+                            <select
+                                id="categoryStatus">
+
+                                <option value="Active">
+                                    Active
+                                </option>
+
+                                <option value="Inactive">
+                                    Inactive
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                    </div>
+
                 </div>
+
 
             </div>
 
-        </div>
+
+
+            <!-- FOOTER -->
+
+            <div class="category-modal-footer">
+
+                <button
+                    type="button"
+                    id="btnCancelCategory"
+                    class="category-cancel-btn">
+
+                    <i class="fa-solid fa-xmark"></i>
+
+                    Cancel
+
+                </button>
+
+
+                <button
+                    type="submit"
+                    id="btnSaveCategory"
+                    class="category-save-btn">
+
+                    <i class="fa-solid fa-floppy-disk"></i>
+
+                    <span id="btnSaveText">
+                        Save Category
+                    </span>
+
+                </button>
+
+            </div>
+
+
+        </form>
 
     </div>
 
 </div>
-     
+
+
+</body>
+
+</html>
