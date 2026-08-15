@@ -75,16 +75,19 @@ const categoryScripts = [
 
     "assets/js/category/category-search.js",
 
+    "assets/js/category/category-search.js",
+
     "assets/js/category/category-save.js",
 
     "assets/js/category/category-edit.js",
 
     "assets/js/category/category-delete.js",
 
-    "assets/js/category/category-export.js"
+    "assets/js/category/category-export.js",
+
+    "assets/js/category/category-modal.js"
 
 ];
-
 
 // ==========================================================
 // LOAD HTML COMPONENT
