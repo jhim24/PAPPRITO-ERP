@@ -1,6 +1,6 @@
 // ==========================================================
 // PAPPRITO ERP
-// APP / NAVIGATION ENGINE V6
+// APP / NAVIGATION ENGINE V7
 // File : assets/js/app.js
 //
 // MAIN FUNCTIONS:
@@ -9,6 +9,7 @@
 // - Dashboard Loader
 // - Product Loader
 // - Category Loader
+// - Receiving Orders Loader
 // - Mobile Sidebar
 // - Page Navigation
 // - Safe Script Loading
@@ -23,8 +24,12 @@
 // ==========================================================
 
 let dashboardScriptsLoaded = false;
+
 let productScriptsLoaded = false;
+
 let categoryScriptsLoaded = false;
+
+let receivingOrdersScriptsLoaded = false;
 
 
 // ==========================================================
@@ -62,11 +67,21 @@ const categoryScripts = [
 ];
 
 
+const receivingOrdersScripts = [
+
+    "assets/js/receiving-orders/receiving-orders.js"
+
+];
+
+
 // ==========================================================
 // LOAD HTML COMPONENT
 // ==========================================================
 
-async function loadComponent(id, file) {
+async function loadComponent(
+    id,
+    file
+) {
 
     try {
 
@@ -94,7 +109,9 @@ async function loadComponent(id, file) {
 
 
         const element =
-            document.getElementById(id);
+            document.getElementById(
+                id
+            );
 
 
         if (!element) {
@@ -136,10 +153,15 @@ async function loadComponent(id, file) {
 // LOAD JAVASCRIPT
 // ==========================================================
 
-function loadScript(src) {
+function loadScript(
+    src
+) {
 
     return new Promise(
-        function(resolve, reject) {
+        function(
+            resolve,
+            reject
+        ) {
 
             const existing =
                 document.querySelector(
@@ -344,10 +366,39 @@ async function loadCategoryScripts() {
 
 
 // ==========================================================
+// RECEIVING ORDERS
+// ==========================================================
+
+async function loadReceivingOrdersScripts() {
+
+    if (
+        receivingOrdersScriptsLoaded
+    ) {
+
+        return;
+
+    }
+
+
+    await loadScriptGroup(
+        receivingOrdersScripts,
+        "RECEIVING ORDERS"
+    );
+
+
+    receivingOrdersScriptsLoaded =
+        true;
+
+}
+
+
+// ==========================================================
 // HTML ESCAPE
 // ==========================================================
 
-function escapeAppHTML(value) {
+function escapeAppHTML(
+    value
+) {
 
     return String(
         value ?? ""
@@ -400,10 +451,12 @@ function showModuleError(
             <div class="d-flex align-items-start gap-3">
 
                 <i
-                    class="fa-solid
-                           fa-circle-exclamation
-                           fs-4">
-                </i>
+                    class="
+                        fa-solid
+                        fa-circle-exclamation
+                        fs-4
+                    "
+                ></i>
 
                 <div>
 
@@ -441,7 +494,9 @@ function showModuleError(
 // LOAD PAGE
 // ==========================================================
 
-async function loadPage(page) {
+async function loadPage(
+    page
+) {
 
     const content =
         document.getElementById(
@@ -575,8 +630,8 @@ async function loadPage(page) {
 
             case "pages/receiving-orders.html":
 
-                safeInitialize(
-                    "initializeReceivingOrders"
+                await initializeReceivingOrdersModule(
+                    content
                 );
 
                 break;
@@ -817,9 +872,11 @@ async function loadPage(page) {
                     <h4 class="alert-heading">
 
                         <i
-                            class="fa-solid
-                                   fa-triangle-exclamation">
-                        </i>
+                            class="
+                                fa-solid
+                                fa-triangle-exclamation
+                            "
+                        ></i>
 
                         Page Loading Error
 
@@ -1077,22 +1134,8 @@ async function initializeCategoryModule(
         );
 
 
-        // ==================================================
-        // LOAD CATEGORY JS ONLY ONCE
-        // ==================================================
-
         await loadCategoryScripts();
 
-
-        // ==================================================
-        // IMPORTANT
-        //
-        // Every time categories.html is inserted into
-        // #content, the DOM is NEW.
-        //
-        // Therefore initializeCategoryPage()
-        // MUST run every time.
-        // ==================================================
 
         if (
             typeof initializeCategoryPage ===
@@ -1112,13 +1155,6 @@ async function initializeCategoryModule(
         }
 
 
-        // ==================================================
-        // DO NOT CALL loadCategories() HERE
-        //
-        // initializeCategoryPage() already handles it.
-        // ==================================================
-
-
         console.log(
             "Category Master initialized."
         );
@@ -1136,6 +1172,85 @@ async function initializeCategoryModule(
         showModuleError(
             content,
             "Category",
+            error
+        );
+
+    }
+
+}
+
+
+// ==========================================================
+// RECEIVING ORDERS INITIALIZATION
+// ==========================================================
+
+async function initializeReceivingOrdersModule(
+    content
+) {
+
+    try {
+
+        console.log(
+            "=========================================="
+        );
+
+
+        console.log(
+            "INITIALIZING RECEIVING ORDERS"
+        );
+
+
+        console.log(
+            "=========================================="
+        );
+
+
+        // ==================================================
+        // LOAD RECEIVING ORDERS JAVASCRIPT
+        // ==================================================
+
+        await loadReceivingOrdersScripts();
+
+
+        // ==================================================
+        // INITIALIZE RECEIVING ORDERS PAGE
+        // ==================================================
+
+        if (
+            typeof initializeReceivingOrders ===
+            "function"
+        ) {
+
+            initializeReceivingOrders();
+
+        }
+
+        else {
+
+            throw new Error(
+                "initializeReceivingOrders() not found."
+            );
+
+        }
+
+
+        console.log(
+            "Receiving Orders initialized."
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Receiving Orders Module Error:",
+            error
+        );
+
+
+        showModuleError(
+            content,
+            "Receiving Orders",
             error
         );
 
@@ -1770,6 +1885,10 @@ window.loadCategoryScripts =
     loadCategoryScripts;
 
 
+window.loadReceivingOrdersScripts =
+    loadReceivingOrdersScripts;
+
+
 window.loadPage =
     loadPage;
 
@@ -1788,6 +1907,10 @@ window.initializeProductModule =
 
 window.initializeCategoryModule =
     initializeCategoryModule;
+
+
+window.initializeReceivingOrdersModule =
+    initializeReceivingOrdersModule;
 
 
 window.toggleSidebar =
@@ -1883,5 +2006,5 @@ window.logoutERP =
 
 
 console.log(
-    "PAPPRITO ERP app.js V6 loaded."
+    "PAPPRITO ERP app.js V7 loaded."
 );
