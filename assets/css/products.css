@@ -1,7 +1,9 @@
 /* ==========================================================
    PAPPRITO ERP
    PRODUCT MASTER
-   PREMIUM CSS
+   PREMIUM CSS V2
+   LIGHT GREY BACKGROUND
+   RED + YELLOW BRAND
    ========================================================== */
 
 .product-master {
@@ -10,15 +12,23 @@
     --product-red-dark: #98091F;
     --product-yellow: #FFC72C;
 
-    --product-bg: #F5F6F8;
+    /* PAGE BACKGROUND */
+    --product-bg: #EEF1F5;
+
+    /* CARDS REMAIN WHITE */
     --product-card: #FFFFFF;
-    --product-border: #E7E9EE;
+
+    --product-border: #DDE2E8;
 
     --product-text: #20242C;
     --product-muted: #7B8493;
 
     width: 100%;
     min-height: 100%;
+
+    background: var(--product-bg);
+
+    padding: 24px;
 
 }
 
@@ -176,21 +186,27 @@
 
     border-radius: 16px;
 
-    background: #FFFFFF;
+    background:
+        #FFFFFF;
 
     box-shadow:
         0 6px 20px
-        rgba(20,30,50,.05);
+        rgba(20,30,50,.06);
 
 }
 
+
+/* ==========================================================
+   TOOLBAR INPUT
+   ========================================================== */
 
 .product-master .product-toolbar .input-group-text {
 
     border-color:
         var(--product-border);
 
-    background: #FFFFFF;
+    background:
+        #F8F9FB;
 
     color:
         var(--product-red);
@@ -220,14 +236,19 @@
 
     border-radius: 18px;
 
-    background: #FFFFFF;
+    background:
+        #FFFFFF;
 
     box-shadow:
         0 7px 25px
-        rgba(20,30,50,.06);
+        rgba(20,30,50,.07);
 
 }
 
+
+/* ==========================================================
+   TABLE HEADER
+   ========================================================== */
 
 .product-master .product-list-header {
 
@@ -243,6 +264,9 @@
     border-bottom:
         1px solid
         var(--product-border);
+
+    background:
+        #FFFFFF;
 
 }
 
@@ -288,6 +312,9 @@
 
     width: 100%;
 
+    background:
+        #FFFFFF;
+
 }
 
 
@@ -300,7 +327,7 @@
         #737C8B;
 
     background:
-        #FAFBFC;
+        #F4F6F8;
 
     border-bottom:
         1px solid
@@ -330,13 +357,17 @@
         13px 16px;
 
     border-bottom:
-        1px solid #F0F1F4;
+        1px solid
+        #EEF0F3;
 
     color:
         var(--product-text);
 
     font-size:
         13px;
+
+    background:
+        #FFFFFF;
 
 }
 
@@ -349,7 +380,7 @@
 }
 
 
-.product-master .product-table tbody tr:hover {
+.product-master .product-table tbody tr:hover td {
 
     background:
         #FFF8F9;
@@ -380,7 +411,7 @@
         var(--product-border);
 
     background:
-        #F4F5F7;
+        #F1F3F5;
 
 }
 
@@ -409,7 +440,7 @@
         var(--product-red);
 
     background:
-        rgba(200,16,46,.07);
+        #F8EDEF;
 
 }
 
@@ -471,7 +502,7 @@
         var(--product-red);
 
     background:
-        rgba(200,16,46,.07);
+        #FCECEF;
 
     font-size:
         11px;
@@ -629,7 +660,7 @@
         var(--product-red);
 
     background:
-        rgba(200,16,46,.07);
+        #F8EDEF;
 
     font-size:
         25px;
@@ -691,7 +722,7 @@
         25px;
 
     background:
-        #FFFFFF;
+        #F4F6F8;
 
 }
 
@@ -699,7 +730,7 @@
 #productModal hr {
 
     border-color:
-        #E8E9ED;
+        #DDE1E7;
 
     opacity:
         1;
@@ -766,10 +797,13 @@
 
     border:
         1px solid
-        #DDE1E7;
+        #D7DCE3;
 
     border-radius:
         10px;
+
+    background:
+        #FFFFFF;
 
 }
 
@@ -818,13 +852,13 @@
 
     border:
         1px dashed
-        #D7DAE0;
+        #C8CDD5;
 
     border-radius:
         14px;
 
     background:
-        #F8F9FA;
+        #FFFFFF;
 
 }
 
@@ -857,13 +891,13 @@
 
     border:
         1px solid
-        #E7E9EE;
+        #DDE2E8;
 
     border-radius:
         12px;
 
     background:
-        #FAFBFC;
+        #FFFFFF;
 
 }
 
@@ -912,10 +946,10 @@
 
     border-top:
         1px solid
-        #E8E9ED;
+        #DDE1E7;
 
     background:
-        #FAFBFC;
+        #FFFFFF;
 
 }
 
@@ -960,7 +994,7 @@
     .product-master {
 
         padding:
-            0;
+            15px;
 
     }
 
