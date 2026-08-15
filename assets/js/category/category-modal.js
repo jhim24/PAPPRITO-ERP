@@ -1,19 +1,22 @@
 // ==========================================================
 // PAPPRITO ERP
-// CATEGORY MODAL ENGINE V2
+// CATEGORY MODAL ENGINE V3
+//
 // File:
 // assets/js/category/category-modal.js
 //
+// FINAL VERSION
+//
 // FUNCTIONS:
-// - Open Add Category
-// - Close Category Modal
+// - Add Category
+// - Close Category
 // - X Button
 // - Cancel Button
-// - Bootstrap Modal Events
-// - Reset Form
-// - Add Category Mode
-// - Edit Category Support
-// - Prevent Button Submit
+// - ESC Close
+// - Backdrop Close
+// - Dynamic Page Support
+// - Bootstrap Modal Support
+// - Prevent Function Conflicts
 // ==========================================================
 
 "use strict";
@@ -33,7 +36,7 @@ function getCategoryModalElement() {
 
 
 // ==========================================================
-// GET BOOTSTRAP MODAL INSTANCE
+// GET BOOTSTRAP MODAL
 // ==========================================================
 
 function getCategoryModalInstance() {
@@ -45,7 +48,7 @@ function getCategoryModalInstance() {
     if (!modalElement) {
 
         console.warn(
-            "Category modal element not found."
+            "Category Modal element not found."
         );
 
         return null;
@@ -69,7 +72,12 @@ function getCategoryModalInstance() {
 
     return bootstrap.Modal
         .getOrCreateInstance(
-            modalElement
+            modalElement,
+            {
+                backdrop: true,
+                keyboard: true,
+                focus: true
+            }
         );
 
 }
@@ -84,6 +92,21 @@ function openAddCategory() {
     console.log(
         "Opening Add Category..."
     );
+
+
+    const modalElement =
+        getCategoryModalElement();
+
+
+    if (!modalElement) {
+
+        console.error(
+            "Cannot open Add Category: #categoryModal not found."
+        );
+
+        return;
+
+    }
 
 
     // ======================================================
@@ -132,25 +155,25 @@ function openAddCategory() {
 
 
     // ======================================================
-    // SAVE BUTTON TEXT
+    // SAVE BUTTON
     // ======================================================
 
-    const buttonText =
+    const saveText =
         document.getElementById(
             "btnSaveText"
         );
 
 
-    if (buttonText) {
+    if (saveText) {
 
-        buttonText.textContent =
+        saveText.textContent =
             "Save Category";
 
     }
 
 
     // ======================================================
-    // GENERATE CATEGORY CODE
+    // GENERATE CODE
     // ======================================================
 
     if (
@@ -164,7 +187,7 @@ function openAddCategory() {
 
 
     // ======================================================
-    // UPDATE ICON PREVIEW
+    // ICON PREVIEW
     // ======================================================
 
     if (
@@ -178,7 +201,7 @@ function openAddCategory() {
 
 
     // ======================================================
-    // OPEN MODAL
+    // SHOW MODAL
     // ======================================================
 
     const modal =
@@ -196,7 +219,7 @@ function openAddCategory() {
 
 
     console.log(
-        "Category modal opened."
+        "Category Add Modal opened."
     );
 
 }
@@ -213,28 +236,6 @@ function closeCategoryModal() {
     );
 
 
-    const modal =
-        getCategoryModalInstance();
-
-
-    if (!modal) {
-
-        return;
-
-    }
-
-
-    modal.hide();
-
-}
-
-
-// ==========================================================
-// X BUTTON
-// ==========================================================
-
-function initializeCategoryCloseButtons() {
-
     const modalElement =
         getCategoryModalElement();
 
@@ -242,7 +243,7 @@ function initializeCategoryCloseButtons() {
     if (!modalElement) {
 
         console.warn(
-            "Category modal not found."
+            "Category Modal not found."
         );
 
         return;
@@ -250,160 +251,156 @@ function initializeCategoryCloseButtons() {
     }
 
 
-    // ======================================================
-    // X BUTTON
-    // ======================================================
+    if (
+        typeof bootstrap ===
+        "undefined"
+    ) {
 
-    const closeButton =
-        modalElement.querySelector(
-            ".btn-close"
+        console.error(
+            "Bootstrap is not loaded."
         );
 
+        return;
 
-    if (closeButton) {
-
-        if (
-            closeButton.dataset.categoryCloseInitialized !==
-            "true"
-        ) {
-
-            closeButton.dataset.categoryCloseInitialized =
-                "true";
+    }
 
 
-            closeButton.type =
-                "button";
-
-
-            closeButton.addEventListener(
-                "click",
-                function(event) {
-
-                    event.preventDefault();
-
-                    event.stopPropagation();
-
-                    console.log(
-                        "Category X button clicked."
-                    );
-
-
-                    closeCategoryModal();
-
-                }
+    const modal =
+        bootstrap.Modal
+            .getInstance(
+                modalElement
             );
 
-        }
+
+    if (modal) {
+
+        modal.hide();
 
     }
 
     else {
 
-        console.warn(
-            "Category X button not found."
-        );
+        /*
+         * If Bootstrap instance doesn't exist,
+         * create one and immediately hide it.
+         */
+
+        const newModal =
+            bootstrap.Modal
+                .getOrCreateInstance(
+                    modalElement
+                );
+
+
+        newModal.hide();
+
+    }
+
+}
+
+
+// ==========================================================
+// FORCE CLOSE
+// ==========================================================
+//
+// Emergency fallback if Bootstrap instance
+// is not responding.
+//
+
+function forceCloseCategoryModal() {
+
+    const modalElement =
+        getCategoryModalElement();
+
+
+    if (!modalElement) {
+
+        return;
 
     }
 
 
-    // ======================================================
-    // CANCEL BUTTON
-    // ======================================================
+    // Remove Bootstrap state
 
-    const cancelButton =
-        modalElement.querySelector(
-            "#categoryCancelBtn"
+    modalElement.classList.remove(
+        "show"
+    );
+
+
+    modalElement.style.display =
+        "none";
+
+
+    modalElement.setAttribute(
+        "aria-hidden",
+        "true"
+    );
+
+
+    modalElement.removeAttribute(
+        "aria-modal"
+    );
+
+
+    modalElement.removeAttribute(
+        "role"
+    );
+
+
+    // Remove body state
+
+    document.body.classList.remove(
+        "modal-open"
+    );
+
+
+    document.body.style.removeProperty(
+        "padding-right"
+    );
+
+
+    // Remove backdrop
+
+    document
+        .querySelectorAll(
+            ".modal-backdrop"
+        )
+        .forEach(
+            function(backdrop) {
+
+                backdrop.remove();
+
+            }
         );
 
 
-    const fallbackCancel =
-        modalElement.querySelector(
-            ".category-cancel-btn"
-        );
+    // Clear edit state
 
-
-    const button =
-        cancelButton ||
-        fallbackCancel;
-
-
-    if (button) {
-
-        if (
-            button.dataset.categoryCancelInitialized !==
-            "true"
-        ) {
-
-            button.dataset.categoryCancelInitialized =
-                "true";
-
-
-            button.type =
-                "button";
-
-
-            button.addEventListener(
-                "click",
-                function(event) {
-
-                    event.preventDefault();
-
-                    event.stopPropagation();
-
-                    console.log(
-                        "Category Cancel button clicked."
-                    );
-
-
-                    closeCategoryModal();
-
-                }
-            );
-
-        }
-
-    }
-
-    else {
-
-        console.warn(
-            "Category Cancel button not found."
-        );
-
-    }
+    window.editingCategoryId =
+        null;
 
 
     console.log(
-        "Category modal buttons initialized."
+        "Category Modal force closed."
     );
 
 }
 
 
 // ==========================================================
-// INITIALIZE BOOTSTRAP MODAL EVENTS
+// DOCUMENT EVENT DELEGATION
 // ==========================================================
+//
+// IMPORTANT:
+// The Category page is dynamically loaded.
+// Therefore we listen on document instead of
+// attaching only once to #categoryModal.
+//
 
-function initializeCategoryModalEvents() {
-
-    const modalElement =
-        getCategoryModalElement();
-
-
-    if (!modalElement) {
-
-        return;
-
-    }
-
-
-    // ======================================================
-    // PREVENT DUPLICATE EVENTS
-    // ======================================================
+function initializeCategoryDocumentEvents() {
 
     if (
-        modalElement.dataset.categoryEventsInitialized ===
-        "true"
+        window.categoryDocumentEventsInitialized
     ) {
 
         return;
@@ -411,202 +408,115 @@ function initializeCategoryModalEvents() {
     }
 
 
-    modalElement.dataset.categoryEventsInitialized =
-        "true";
+    window.categoryDocumentEventsInitialized =
+        true;
 
 
     // ======================================================
-    // MODAL SHOWN
+    // CLICK
     // ======================================================
 
-    modalElement.addEventListener(
-        "shown.bs.modal",
-        function() {
+    document.addEventListener(
+        "click",
+        function(event) {
 
-            console.log(
-                "Category modal opened."
-            );
-
-
-            if (
-                typeof updateCategoryIconPreview ===
-                "function"
-            ) {
-
-                updateCategoryIconPreview();
-
-            }
-
-        }
-    );
+            const target =
+                event.target;
 
 
-    // ======================================================
-    // MODAL HIDDEN
-    // ======================================================
+            // ==================================================
+            // X BUTTON
+            // ==================================================
 
-    modalElement.addEventListener(
-        "hidden.bs.modal",
-        function() {
-
-            console.log(
-                "Category modal closed."
-            );
-
-
-            // Clear edit mode
-
-            window.editingCategoryId =
-                null;
-
-
-            // Reset form
-
-            if (
-                typeof resetCategoryForm ===
-                "function"
-            ) {
-
-                resetCategoryForm();
-
-            }
-
-        }
-    );
-
-
-    console.log(
-        "Category Bootstrap modal events initialized."
-    );
-
-}
-
-
-// ==========================================================
-// INITIALIZE BUTTON TYPES
-// ==========================================================
-
-function initializeCategoryButtonTypes() {
-
-    const modalElement =
-        getCategoryModalElement();
-
-
-    if (!modalElement) {
-
-        return;
-
-    }
-
-
-    const buttons =
-        modalElement.querySelectorAll(
-            "button"
-        );
-
-
-    buttons.forEach(
-        function(button) {
-
-            /*
-             * If button has no type,
-             * make it a normal button.
-             *
-             * This prevents accidental
-             * form submission.
-             */
-
-            if (
-                !button.hasAttribute(
-                    "type"
-                )
-            ) {
-
-                button.setAttribute(
-                    "type",
-                    "button"
+            const closeButton =
+                target.closest(
+                    "#categoryModal .btn-close"
                 );
 
-            }
 
-        }
-    );
+            if (closeButton) {
 
+                event.preventDefault();
 
-    console.log(
-        "Category button types initialized."
-    );
+                event.stopPropagation();
 
-}
-
-
-// ==========================================================
-// ADD CATEGORY BUTTON
-// ==========================================================
-//
-// Supports buttons such as:
-//
-// onclick="openAddCategory()"
-//
-// or:
-//
-// onclick="openAddCategory(); return false;"
-//
-
-function initializeAddCategoryButtons() {
-
-    const buttons =
-        document.querySelectorAll(
-            "#btnAddCategory, .btn-add-category"
-        );
+                console.log(
+                    "CATEGORY X BUTTON CLICKED"
+                );
 
 
-    buttons.forEach(
-        function(button) {
-
-            if (
-                button.dataset.addCategoryInitialized ===
-                "true"
-            ) {
+                closeCategoryModal();
 
                 return;
 
             }
 
 
-            button.dataset.addCategoryInitialized =
-                "true";
+            // ==================================================
+            // CANCEL BUTTON
+            // ==================================================
+
+            const cancelButton =
+                target.closest(
+                    "#categoryModal #categoryCancelBtn, " +
+                    "#categoryModal .category-cancel-btn"
+                );
 
 
-            button.type =
-                "button";
+            if (cancelButton) {
+
+                event.preventDefault();
+
+                event.stopPropagation();
+
+                console.log(
+                    "CATEGORY CANCEL BUTTON CLICKED"
+                );
 
 
-            button.addEventListener(
-                "click",
-                function(event) {
+                closeCategoryModal();
 
-                    event.preventDefault();
+                return;
 
-                    event.stopPropagation();
+            }
 
 
-                    openAddCategory();
+            // ==================================================
+            // ADD CATEGORY
+            // ==================================================
 
-                }
-            );
+            const addButton =
+                target.closest(
+                    "#btnAddCategory, " +
+                    ".btn-add-category"
+                );
 
-        }
+
+            if (addButton) {
+
+                event.preventDefault();
+
+                event.stopPropagation();
+
+                console.log(
+                    "CATEGORY ADD BUTTON CLICKED"
+                );
+
+
+                openAddCategory();
+
+                return;
+
+            }
+
+        },
+        true
     );
 
-}
 
-
-// ==========================================================
-// ESCAPE KEY SUPPORT
-// ==========================================================
-
-function initializeCategoryEscapeSupport() {
+    // ======================================================
+    // ESC KEY
+    // ======================================================
 
     document.addEventListener(
         "keydown",
@@ -645,23 +555,29 @@ function initializeCategoryEscapeSupport() {
 
 
             console.log(
-                "Escape pressed. Closing Category Modal."
+                "CATEGORY ESC PRESSED"
             );
 
 
             closeCategoryModal();
 
-        }
+        },
+        true
+    );
+
+
+    console.log(
+        "Category document events initialized."
     );
 
 }
 
 
 // ==========================================================
-// BACKDROP CLICK SUPPORT
+// BOOTSTRAP MODAL EVENTS
 // ==========================================================
 
-function initializeCategoryBackdropSupport() {
+function initializeCategoryBootstrapEvents() {
 
     const modalElement =
         getCategoryModalElement();
@@ -669,69 +585,111 @@ function initializeCategoryBackdropSupport() {
 
     if (!modalElement) {
 
-        return;
+        return false;
 
     }
 
 
-    modalElement.addEventListener(
-        "click",
-        function(event) {
+    if (
+        modalElement.dataset.categoryBootstrapEvents ===
+        "true"
+    ) {
 
-            /*
-             * Only close when the actual
-             * modal container is clicked.
-             *
-             * Do NOT close when clicking
-             * inside modal-content.
-             */
+        return true;
+
+    }
+
+
+    modalElement.dataset.categoryBootstrapEvents =
+        "true";
+
+
+    // ======================================================
+    // SHOWN
+    // ======================================================
+
+    modalElement.addEventListener(
+        "shown.bs.modal",
+        function() {
+
+            console.log(
+                "Category modal shown."
+            );
+
 
             if (
-                event.target ===
-                modalElement
+                typeof updateCategoryIconPreview ===
+                "function"
             ) {
 
-                console.log(
-                    "Category backdrop clicked."
-                );
-
-
-                closeCategoryModal();
+                updateCategoryIconPreview();
 
             }
 
         }
     );
 
+
+    // ======================================================
+    // HIDDEN
+    // ======================================================
+
+    modalElement.addEventListener(
+        "hidden.bs.modal",
+        function() {
+
+            console.log(
+                "Category modal hidden."
+            );
+
+
+            window.editingCategoryId =
+                null;
+
+
+            if (
+                typeof resetCategoryForm ===
+                "function"
+            ) {
+
+                resetCategoryForm();
+
+            }
+
+        }
+    );
+
+
+    return true;
+
 }
 
 
 // ==========================================================
-// FULL INITIALIZATION
+// INITIALIZE MODAL
 // ==========================================================
 
 function initializeCategoryModal() {
 
     console.log(
-        "Initializing PAPPRITO Category Modal..."
+        "Initializing Category Modal..."
     );
 
 
-    initializeCategoryCloseButtons();
+    initializeCategoryDocumentEvents();
 
-    initializeCategoryModalEvents();
 
-    initializeCategoryButtonTypes();
+    /*
+     * The page is dynamically loaded.
+     * If modal already exists, initialize
+     * Bootstrap events immediately.
+     */
 
-    initializeAddCategoryButtons();
-
-    initializeCategoryEscapeSupport();
-
-    initializeCategoryBackdropSupport();
+    initializeCategoryBootstrapEvents();
 
 
     console.log(
-        "PAPPRITO Category Modal Engine V2 ready."
+        "PAPPRITO Category Modal Engine V3 ready."
     );
 
 }
@@ -757,75 +715,67 @@ window.closeCategoryModal =
     closeCategoryModal;
 
 
+window.forceCloseCategoryModal =
+    forceCloseCategoryModal;
+
+
 window.initializeCategoryModal =
     initializeCategoryModal;
 
 
 // ==========================================================
-// AUTO INITIALIZATION
+// AUTO INITIALIZE
 // ==========================================================
 
-function startCategoryModalEngine() {
-
-    /*
-     * Important:
-     * The Category HTML is loaded dynamically
-     * by app.js.
-     *
-     * Therefore, if the modal does not exist
-     * yet, wait for the page loader.
-     */
-
-    const modalElement =
-        getCategoryModalElement();
-
-
-    if (!modalElement) {
-
-        console.log(
-            "Category modal not available yet."
-        );
-
-        return;
-
-    }
-
-
-    initializeCategoryModal();
-
-}
+initializeCategoryModal();
 
 
 // ==========================================================
-// DOM READY
+// PAGE LOAD WATCHER
 // ==========================================================
+//
+// Since categories.html is inserted dynamically,
+// watch for #categoryModal to appear.
+//
 
 if (
-    document.readyState ===
-    "loading"
+    typeof MutationObserver !==
+    "undefined"
 ) {
 
-    document.addEventListener(
-        "DOMContentLoaded",
-        startCategoryModalEngine,
+    const observer =
+        new MutationObserver(
+            function() {
+
+                const modal =
+                    getCategoryModalElement();
+
+
+                if (modal) {
+
+                    initializeCategoryBootstrapEvents();
+
+                }
+
+            }
+        );
+
+
+    observer.observe(
+        document.body,
         {
-            once: true
+            childList: true,
+            subtree: true
         }
     );
 
 }
 
-else {
-
-    startCategoryModalEngine();
-
-}
-
 
 // ==========================================================
-// READY MESSAGE
+// READY
 // ==========================================================
 
 console.log(
-    "PAPPRITO Category Modal Engine V2 loaded."
+    "PAPPRITO Category Modal Engine V3 loaded."
 );
