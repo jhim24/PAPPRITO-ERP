@@ -66,24 +66,63 @@
 
 
     <!-- ==========================================================
-         PAPPRITO ERP CSS
+         PAPPRITO ERP
+         GLOBAL CSS
     ========================================================== -->
 
     <link
         rel="stylesheet"
         href="./assets/css/style.css">
 
+
+    <!-- ==========================================================
+         SIDEBAR CSS
+    ========================================================== -->
+
     <link
         rel="stylesheet"
         href="./assets/css/sidebar.css">
+
+
+    <!-- ==========================================================
+         NAVBAR CSS
+    ========================================================== -->
 
     <link
         rel="stylesheet"
         href="./assets/css/navbar.css">
 
+
+    <!-- ==========================================================
+         DASHBOARD CSS
+    ========================================================== -->
+
     <link
         rel="stylesheet"
         href="./assets/css/dashboard.css">
+
+
+    <!-- ==========================================================
+         PRODUCT MASTER CSS
+    ========================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="./assets/css/products.css">
+
+
+    <!-- ==========================================================
+         CATEGORY MASTER CSS
+    ========================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="./assets/css/categories.css">
+
+
+    <!-- ==========================================================
+         GLOBAL RESPONSIVE CSS
+    ========================================================== -->
 
     <link
         rel="stylesheet"
@@ -271,7 +310,7 @@ if ("serviceWorker" in navigator) {
 
 
 <!-- ==========================================================
-     FIREBASE / STORAGE CHECK
+     FIREBASE / STORAGE / CHART CHECK
 ========================================================== -->
 
 <script>
@@ -289,9 +328,23 @@ window.addEventListener(
         );
 
         console.log(
+            "=========================================="
+        );
+
+
+        /* ------------------------------------------
+           FIREBASE
+        ------------------------------------------ */
+
+        console.log(
             "Firebase:",
             typeof firebase !== "undefined"
         );
+
+
+        /* ------------------------------------------
+           FIREBASE DATABASE
+        ------------------------------------------ */
 
         console.log(
             "Firebase Database:",
@@ -299,16 +352,37 @@ window.addEventListener(
             typeof firebase.database === "function"
         );
 
+
+        /* ------------------------------------------
+           FIREBASE STORAGE
+        ------------------------------------------ */
+
         console.log(
             "Firebase Storage:",
             typeof firebase !== "undefined" &&
             typeof firebase.storage === "function"
         );
 
+
+        /* ------------------------------------------
+           CHART.JS
+        ------------------------------------------ */
+
         console.log(
             "Chart.js:",
             typeof Chart !== "undefined"
         );
+
+
+        /* ------------------------------------------
+           PAPPRITO APP
+        ------------------------------------------ */
+
+        console.log(
+            "PAPPRITO App:",
+            typeof loadPage === "function"
+        );
+
 
         console.log(
             "=========================================="
