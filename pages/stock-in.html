@@ -1,0 +1,831 @@
+<!-- ==========================================================
+     PAPPRITO ERP
+     STOCK IN
+     File: pages/stock-in.html
+========================================================== -->
+
+<div class="stock-in-page">
+
+    <!-- ======================================================
+         PAGE HEADER
+    ======================================================= -->
+
+    <div class="stock-in-header">
+
+        <div>
+
+            <div class="stock-in-eyebrow">
+
+                <i class="fa-solid fa-arrow-down"></i>
+
+                INVENTORY MANAGEMENT
+
+            </div>
+
+            <h1 class="stock-in-title">
+
+                Stock In
+
+            </h1>
+
+            <p class="stock-in-description">
+
+                Record incoming stock and update your inventory balance.
+
+            </p>
+
+        </div>
+
+
+        <div class="stock-in-header-actions">
+
+            <button
+                type="button"
+                class="btn btn-secondary"
+                id="stockInRefreshBtn">
+
+                <i class="fa-solid fa-rotate"></i>
+
+                Refresh
+
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- ======================================================
+         SUMMARY CARDS
+    ======================================================= -->
+
+    <div class="row g-3 stock-in-summary">
+
+        <!-- TOTAL TRANSACTIONS -->
+
+        <div class="col-12 col-sm-6 col-xl-3">
+
+            <div class="stock-summary-card">
+
+                <div class="stock-summary-icon">
+
+                    <i class="fa-solid fa-receipt"></i>
+
+                </div>
+
+                <div>
+
+                    <div class="stock-summary-label">
+
+                        Total Transactions
+
+                    </div>
+
+                    <div
+                        class="stock-summary-value"
+                        id="stockInTotalTransactions">
+
+                        0
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- TOTAL QUANTITY -->
+
+        <div class="col-12 col-sm-6 col-xl-3">
+
+            <div class="stock-summary-card">
+
+                <div class="stock-summary-icon">
+
+                    <i class="fa-solid fa-boxes-stacked"></i>
+
+                </div>
+
+                <div>
+
+                    <div class="stock-summary-label">
+
+                        Total Quantity
+
+                    </div>
+
+                    <div
+                        class="stock-summary-value"
+                        id="stockInTotalQuantity">
+
+                        0
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- TOTAL VALUE -->
+
+        <div class="col-12 col-sm-6 col-xl-3">
+
+            <div class="stock-summary-card">
+
+                <div class="stock-summary-icon">
+
+                    <i class="fa-solid fa-peso-sign"></i>
+
+                </div>
+
+                <div>
+
+                    <div class="stock-summary-label">
+
+                        Total Stock Value
+
+                    </div>
+
+                    <div
+                        class="stock-summary-value"
+                        id="stockInTotalValue">
+
+                        ₱0.00
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- TODAY -->
+
+        <div class="col-12 col-sm-6 col-xl-3">
+
+            <div class="stock-summary-card">
+
+                <div class="stock-summary-icon">
+
+                    <i class="fa-solid fa-calendar-day"></i>
+
+                </div>
+
+                <div>
+
+                    <div class="stock-summary-label">
+
+                        Today's Stock In
+
+                    </div>
+
+                    <div
+                        class="stock-summary-value"
+                        id="stockInToday">
+
+                        0
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ======================================================
+         STOCK IN FORM
+    ======================================================= -->
+
+    <div class="card stock-in-form-card">
+
+        <div class="card-header stock-in-card-header">
+
+            <div>
+
+                <h5 class="mb-1">
+
+                    <i class="fa-solid fa-circle-plus"></i>
+
+                    Add Stock In
+
+                </h5>
+
+                <small>
+
+                    Enter the details of the incoming inventory.
+
+                </small>
+
+            </div>
+
+        </div>
+
+
+        <div class="card-body">
+
+
+            <form
+                id="stockInForm"
+                autocomplete="off">
+
+
+                <!-- ==========================================
+                     TRANSACTION INFORMATION
+                =========================================== -->
+
+                <div class="stock-section-title">
+
+                    <i class="fa-solid fa-file-invoice"></i>
+
+                    Transaction Information
+
+                </div>
+
+
+                <div class="row g-3">
+
+
+                    <!-- REFERENCE NUMBER -->
+
+                    <div class="col-12 col-md-4">
+
+                        <label
+                            for="stockInReference"
+                            class="form-label">
+
+                            Reference No.
+
+                        </label>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="stockInReference"
+                            name="reference"
+                            placeholder="Auto Generated"
+                            readonly>
+
+                    </div>
+
+
+                    <!-- DATE -->
+
+                    <div class="col-12 col-md-4">
+
+                        <label
+                            for="stockInDate"
+                            class="form-label">
+
+                            Stock In Date
+                            <span class="text-danger">*</span>
+
+                        </label>
+
+                        <input
+                            type="date"
+                            class="form-control"
+                            id="stockInDate"
+                            name="date"
+                            required>
+
+                    </div>
+
+
+                    <!-- SUPPLIER -->
+
+                    <div class="col-12 col-md-4">
+
+                        <label
+                            for="stockInSupplier"
+                            class="form-label">
+
+                            Supplier
+
+                        </label>
+
+                        <select
+                            class="form-select"
+                            id="stockInSupplier"
+                            name="supplier">
+
+                            <option value="">
+
+                                Select Supplier
+
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- INVOICE -->
+
+                    <div class="col-12 col-md-6">
+
+                        <label
+                            for="stockInInvoice"
+                            class="form-label">
+
+                            Supplier Invoice / DR No.
+
+                        </label>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="stockInInvoice"
+                            name="invoice"
+                            placeholder="Enter invoice or DR number">
+
+                    </div>
+
+
+                    <!-- RECEIVED BY -->
+
+                    <div class="col-12 col-md-6">
+
+                        <label
+                            for="stockInReceivedBy"
+                            class="form-label">
+
+                            Received By
+
+                        </label>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="stockInReceivedBy"
+                            name="receivedBy"
+                            placeholder="Enter receiver name">
+
+                    </div>
+
+                </div>
+
+
+                <hr class="my-4">
+
+
+                <!-- ==========================================
+                     ITEM INFORMATION
+                =========================================== -->
+
+                <div class="stock-section-title">
+
+                    <i class="fa-solid fa-box"></i>
+
+                    Item Information
+
+                </div>
+
+
+                <div class="row g-3">
+
+
+                    <!-- PRODUCT -->
+
+                    <div class="col-12 col-lg-5">
+
+                        <label
+                            for="stockInProduct"
+                            class="form-label">
+
+                            Product
+                            <span class="text-danger">*</span>
+
+                        </label>
+
+                        <select
+                            class="form-select"
+                            id="stockInProduct"
+                            name="product"
+                            required>
+
+                            <option value="">
+
+                                Select Product
+
+                            </option>
+
+                        </select>
+
+                        <div
+                            class="form-text"
+                            id="stockInProductInfo">
+
+                            Select a product to view its information.
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- QUANTITY -->
+
+                    <div class="col-12 col-sm-6 col-lg-2">
+
+                        <label
+                            for="stockInQuantity"
+                            class="form-label">
+
+                            Quantity
+                            <span class="text-danger">*</span>
+
+                        </label>
+
+                        <input
+                            type="number"
+                            class="form-control"
+                            id="stockInQuantity"
+                            name="quantity"
+                            min="1"
+                            step="1"
+                            value="1"
+                            required>
+
+                    </div>
+
+
+                    <!-- UNIT -->
+
+                    <div class="col-12 col-sm-6 col-lg-2">
+
+                        <label
+                            for="stockInUnit"
+                            class="form-label">
+
+                            Unit
+
+                        </label>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="stockInUnit"
+                            name="unit"
+                            value="pcs"
+                            readonly>
+
+                    </div>
+
+
+                    <!-- UNIT COST -->
+
+                    <div class="col-12 col-md-6 col-lg-3">
+
+                        <label
+                            for="stockInUnitCost"
+                            class="form-label">
+
+                            Unit Cost
+                            <span class="text-danger">*</span>
+
+                        </label>
+
+                        <div class="input-group">
+
+                            <span class="input-group-text">
+
+                                ₱
+
+                            </span>
+
+                            <input
+                                type="number"
+                                class="form-control"
+                                id="stockInUnitCost"
+                                name="unitCost"
+                                min="0"
+                                step="0.01"
+                                value="0.00"
+                                required>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- CURRENT STOCK -->
+
+                    <div class="col-12 col-md-6 col-lg-3">
+
+                        <label
+                            for="stockInCurrentStock"
+                            class="form-label">
+
+                            Current Stock
+
+                        </label>
+
+                        <input
+                            type="number"
+                            class="form-control"
+                            id="stockInCurrentStock"
+                            value="0"
+                            readonly>
+
+                    </div>
+
+
+                    <!-- NEW STOCK -->
+
+                    <div class="col-12 col-md-6 col-lg-3">
+
+                        <label
+                            for="stockInNewStock"
+                            class="form-label">
+
+                            New Stock
+
+                        </label>
+
+                        <input
+                            type="number"
+                            class="form-control stock-new-stock"
+                            id="stockInNewStock"
+                            value="0"
+                            readonly>
+
+                    </div>
+
+
+                    <!-- TOTAL COST -->
+
+                    <div class="col-12 col-md-6 col-lg-6">
+
+                        <label
+                            for="stockInTotalCost"
+                            class="form-label">
+
+                            Total Cost
+
+                        </label>
+
+                        <div class="input-group">
+
+                            <span class="input-group-text">
+
+                                ₱
+
+                            </span>
+
+                            <input
+                                type="text"
+                                class="form-control stock-total-cost"
+                                id="stockInTotalCost"
+                                value="0.00"
+                                readonly>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <hr class="my-4">
+
+
+                <!-- ==========================================
+                     NOTES
+                =========================================== -->
+
+                <div class="stock-section-title">
+
+                    <i class="fa-solid fa-note-sticky"></i>
+
+                    Notes
+
+                </div>
+
+
+                <div class="mb-3">
+
+                    <label
+                        for="stockInNotes"
+                        class="form-label">
+
+                        Remarks / Notes
+
+                    </label>
+
+                    <textarea
+                        class="form-control"
+                        id="stockInNotes"
+                        name="notes"
+                        rows="3"
+                        placeholder="Enter additional remarks..."></textarea>
+
+                </div>
+
+
+                <!-- ==========================================
+                     FORM ACTIONS
+                =========================================== -->
+
+                <div class="stock-form-actions">
+
+
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        id="stockInCancelBtn">
+
+                        <i class="fa-solid fa-xmark"></i>
+
+                        Cancel
+
+                    </button>
+
+
+                    <button
+                        type="reset"
+                        class="btn btn-outline-secondary"
+                        id="stockInResetBtn">
+
+                        <i class="fa-solid fa-rotate-left"></i>
+
+                        Reset
+
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        class="btn btn-danger"
+                        id="stockInSaveBtn">
+
+                        <i class="fa-solid fa-floppy-disk"></i>
+
+                        Save Stock In
+
+                    </button>
+
+                </div>
+
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- ======================================================
+         STOCK IN HISTORY
+    ======================================================= -->
+
+    <div class="card stock-history-card">
+
+        <div class="card-header stock-in-card-header">
+
+            <div>
+
+                <h5 class="mb-1">
+
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+
+                    Stock In History
+
+                </h5>
+
+                <small>
+
+                    Recent stock-in transactions.
+
+                </small>
+
+            </div>
+
+        </div>
+
+
+        <div class="card-body p-0">
+
+            <div class="stock-history-toolbar p-3">
+
+                <div class="input-group stock-history-search">
+
+                    <span class="input-group-text">
+
+                        <i class="fa-solid fa-magnifying-glass"></i>
+
+                    </span>
+
+                    <input
+                        type="search"
+                        class="form-control"
+                        id="stockInSearch"
+                        placeholder="Search reference, product or supplier...">
+
+                </div>
+
+            </div>
+
+
+            <div class="table-responsive">
+
+                <table
+                    class="table table-hover align-middle mb-0"
+                    id="stockInHistoryTable">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Reference
+                            </th>
+
+                            <th>
+                                Date
+                            </th>
+
+                            <th>
+                                Product
+                            </th>
+
+                            <th>
+                                Supplier
+                            </th>
+
+                            <th class="text-end">
+                                Quantity
+                            </th>
+
+                            <th>
+                                Unit
+                            </th>
+
+                            <th class="text-end">
+                                Unit Cost
+                            </th>
+
+                            <th class="text-end">
+                                Total Cost
+                            </th>
+
+                            <th>
+                                Received By
+                            </th>
+
+                            <th class="text-center">
+                                Status
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="stockInHistoryBody">
+
+                        <tr>
+
+                            <td
+                                colspan="10"
+                                class="text-center py-5 text-muted">
+
+                                <i
+                                    class="
+                                        fa-solid
+                                        fa-box-open
+                                        fs-3
+                                        mb-2
+                                    "
+                                ></i>
+
+                                <div>
+
+                                    No stock-in transactions yet.
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
