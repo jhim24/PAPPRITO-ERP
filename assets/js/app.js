@@ -1,6 +1,6 @@
 // ==========================================================
 // PAPPRITO ERP
-// APP / NAVIGATION ENGINE V8
+// APP / NAVIGATION ENGINE V9
 // File : assets/js/app.js
 //
 // MAIN FUNCTIONS:
@@ -11,6 +11,7 @@
 // - Category Loader
 // - Receiving Orders Loader
 // - Inventory Loader
+// - Raw Materials Loader
 // - Mobile Sidebar
 // - Page Navigation
 // - Safe Script Loading
@@ -33,6 +34,8 @@ let categoryScriptsLoaded = false;
 let receivingOrdersScriptsLoaded = false;
 
 let inventoryScriptsLoaded = false;
+
+let rawMaterialsScriptsLoaded = false;
 
 
 // ==========================================================
@@ -80,6 +83,13 @@ const receivingOrdersScripts = [
 const inventoryScripts = [
 
     "assets/js/inventory/inventory.js"
+
+];
+
+
+const rawMaterialsScripts = [
+
+    "assets/js/raw-materials/raw-materials.js"
 
 ];
 
@@ -430,6 +440,33 @@ async function loadInventoryScripts() {
 
 
 // ==========================================================
+// RAW MATERIALS
+// ==========================================================
+
+async function loadRawMaterialsScripts() {
+
+    if (
+        rawMaterialsScriptsLoaded
+    ) {
+
+        return;
+
+    }
+
+
+    await loadScriptGroup(
+        rawMaterialsScripts,
+        "RAW MATERIALS"
+    );
+
+
+    rawMaterialsScriptsLoaded =
+        true;
+
+}
+
+
+// ==========================================================
 // HTML ESCAPE
 // ==========================================================
 
@@ -600,6 +637,35 @@ async function loadPage(
 
 
         // ==================================================
+        // STOP OLD RAW MATERIALS LISTENER
+        // ==================================================
+
+        if (
+            page !==
+            "pages/raw-materials.html" &&
+            typeof stopRawMaterialsListener ===
+            "function"
+        ) {
+
+            try {
+
+                stopRawMaterialsListener();
+
+            }
+
+            catch (error) {
+
+                console.warn(
+                    "Unable to stop raw materials listener:",
+                    error
+                );
+
+            }
+
+        }
+
+
+        // ==================================================
         // LOAD PAGE HTML
         // ==================================================
 
@@ -736,6 +802,19 @@ async function loadPage(
             case "pages/inventory.html":
 
                 await initializeInventoryModule(
+                    content
+                );
+
+                break;
+
+
+            // ==================================================
+            // RAW MATERIALS
+            // ==================================================
+
+            case "pages/raw-materials.html":
+
+                await initializeRawMaterialsModule(
                     content
                 );
 
@@ -1342,16 +1421,8 @@ async function initializeInventoryModule(
         );
 
 
-        // ==================================================
-        // LOAD INVENTORY JAVASCRIPT
-        // ==================================================
-
         await loadInventoryScripts();
 
-
-        // ==================================================
-        // INITIALIZE INVENTORY PAGE
-        // ==================================================
 
         if (
             typeof initializeInventory ===
@@ -1388,6 +1459,85 @@ async function initializeInventoryModule(
         showModuleError(
             content,
             "Inventory",
+            error
+        );
+
+    }
+
+}
+
+
+// ==========================================================
+// RAW MATERIALS INITIALIZATION
+// ==========================================================
+
+async function initializeRawMaterialsModule(
+    content
+) {
+
+    try {
+
+        console.log(
+            "=========================================="
+        );
+
+
+        console.log(
+            "INITIALIZING RAW MATERIALS"
+        );
+
+
+        console.log(
+            "=========================================="
+        );
+
+
+        // ==================================================
+        // LOAD RAW MATERIALS JAVASCRIPT
+        // ==================================================
+
+        await loadRawMaterialsScripts();
+
+
+        // ==================================================
+        // INITIALIZE RAW MATERIALS PAGE
+        // ==================================================
+
+        if (
+            typeof initializeRawMaterials ===
+            "function"
+        ) {
+
+            await initializeRawMaterials();
+
+        }
+
+        else {
+
+            throw new Error(
+                "initializeRawMaterials() not found."
+            );
+
+        }
+
+
+        console.log(
+            "Raw Materials initialized."
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Raw Materials Module Error:",
+            error
+        );
+
+
+        showModuleError(
+            content,
+            "Raw Materials",
             error
         );
 
@@ -1487,6 +1637,22 @@ function openInventory() {
 
     loadPage(
         "pages/inventory.html"
+    );
+
+}
+
+
+// ==========================================================
+// RAW MATERIALS NAVIGATION
+// ==========================================================
+
+function openRawMaterials() {
+
+    closeSidebarMobile();
+
+
+    loadPage(
+        "pages/raw-materials.html"
     );
 
 }
@@ -2031,6 +2197,10 @@ window.loadInventoryScripts =
     loadInventoryScripts;
 
 
+window.loadRawMaterialsScripts =
+    loadRawMaterialsScripts;
+
+
 window.loadPage =
     loadPage;
 
@@ -2057,6 +2227,10 @@ window.initializeReceivingOrdersModule =
 
 window.initializeInventoryModule =
     initializeInventoryModule;
+
+
+window.initializeRawMaterialsModule =
+    initializeRawMaterialsModule;
 
 
 window.toggleSidebar =
@@ -2097,6 +2271,10 @@ window.openCategory =
 
 window.openInventory =
     openInventory;
+
+
+window.openRawMaterials =
+    openRawMaterials;
 
 
 window.openStockIn =
@@ -2152,5 +2330,5 @@ window.logoutERP =
 
 
 console.log(
-    "PAPPRITO ERP app.js V8 loaded."
+    "PAPPRITO ERP app.js V9 loaded."
 );
