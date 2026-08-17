@@ -1,0 +1,1920 @@
+<!-- ==========================================================
+     PAPPRITO ERP
+     INVENTORY MASTER
+     File: pages/inventory.html
+========================================================== -->
+
+<section
+    id="inventoryPage"
+    class="inventory-page"
+>
+
+
+    <!-- ======================================================
+         PAGE HEADER
+    ======================================================= -->
+
+    <div class="inventory-page-header">
+
+        <div class="inventory-page-title">
+
+            <div class="inventory-page-label">
+
+                <i class="fa-solid fa-warehouse"></i>
+
+                INVENTORY MANAGEMENT
+
+            </div>
+
+
+            <h1>
+
+                Inventory
+
+            </h1>
+
+
+            <p>
+
+                Manage stock levels, stock movements,
+                inventory value and reorder levels.
+
+            </p>
+
+        </div>
+
+
+        <!-- HEADER ACTIONS -->
+
+        <div class="inventory-header-actions">
+
+            <button
+                type="button"
+                class="
+                    inventory-btn
+                    inventory-btn-secondary
+                "
+                id="btnRefreshInventory"
+            >
+
+                <i class="fa-solid fa-rotate"></i>
+
+                Refresh
+
+            </button>
+
+
+            <button
+                type="button"
+                class="
+                    inventory-btn
+                    inventory-btn-primary
+                "
+                id="btnInventoryStockIn"
+            >
+
+                <i class="fa-solid fa-arrow-down"></i>
+
+                Stock In
+
+            </button>
+
+
+            <button
+                type="button"
+                class="
+                    inventory-btn
+                    inventory-btn-danger
+                "
+                id="btnInventoryStockOut"
+            >
+
+                <i class="fa-solid fa-arrow-up"></i>
+
+                Stock Out
+
+            </button>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ======================================================
+         ALERT
+    ======================================================= -->
+
+    <div
+        id="inventoryAlert"
+        class="inventory-alert"
+        style="display:none;"
+    >
+
+        <i
+            id="inventoryAlertIcon"
+            class="fa-solid"
+        ></i>
+
+
+        <span
+            id="inventoryAlertMessage"
+        ></span>
+
+    </div>
+
+
+
+    <!-- ======================================================
+         INVENTORY STATISTICS
+    ======================================================= -->
+
+    <div class="inventory-stat-grid">
+
+
+        <!-- TOTAL ITEMS -->
+
+        <div class="inventory-stat-card">
+
+            <div
+                class="
+                    inventory-stat-icon
+                    inventory-stat-icon-items
+                "
+            >
+
+                <i class="fa-solid fa-boxes-stacked"></i>
+
+            </div>
+
+
+            <div class="inventory-stat-content">
+
+                <span>
+
+                    Total Items
+
+                </span>
+
+
+                <strong
+                    id="inventoryTotalItems"
+                >
+
+                    0
+
+                </strong>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- TOTAL STOCK -->
+
+        <div class="inventory-stat-card">
+
+            <div
+                class="
+                    inventory-stat-icon
+                    inventory-stat-icon-stock
+                "
+            >
+
+                <i class="fa-solid fa-cubes"></i>
+
+            </div>
+
+
+            <div class="inventory-stat-content">
+
+                <span>
+
+                    Total Stock
+
+                </span>
+
+
+                <strong
+                    id="inventoryTotalStock"
+                >
+
+                    0
+
+                </strong>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- LOW STOCK -->
+
+        <div class="inventory-stat-card">
+
+            <div
+                class="
+                    inventory-stat-icon
+                    inventory-stat-icon-low
+                "
+            >
+
+                <i class="fa-solid fa-triangle-exclamation"></i>
+
+            </div>
+
+
+            <div class="inventory-stat-content">
+
+                <span>
+
+                    Low Stock
+
+                </span>
+
+
+                <strong
+                    id="inventoryLowStock"
+                >
+
+                    0
+
+                </strong>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- OUT OF STOCK -->
+
+        <div class="inventory-stat-card">
+
+            <div
+                class="
+                    inventory-stat-icon
+                    inventory-stat-icon-out
+                "
+            >
+
+                <i class="fa-solid fa-circle-xmark"></i>
+
+            </div>
+
+
+            <div class="inventory-stat-content">
+
+                <span>
+
+                    Out of Stock
+
+                </span>
+
+
+                <strong
+                    id="inventoryOutOfStock"
+                >
+
+                    0
+
+                </strong>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- INVENTORY VALUE -->
+
+        <div class="inventory-stat-card">
+
+            <div
+                class="
+                    inventory-stat-icon
+                    inventory-stat-icon-value
+                "
+            >
+
+                <i class="fa-solid fa-peso-sign"></i>
+
+            </div>
+
+
+            <div class="inventory-stat-content">
+
+                <span>
+
+                    Inventory Value
+
+                </span>
+
+
+                <strong
+                    id="inventoryTotalValue"
+                >
+
+                    ₱0.00
+
+                </strong>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- ======================================================
+         INVENTORY TOOLBAR
+    ======================================================= -->
+
+    <div class="inventory-toolbar">
+
+
+        <!-- SEARCH -->
+
+        <div class="inventory-search">
+
+            <i
+                class="
+                    fa-solid
+                    fa-magnifying-glass
+                "
+            ></i>
+
+
+            <input
+                type="search"
+                id="inventorySearch"
+                placeholder="
+                    Search item, code or category...
+                "
+                autocomplete="off"
+            >
+
+        </div>
+
+
+
+        <!-- CATEGORY -->
+
+        <div class="inventory-filter">
+
+            <select
+                id="inventoryCategoryFilter"
+            >
+
+                <option value="all">
+
+                    All Categories
+
+                </option>
+
+            </select>
+
+        </div>
+
+
+
+        <!-- STOCK STATUS -->
+
+        <div class="inventory-filter">
+
+            <select
+                id="inventoryStockStatusFilter"
+            >
+
+                <option value="all">
+
+                    All Stock Status
+
+                </option>
+
+                <option value="In Stock">
+
+                    In Stock
+
+                </option>
+
+                <option value="Low Stock">
+
+                    Low Stock
+
+                </option>
+
+                <option value="Out of Stock">
+
+                    Out of Stock
+
+                </option>
+
+            </select>
+
+        </div>
+
+
+
+        <!-- UNIT -->
+
+        <div class="inventory-filter">
+
+            <select
+                id="inventoryUnitFilter"
+            >
+
+                <option value="all">
+
+                    All Units
+
+                </option>
+
+            </select>
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- ======================================================
+         INVENTORY TABLE CARD
+    ======================================================= -->
+
+    <section
+        class="inventory-card"
+    >
+
+
+        <!-- CARD HEADER -->
+
+        <div
+            class="
+                inventory-card-header
+            "
+        >
+
+            <div>
+
+                <h2>
+
+                    Inventory Items
+
+                </h2>
+
+
+                <p>
+
+                    Current stock balance and inventory
+                    information.
+
+                </p>
+
+            </div>
+
+
+            <div
+                id="inventoryItemsCount"
+                class="inventory-items-count"
+            >
+
+                0 Items
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ==================================================
+             TABLE
+        =================================================== -->
+
+        <div
+            class="
+                inventory-table-wrapper
+            "
+        >
+
+            <table
+                class="
+                    inventory-table
+                "
+            >
+
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+
+                            Item Code
+
+                        </th>
+
+
+                        <th>
+
+                            Item
+
+                        </th>
+
+
+                        <th>
+
+                            Category
+
+                        </th>
+
+
+                        <th>
+
+                            Unit
+
+                        </th>
+
+
+                        <th>
+
+                            Current Stock
+
+                        </th>
+
+
+                        <th>
+
+                            Reorder Level
+
+                        </th>
+
+
+                        <th>
+
+                            Unit Cost
+
+                        </th>
+
+
+                        <th>
+
+                            Stock Value
+
+                        </th>
+
+
+                        <th>
+
+                            Status
+
+                        </th>
+
+
+                        <th>
+
+                            Action
+
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody
+                    id="inventoryTableBody"
+                >
+
+                    <tr>
+
+                        <td
+                            colspan="10"
+                            class="
+                                inventory-loading
+                            "
+                        >
+
+                            <div
+                                class="inventory-spinner"
+                            ></div>
+
+
+                            <span>
+
+                                Loading inventory...
+
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+
+            </table>
+
+        </div>
+
+
+
+        <!-- ==================================================
+             PAGINATION
+        =================================================== -->
+
+        <div
+            class="
+                inventory-pagination
+            "
+        >
+
+
+            <div
+                id="inventoryPaginationInfo"
+                class="
+                    inventory-pagination-info
+                "
+            >
+
+                Showing 0 to 0 of 0 Items
+
+            </div>
+
+
+            <div
+                id="inventoryPaginationButtons"
+                class="
+                    inventory-pagination-buttons
+                "
+            >
+
+            </div>
+
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- ======================================================
+         STOCK MOVEMENT SUMMARY
+    ======================================================= -->
+
+    <section
+        class="
+            inventory-movement-card
+        "
+    >
+
+
+        <div
+            class="
+                inventory-card-header
+            "
+        >
+
+            <div>
+
+                <h2>
+
+                    Recent Stock Movements
+
+                </h2>
+
+
+                <p>
+
+                    Latest stock-in, stock-out and
+                    adjustment transactions.
+
+                </p>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="
+                    inventory-btn
+                    inventory-btn-secondary
+                "
+                id="btnViewInventoryHistory"
+            >
+
+                <i class="fa-solid fa-clock-rotate-left"></i>
+
+                View History
+
+            </button>
+
+        </div>
+
+
+        <div
+            class="
+                inventory-table-wrapper
+            "
+        >
+
+            <table
+                class="
+                    inventory-table
+                    inventory-movement-table
+                "
+            >
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+
+                            Date / Time
+
+                        </th>
+
+
+                        <th>
+
+                            Reference
+
+                        </th>
+
+
+                        <th>
+
+                            Item
+
+                        </th>
+
+
+                        <th>
+
+                            Movement
+
+                        </th>
+
+
+                        <th>
+
+                            Quantity
+
+                        </th>
+
+
+                        <th>
+
+                            Unit
+
+                        </th>
+
+
+                        <th>
+
+                            User
+
+                        </th>
+
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody
+                    id="inventoryMovementTableBody"
+                >
+
+                    <tr>
+
+                        <td
+                            colspan="7"
+                            class="
+                                inventory-loading
+                            "
+                        >
+
+                            <div
+                                class="inventory-spinner"
+                            ></div>
+
+
+                            <span>
+
+                                Loading movements...
+
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+
+            </table>
+
+        </div>
+
+
+    </section>
+
+
+
+</section>
+
+
+<!-- ==========================================================
+     STOCK IN MODAL
+========================================================== -->
+
+<div
+    id="inventoryStockInModal"
+    class="
+        inventory-modal
+    "
+    aria-hidden="true"
+>
+
+
+    <div
+        class="
+            inventory-modal-dialog
+        "
+    >
+
+
+        <div
+            class="
+                inventory-modal-header
+            "
+        >
+
+            <div>
+
+                <span
+                    class="
+                        inventory-modal-label
+                    "
+                >
+
+                    INVENTORY
+
+                </span>
+
+
+                <h2>
+
+                    Stock In
+
+                </h2>
+
+            </div>
+
+
+            <button
+                type="button"
+                id="btnCloseInventoryStockIn"
+                class="
+                    inventory-modal-close
+                "
+                aria-label="Close"
+            >
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+        </div>
+
+
+        <div
+            class="
+                inventory-modal-body
+            "
+        >
+
+            <div class="inventory-form-grid">
+
+
+                <div class="inventory-form-group">
+
+                    <label>
+
+                        Item
+
+                    </label>
+
+
+                    <select
+                        id="inventoryStockInItem"
+                    >
+
+                        <option value="">
+
+                            Select Item
+
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="inventory-form-group">
+
+                    <label>
+
+                        Quantity
+
+                    </label>
+
+
+                    <input
+                        type="number"
+                        id="inventoryStockInQuantity"
+                        min="0"
+                        step="0.01"
+                        placeholder="0.00"
+                    >
+
+                </div>
+
+
+                <div class="inventory-form-group">
+
+                    <label>
+
+                        Unit Cost
+
+                    </label>
+
+
+                    <input
+                        type="number"
+                        id="inventoryStockInCost"
+                        min="0"
+                        step="0.01"
+                        placeholder="0.00"
+                    >
+
+                </div>
+
+
+                <div class="inventory-form-group">
+
+                    <label>
+
+                        Reference No.
+
+                    </label>
+
+
+                    <input
+                        type="text"
+                        id="inventoryStockInReference"
+                        placeholder="e.g. PO-0001"
+                    >
+
+                </div>
+
+
+                <div
+                    class="
+                        inventory-form-group
+                        inventory-form-group-full
+                    "
+                >
+
+                    <label>
+
+                        Remarks
+
+                    </label>
+
+
+                    <textarea
+                        id="inventoryStockInRemarks"
+                        rows="3"
+                        placeholder="
+                            Enter remarks...
+                        "
+                    ></textarea>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+        <div
+            class="
+                inventory-modal-footer
+            "
+        >
+
+            <button
+                type="button"
+                id="btnCancelInventoryStockIn"
+                class="
+                    inventory-btn
+                    inventory-btn-secondary
+                "
+            >
+
+                Cancel
+
+            </button>
+
+
+            <button
+                type="button"
+                id="btnSaveInventoryStockIn"
+                class="
+                    inventory-btn
+                    inventory-btn-primary
+                "
+            >
+
+                <i class="fa-solid fa-check"></i>
+
+                Save Stock In
+
+            </button>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+
+<!-- ==========================================================
+     STOCK OUT MODAL
+========================================================== -->
+
+<div
+    id="inventoryStockOutModal"
+    class="
+        inventory-modal
+    "
+    aria-hidden="true"
+>
+
+
+    <div
+        class="
+            inventory-modal-dialog
+        "
+    >
+
+
+        <div
+            class="
+                inventory-modal-header
+            "
+        >
+
+            <div>
+
+                <span
+                    class="
+                        inventory-modal-label
+                    "
+                >
+
+                    INVENTORY
+
+                </span>
+
+
+                <h2>
+
+                    Stock Out
+
+                </h2>
+
+            </div>
+
+
+            <button
+                type="button"
+                id="btnCloseInventoryStockOut"
+                class="
+                    inventory-modal-close
+                "
+                aria-label="Close"
+            >
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+        </div>
+
+
+        <div
+            class="
+                inventory-modal-body
+            "
+        >
+
+            <div class="inventory-form-grid">
+
+
+                <div class="inventory-form-group">
+
+                    <label>
+
+                        Item
+
+                    </label>
+
+
+                    <select
+                        id="inventoryStockOutItem"
+                    >
+
+                        <option value="">
+
+                            Select Item
+
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="inventory-form-group">
+
+                    <label>
+
+                        Quantity
+
+                    </label>
+
+
+                    <input
+                        type="number"
+                        id="inventoryStockOutQuantity"
+                        min="0"
+                        step="0.01"
+                        placeholder="0.00"
+                    >
+
+                </div>
+
+
+                <div class="inventory-form-group">
+
+                    <label>
+
+                        Reference No.
+
+                    </label>
+
+
+                    <input
+                        type="text"
+                        id="inventoryStockOutReference"
+                        placeholder="e.g. SO-0001"
+                    >
+
+                </div>
+
+
+                <div class="inventory-form-group">
+
+                    <label>
+
+                        Reason
+
+                    </label>
+
+
+                    <select
+                        id="inventoryStockOutReason"
+                    >
+
+                        <option value="Sales">
+
+                            Sales
+
+                        </option>
+
+                        <option value="Production">
+
+                            Production
+
+                        </option>
+
+                        <option value="Wastage">
+
+                            Wastage
+
+                        </option>
+
+                        <option value="Damaged">
+
+                            Damaged
+
+                        </option>
+
+                        <option value="Transfer">
+
+                            Transfer
+
+                        </option>
+
+                        <option value="Other">
+
+                            Other
+
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div
+                    class="
+                        inventory-form-group
+                        inventory-form-group-full
+                    "
+                >
+
+                    <label>
+
+                        Remarks
+
+                    </label>
+
+
+                    <textarea
+                        id="inventoryStockOutRemarks"
+                        rows="3"
+                        placeholder="
+                            Enter remarks...
+                        "
+                    ></textarea>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+        <div
+            class="
+                inventory-modal-footer
+            "
+        >
+
+            <button
+                type="button"
+                id="btnCancelInventoryStockOut"
+                class="
+                    inventory-btn
+                    inventory-btn-secondary
+                "
+            >
+
+                Cancel
+
+            </button>
+
+
+            <button
+                type="button"
+                id="btnSaveInventoryStockOut"
+                class="
+                    inventory-btn
+                    inventory-btn-danger
+                "
+            >
+
+                <i class="fa-solid fa-check"></i>
+
+                Save Stock Out
+
+            </button>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+
+<!-- ==========================================================
+     INVENTORY ADJUSTMENT MODAL
+========================================================== -->
+
+<div
+    id="inventoryAdjustmentModal"
+    class="
+        inventory-modal
+    "
+    aria-hidden="true"
+>
+
+
+    <div
+        class="
+            inventory-modal-dialog
+        "
+    >
+
+
+        <div
+            class="
+                inventory-modal-header
+            "
+        >
+
+            <div>
+
+                <span
+                    class="
+                        inventory-modal-label
+                    "
+                >
+
+                    INVENTORY
+
+                </span>
+
+
+                <h2>
+
+                    Stock Adjustment
+
+                </h2>
+
+            </div>
+
+
+            <button
+                type="button"
+                id="btnCloseInventoryAdjustment"
+                class="
+                    inventory-modal-close
+                "
+                aria-label="Close"
+            >
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+        </div>
+
+
+        <div
+            class="
+                inventory-modal-body
+            "
+        >
+
+            <div class="inventory-form-grid">
+
+
+                <div class="inventory-form-group">
+
+                    <label>
+
+                        Item
+
+                    </label>
+
+
+                    <select
+                        id="inventoryAdjustmentItem"
+                    >
+
+                        <option value="">
+
+                            Select Item
+
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="inventory-form-group">
+
+                    <label>
+
+                        Actual Quantity
+
+                    </label>
+
+
+                    <input
+                        type="number"
+                        id="inventoryAdjustmentQuantity"
+                        min="0"
+                        step="0.01"
+                        placeholder="0.00"
+                    >
+
+                </div>
+
+
+                <div
+                    class="
+                        inventory-form-group
+                        inventory-form-group-full
+                    "
+                >
+
+                    <label>
+
+                        Reason
+
+                    </label>
+
+
+                    <textarea
+                        id="inventoryAdjustmentReason"
+                        rows="3"
+                        placeholder="
+                            Explain the reason for adjustment...
+                        "
+                    ></textarea>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+        <div
+            class="
+                inventory-modal-footer
+            "
+        >
+
+            <button
+                type="button"
+                id="btnCancelInventoryAdjustment"
+                class="
+                    inventory-btn
+                    inventory-btn-secondary
+                "
+            >
+
+                Cancel
+
+            </button>
+
+
+            <button
+                type="button"
+                id="btnSaveInventoryAdjustment"
+                class="
+                    inventory-btn
+                    inventory-btn-primary
+                "
+            >
+
+                <i class="fa-solid fa-sliders"></i>
+
+                Save Adjustment
+
+            </button>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+
+<!-- ==========================================================
+     INVENTORY DETAILS MODAL
+========================================================== -->
+
+<div
+    id="inventoryDetailsModal"
+    class="
+        inventory-modal
+    "
+    aria-hidden="true"
+>
+
+
+    <div
+        class="
+            inventory-modal-dialog
+            inventory-details-dialog
+        "
+    >
+
+
+        <div
+            class="
+                inventory-modal-header
+            "
+        >
+
+            <div>
+
+                <span
+                    class="
+                        inventory-modal-label
+                    "
+                >
+
+                    INVENTORY ITEM
+
+                </span>
+
+
+                <h2
+                    id="inventoryDetailsTitle"
+                >
+
+                    Item Details
+
+                </h2>
+
+            </div>
+
+
+            <button
+                type="button"
+                id="btnCloseInventoryDetails"
+                class="
+                    inventory-modal-close
+                "
+                aria-label="Close"
+            >
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+        </div>
+
+
+        <div
+            class="
+                inventory-modal-body
+            "
+        >
+
+
+            <div
+                class="
+                    inventory-details-grid
+                "
+            >
+
+
+                <div>
+
+                    <span>
+
+                        Item Code
+
+                    </span>
+
+
+                    <strong
+                        id="inventoryDetailCode"
+                    >
+
+                        -
+
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+
+                        Item Name
+
+                    </span>
+
+
+                    <strong
+                        id="inventoryDetailName"
+                    >
+
+                        -
+
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+
+                        Category
+
+                    </span>
+
+
+                    <strong
+                        id="inventoryDetailCategory"
+                    >
+
+                        -
+
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+
+                        Unit
+
+                    </span>
+
+
+                    <strong
+                        id="inventoryDetailUnit"
+                    >
+
+                        -
+
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+
+                        Current Stock
+
+                    </span>
+
+
+                    <strong
+                        id="inventoryDetailStock"
+                    >
+
+                        0
+
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+
+                        Reorder Level
+
+                    </span>
+
+
+                    <strong
+                        id="inventoryDetailReorder"
+                    >
+
+                        0
+
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+
+                        Unit Cost
+
+                    </span>
+
+
+                    <strong
+                        id="inventoryDetailCost"
+                    >
+
+                        ₱0.00
+
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+
+                        Stock Value
+
+                    </span>
+
+
+                    <strong
+                        id="inventoryDetailValue"
+                    >
+
+                        ₱0.00
+
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+
+                        Status
+
+                    </span>
+
+
+                    <strong
+                        id="inventoryDetailStatus"
+                    >
+
+                        -
+
+                    </strong>
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- ITEM MOVEMENT -->
+
+            <div
+                class="
+                    inventory-detail-history
+                "
+            >
+
+                <h3>
+
+                    Recent Movements
+
+                </h3>
+
+
+                <div
+                    class="
+                        inventory-table-wrapper
+                    "
+                >
+
+                    <table
+                        class="
+                            inventory-table
+                        "
+                    >
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+
+                                    Date
+
+                                </th>
+
+
+                                <th>
+
+                                    Reference
+
+                                </th>
+
+
+                                <th>
+
+                                    Movement
+
+                                </th>
+
+
+                                <th>
+
+                                    Quantity
+
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody
+                            id="inventoryDetailHistoryBody"
+                        >
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+        <div
+            class="
+                inventory-modal-footer
+            "
+        >
+
+            <button
+                type="button"
+                id="btnInventoryAdjustmentFromDetails"
+                class="
+                    inventory-btn
+                    inventory-btn-secondary
+                "
+            >
+
+                <i class="fa-solid fa-sliders"></i>
+
+                Adjustment
+
+            </button>
+
+
+            <button
+                type="button"
+                id="btnInventoryStockInFromDetails"
+                class="
+                    inventory-btn
+                    inventory-btn-primary
+                "
+            >
+
+                <i class="fa-solid fa-arrow-down"></i>
+
+                Stock In
+
+            </button>
+
+
+            <button
+                type="button"
+                id="btnInventoryStockOutFromDetails"
+                class="
+                    inventory-btn
+                    inventory-btn-danger
+                "
+            >
+
+                <i class="fa-solid fa-arrow-up"></i>
+
+                Stock Out
+
+            </button>
+
+        </div>
+
+
+    </div>
+
+</div>
