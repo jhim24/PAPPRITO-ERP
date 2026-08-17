@@ -1,0 +1,624 @@
+/* ==========================================================
+   PAPPRITO ERP
+   STOCK IN CSS
+   File: assets/css/stock-in.css
+========================================================== */
+
+
+/* ==========================================================
+   PAGE
+========================================================== */
+
+.stock-in-page {
+    width: 100%;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 24px;
+    box-sizing: border-box;
+}
+
+
+/* ==========================================================
+   HEADER
+========================================================== */
+
+.stock-in-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+.stock-in-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: .7px;
+    margin-bottom: 5px;
+}
+
+.stock-in-eyebrow i {
+    color: #C8102E;
+}
+
+.stock-in-title {
+    margin: 0;
+    color: #111827;
+    font-size: 32px;
+    font-weight: 700;
+}
+
+.stock-in-description {
+    margin: 7px 0 0;
+    color: #64748b;
+    font-size: 15px;
+}
+
+.stock-in-header-actions {
+    display: flex;
+    gap: 8px;
+}
+
+
+/* ==========================================================
+   SUMMARY CARDS
+========================================================== */
+
+.stock-in-summary {
+    margin-bottom: 24px;
+}
+
+.stock-summary-card {
+    min-height: 100px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    padding: 18px;
+
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+
+    box-shadow: 0 2px 8px rgba(15, 23, 42, .05);
+}
+
+.stock-summary-icon {
+    width: 48px;
+    height: 48px;
+
+    flex: 0 0 48px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background: #fff1f2;
+    color: #C8102E;
+
+    font-size: 20px;
+}
+
+.stock-summary-label {
+    color: #64748b;
+    font-size: 13px;
+    margin-bottom: 3px;
+}
+
+.stock-summary-value {
+    color: #111827;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+
+/* ==========================================================
+   FORM CARD
+========================================================== */
+
+.stock-in-form-card,
+.stock-history-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #ffffff;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, .05);
+}
+
+.stock-in-form-card {
+    margin-bottom: 24px;
+}
+
+.stock-in-card-header {
+    min-height: 68px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 15px 20px;
+
+    background: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.stock-in-card-header h5 {
+    color: #111827;
+    font-weight: 700;
+}
+
+.stock-in-card-header h5 i {
+    color: #C8102E;
+    margin-right: 7px;
+}
+
+.stock-in-card-header small {
+    color: #64748b;
+}
+
+.stock-in-form-card .card-body {
+    padding: 22px;
+}
+
+
+/* ==========================================================
+   SECTION TITLE
+========================================================== */
+
+.stock-section-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    margin-bottom: 16px;
+
+    color: #1f2937;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.stock-section-title i {
+    color: #C8102E;
+}
+
+
+/* ==========================================================
+   FORM
+========================================================== */
+
+.stock-in-page .form-label {
+    color: #374151;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.stock-in-page .form-control,
+.stock-in-page .form-select {
+    min-height: 42px;
+
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+
+    color: #1f2937;
+    background: #ffffff;
+
+    box-shadow: none;
+}
+
+.stock-in-page .form-control:focus,
+.stock-in-page .form-select:focus {
+    border-color: #C8102E;
+
+    box-shadow:
+        0 0 0 3px rgba(200, 16, 46, .10);
+}
+
+.stock-in-page textarea.form-control {
+    min-height: 90px;
+    resize: vertical;
+}
+
+.stock-in-page .input-group-text {
+    min-height: 42px;
+
+    background: #f8fafc;
+    border-color: #cbd5e1;
+
+    color: #475569;
+    font-weight: 600;
+}
+
+
+/* ==========================================================
+   READONLY FIELDS
+========================================================== */
+
+.stock-in-page input[readonly] {
+    background: #f8fafc;
+    color: #475569;
+}
+
+.stock-new-stock {
+    font-weight: 700;
+}
+
+.stock-total-cost {
+    font-weight: 700;
+    color: #C8102E !important;
+}
+
+
+/* ==========================================================
+   FORM ACTIONS
+========================================================== */
+
+.stock-form-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+
+    padding-top: 4px;
+}
+
+.stock-form-actions .btn {
+    min-height: 42px;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.stock-form-actions .btn-danger {
+    background: #C8102E;
+    border-color: #C8102E;
+}
+
+.stock-form-actions .btn-danger:hover {
+    background: #a80d27;
+    border-color: #a80d27;
+}
+
+
+/* ==========================================================
+   HISTORY
+========================================================== */
+
+.stock-history-card {
+    margin-bottom: 24px;
+}
+
+.stock-history-toolbar {
+    display: flex;
+    justify-content: flex-end;
+
+    background: #ffffff;
+}
+
+.stock-history-search {
+    width: 100%;
+    max-width: 420px;
+}
+
+.stock-history-search .input-group-text {
+    background: #ffffff;
+    border-color: #cbd5e1;
+    color: #64748b;
+}
+
+.stock-history-search .form-control {
+    min-height: 40px;
+}
+
+
+/* ==========================================================
+   TABLE
+========================================================== */
+
+.stock-history-card .table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.stock-history-card table {
+    min-width: 1100px;
+    margin: 0;
+}
+
+.stock-history-card thead th {
+    background: #f8fafc;
+    color: #475569;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    white-space: nowrap;
+
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.stock-history-card tbody td {
+    color: #334155;
+    font-size: 13px;
+
+    white-space: nowrap;
+
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.stock-history-card tbody tr:hover {
+    background: #fff8f9;
+}
+
+
+/* ==========================================================
+   STATUS
+========================================================== */
+
+.stock-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 70px;
+    padding: 5px 9px;
+
+    border-radius: 20px;
+
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.stock-status-success {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.stock-status-pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.stock-status-cancelled {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+
+/* ==========================================================
+   EMPTY STATE
+========================================================== */
+
+.stock-history-card .text-muted i {
+    display: block;
+    color: #94a3b8;
+}
+
+
+/* ==========================================================
+   BUTTONS
+========================================================== */
+
+.stock-in-page .btn {
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.stock-in-page .btn-danger {
+    background: #C8102E;
+    border-color: #C8102E;
+}
+
+.stock-in-page .btn-danger:hover {
+    background: #a80d27;
+    border-color: #a80d27;
+}
+
+.stock-in-page .btn-secondary {
+    background: #64748b;
+    border-color: #64748b;
+}
+
+.stock-in-page .btn-secondary:hover {
+    background: #475569;
+    border-color: #475569;
+}
+
+
+/* ==========================================================
+   TABLET
+========================================================== */
+
+@media (max-width: 992px) {
+
+    .stock-in-page {
+        padding: 18px;
+    }
+
+    .stock-in-title {
+        font-size: 28px;
+    }
+
+    .stock-in-header {
+        align-items: stretch;
+    }
+
+    .stock-in-header-actions {
+        flex-shrink: 0;
+    }
+
+}
+
+
+/* ==========================================================
+   MOBILE
+========================================================== */
+
+@media (max-width: 767px) {
+
+    .stock-in-page {
+        padding: 14px;
+    }
+
+
+    .stock-in-header {
+        flex-direction: column;
+        gap: 14px;
+        margin-bottom: 18px;
+    }
+
+
+    .stock-in-header-actions {
+        width: 100%;
+    }
+
+
+    .stock-in-header-actions .btn {
+        width: 100%;
+    }
+
+
+    .stock-in-title {
+        font-size: 25px;
+    }
+
+
+    .stock-in-description {
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+
+    .stock-summary-card {
+        min-height: 88px;
+        padding: 14px;
+    }
+
+
+    .stock-summary-icon {
+        width: 42px;
+        height: 42px;
+        flex-basis: 42px;
+        font-size: 17px;
+    }
+
+
+    .stock-summary-value {
+        font-size: 20px;
+    }
+
+
+    .stock-in-card-header {
+        padding: 14px;
+    }
+
+
+    .stock-in-form-card .card-body {
+        padding: 15px;
+    }
+
+
+    .stock-section-title {
+        font-size: 14px;
+    }
+
+
+    .stock-form-actions {
+        flex-direction: column-reverse;
+        align-items: stretch;
+    }
+
+
+    .stock-form-actions .btn {
+        width: 100%;
+    }
+
+
+    .stock-history-toolbar {
+        padding: 12px !important;
+    }
+
+
+    .stock-history-search {
+        max-width: none;
+    }
+
+}
+
+
+/* ==========================================================
+   SMALL MOBILE
+========================================================== */
+
+@media (max-width: 480px) {
+
+    .stock-in-page {
+        padding: 10px;
+    }
+
+
+    .stock-in-title {
+        font-size: 23px;
+    }
+
+
+    .stock-in-eyebrow {
+        font-size: 11px;
+    }
+
+
+    .stock-summary-card {
+        padding: 12px;
+    }
+
+
+    .stock-summary-label {
+        font-size: 12px;
+    }
+
+
+    .stock-summary-value {
+        font-size: 18px;
+    }
+
+
+    .stock-in-form-card .card-body {
+        padding: 12px;
+    }
+
+
+    .stock-in-page .form-control,
+    .stock-in-page .form-select {
+        min-height: 44px;
+    }
+
+
+    .stock-history-card table {
+        min-width: 1050px;
+    }
+
+}
+
+
+/* ==========================================================
+   TOUCH DEVICES
+========================================================== */
+
+@media (hover: none) and (pointer: coarse) {
+
+    .stock-in-page .btn {
+        min-height: 44px;
+    }
+
+    .stock-in-page .form-control,
+    .stock-in-page .form-select {
+        min-height: 44px;
+    }
+
+}
