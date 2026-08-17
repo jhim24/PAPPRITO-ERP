@@ -1,0 +1,1062 @@
+<!-- ==========================================================
+     PAPPRITO ERP
+     RAW MATERIALS MASTER
+     File: pages/raw-materials.html
+========================================================== -->
+
+<div class="raw-materials-page">
+
+    <!-- ======================================================
+         PAGE HEADER
+    ======================================================= -->
+
+    <div class="raw-materials-header">
+
+        <div>
+
+            <div class="raw-materials-eyebrow">
+
+                <i class="fa-solid fa-boxes-stacked"></i>
+
+                INVENTORY MANAGEMENT
+
+            </div>
+
+            <h1 class="raw-materials-title">
+
+                Raw Materials
+
+            </h1>
+
+            <p class="raw-materials-description">
+
+                Manage raw materials used for purchasing,
+                stock room, and production.
+
+            </p>
+
+        </div>
+
+
+        <div class="raw-materials-header-actions">
+
+            <button
+                type="button"
+                class="btn btn-secondary"
+                id="rawMaterialRefreshBtn">
+
+                <i class="fa-solid fa-rotate"></i>
+
+                Refresh
+
+            </button>
+
+
+            <button
+                type="button"
+                class="btn btn-danger"
+                id="addRawMaterialBtn">
+
+                <i class="fa-solid fa-plus"></i>
+
+                Add Raw Material
+
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- ======================================================
+         SUMMARY
+    ======================================================= -->
+
+    <div class="row g-3 raw-material-summary">
+
+        <!-- TOTAL MATERIALS -->
+
+        <div class="col-12 col-sm-6 col-xl-3">
+
+            <div class="raw-material-summary-card">
+
+                <div class="raw-material-summary-icon">
+
+                    <i class="fa-solid fa-boxes-stacked"></i>
+
+                </div>
+
+                <div>
+
+                    <div class="raw-material-summary-label">
+
+                        Total Materials
+
+                    </div>
+
+                    <div
+                        class="raw-material-summary-value"
+                        id="rawMaterialTotal">
+
+                        0
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ACTIVE -->
+
+        <div class="col-12 col-sm-6 col-xl-3">
+
+            <div class="raw-material-summary-card">
+
+                <div class="raw-material-summary-icon">
+
+                    <i class="fa-solid fa-circle-check"></i>
+
+                </div>
+
+                <div>
+
+                    <div class="raw-material-summary-label">
+
+                        Active
+
+                    </div>
+
+                    <div
+                        class="raw-material-summary-value"
+                        id="rawMaterialActive">
+
+                        0
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- LOW STOCK -->
+
+        <div class="col-12 col-sm-6 col-xl-3">
+
+            <div class="raw-material-summary-card">
+
+                <div class="raw-material-summary-icon">
+
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+
+                </div>
+
+                <div>
+
+                    <div class="raw-material-summary-label">
+
+                        Low Stock
+
+                    </div>
+
+                    <div
+                        class="raw-material-summary-value"
+                        id="rawMaterialLowStock">
+
+                        0
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- OUT OF STOCK -->
+
+        <div class="col-12 col-sm-6 col-xl-3">
+
+            <div class="raw-material-summary-card">
+
+                <div class="raw-material-summary-icon">
+
+                    <i class="fa-solid fa-box-open"></i>
+
+                </div>
+
+                <div>
+
+                    <div class="raw-material-summary-label">
+
+                        Out of Stock
+
+                    </div>
+
+                    <div
+                        class="raw-material-summary-value"
+                        id="rawMaterialOutOfStock">
+
+                        0
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ======================================================
+         FILTER / SEARCH
+    ======================================================= -->
+
+    <div class="card raw-material-filter-card">
+
+        <div class="card-body">
+
+            <div class="row g-3 align-items-end">
+
+
+                <!-- SEARCH -->
+
+                <div class="col-12 col-lg-5">
+
+                    <label
+                        for="rawMaterialSearch"
+                        class="form-label">
+
+                        Search
+
+                    </label>
+
+                    <div class="input-group">
+
+                        <span class="input-group-text">
+
+                            <i class="fa-solid fa-magnifying-glass"></i>
+
+                        </span>
+
+                        <input
+                            type="search"
+                            class="form-control"
+                            id="rawMaterialSearch"
+                            placeholder="Search code, material or supplier...">
+
+                    </div>
+
+                </div>
+
+
+                <!-- CATEGORY -->
+
+                <div class="col-12 col-sm-6 col-lg-3">
+
+                    <label
+                        for="rawMaterialCategoryFilter"
+                        class="form-label">
+
+                        Category
+
+                    </label>
+
+                    <select
+                        class="form-select"
+                        id="rawMaterialCategoryFilter">
+
+                        <option value="">
+
+                            All Categories
+
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- STATUS -->
+
+                <div class="col-12 col-sm-6 col-lg-2">
+
+                    <label
+                        for="rawMaterialStatusFilter"
+                        class="form-label">
+
+                        Status
+
+                    </label>
+
+                    <select
+                        class="form-select"
+                        id="rawMaterialStatusFilter">
+
+                        <option value="">
+
+                            All Status
+
+                        </option>
+
+                        <option value="Active">
+
+                            Active
+
+                        </option>
+
+                        <option value="Inactive">
+
+                            Inactive
+
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- STOCK -->
+
+                <div class="col-12 col-lg-2">
+
+                    <label
+                        for="rawMaterialStockFilter"
+                        class="form-label">
+
+                        Stock
+
+                    </label>
+
+                    <select
+                        class="form-select"
+                        id="rawMaterialStockFilter">
+
+                        <option value="">
+
+                            All Stock
+
+                        </option>
+
+                        <option value="in">
+
+                            In Stock
+
+                        </option>
+
+                        <option value="low">
+
+                            Low Stock
+
+                        </option>
+
+                        <option value="out">
+
+                            Out of Stock
+
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ======================================================
+         RAW MATERIAL TABLE
+    ======================================================= -->
+
+    <div class="card raw-material-table-card">
+
+        <div class="card-header raw-material-card-header">
+
+            <div>
+
+                <h5 class="mb-1">
+
+                    <i class="fa-solid fa-list"></i>
+
+                    Raw Material List
+
+                </h5>
+
+                <small>
+
+                    Materials available for purchasing
+                    and production.
+
+                </small>
+
+            </div>
+
+
+            <div
+                class="raw-material-record-count"
+                id="rawMaterialRecordCount">
+
+                0 Materials
+
+            </div>
+
+        </div>
+
+
+        <div class="card-body p-0">
+
+            <div class="table-responsive">
+
+                <table
+                    class="table table-hover align-middle mb-0"
+                    id="rawMaterialTable">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Material Code
+                            </th>
+
+                            <th>
+                                Material Name
+                            </th>
+
+                            <th>
+                                Category
+                            </th>
+
+                            <th>
+                                Unit
+                            </th>
+
+                            <th class="text-end">
+                                Current Stock
+                            </th>
+
+                            <th class="text-end">
+                                Reorder Level
+                            </th>
+
+                            <th class="text-end">
+                                Unit Cost
+                            </th>
+
+                            <th>
+                                Supplier
+                            </th>
+
+                            <th class="text-center">
+                                Status
+                            </th>
+
+                            <th class="text-center">
+                                Action
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="rawMaterialTableBody">
+
+                        <tr>
+
+                            <td
+                                colspan="10"
+                                class="text-center py-5 text-muted">
+
+                                <i
+                                    class="
+                                        fa-solid
+                                        fa-box-open
+                                        fs-3
+                                        mb-2
+                                    "
+                                ></i>
+
+                                <div>
+
+                                    No raw materials found.
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ==========================================================
+     RAW MATERIAL MODAL
+========================================================== -->
+
+<div
+    class="modal fade"
+    id="rawMaterialModal"
+    tabindex="-1"
+    aria-hidden="true">
+
+    <div
+        class="
+            modal-dialog
+            modal-dialog-centered
+            modal-lg
+        ">
+
+        <div class="modal-content">
+
+
+            <!-- ==================================================
+                 MODAL HEADER
+            =================================================== -->
+
+            <div class="modal-header">
+
+                <h5
+                    class="modal-title"
+                    id="rawMaterialModalTitle">
+
+                    <i class="fa-solid fa-boxes-stacked"></i>
+
+                    Add Raw Material
+
+                </h5>
+
+
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close">
+                </button>
+
+            </div>
+
+
+            <!-- ==================================================
+                 FORM
+            =================================================== -->
+
+            <form
+                id="rawMaterialForm"
+                autocomplete="off">
+
+                <div class="modal-body">
+
+
+                    <!-- ==========================================
+                         HIDDEN ID
+                    =========================================== -->
+
+                    <input
+                        type="hidden"
+                        id="rawMaterialId">
+
+
+                    <!-- ==========================================
+                         BASIC INFORMATION
+                    =========================================== -->
+
+                    <div class="raw-material-modal-section">
+
+                        <div class="raw-material-modal-section-title">
+
+                            <i class="fa-solid fa-circle-info"></i>
+
+                            Material Information
+
+                        </div>
+
+
+                        <div class="row g-3">
+
+
+                            <!-- CODE -->
+
+                            <div class="col-12 col-md-4">
+
+                                <label
+                                    for="rawMaterialCode"
+                                    class="form-label">
+
+                                    Material Code
+                                    <span class="text-danger">*</span>
+
+                                </label>
+
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    id="rawMaterialCode"
+                                    placeholder="RM-0001"
+                                    required>
+
+                            </div>
+
+
+                            <!-- NAME -->
+
+                            <div class="col-12 col-md-8">
+
+                                <label
+                                    for="rawMaterialName"
+                                    class="form-label">
+
+                                    Material Name
+                                    <span class="text-danger">*</span>
+
+                                </label>
+
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    id="rawMaterialName"
+                                    placeholder="e.g. Chicken Breast"
+                                    required>
+
+                            </div>
+
+
+                            <!-- CATEGORY -->
+
+                            <div class="col-12 col-md-6">
+
+                                <label
+                                    for="rawMaterialCategory"
+                                    class="form-label">
+
+                                    Category
+                                    <span class="text-danger">*</span>
+
+                                </label>
+
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    id="rawMaterialCategory"
+                                    placeholder="e.g. Meat"
+                                    required>
+
+                            </div>
+
+
+                            <!-- UNIT -->
+
+                            <div class="col-12 col-md-3">
+
+                                <label
+                                    for="rawMaterialUnit"
+                                    class="form-label">
+
+                                    Unit
+                                    <span class="text-danger">*</span>
+
+                                </label>
+
+                                <select
+                                    class="form-select"
+                                    id="rawMaterialUnit"
+                                    required>
+
+                                    <option value="pcs">
+
+                                        PCS
+
+                                    </option>
+
+                                    <option value="kg">
+
+                                        KG
+
+                                    </option>
+
+                                    <option value="g">
+
+                                        G
+
+                                    </option>
+
+                                    <option value="liter">
+
+                                        LITER
+
+                                    </option>
+
+                                    <option value="ml">
+
+                                        ML
+
+                                    </option>
+
+                                    <option value="box">
+
+                                        BOX
+
+                                    </option>
+
+                                    <option value="pack">
+
+                                        PACK
+
+                                    </option>
+
+                                    <option value="bottle">
+
+                                        BOTTLE
+
+                                    </option>
+
+                                    <option value="can">
+
+                                        CAN
+
+                                    </option>
+
+                                    <option value="sack">
+
+                                        SACK
+
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                            <!-- STATUS -->
+
+                            <div class="col-12 col-md-3">
+
+                                <label
+                                    for="rawMaterialStatus"
+                                    class="form-label">
+
+                                    Status
+
+                                </label>
+
+                                <select
+                                    class="form-select"
+                                    id="rawMaterialStatus">
+
+                                    <option value="Active">
+
+                                        Active
+
+                                    </option>
+
+                                    <option value="Inactive">
+
+                                        Inactive
+
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <hr class="my-4">
+
+
+                    <!-- ==========================================
+                         INVENTORY INFORMATION
+                    =========================================== -->
+
+                    <div class="raw-material-modal-section">
+
+                        <div class="raw-material-modal-section-title">
+
+                            <i class="fa-solid fa-warehouse"></i>
+
+                            Inventory Information
+
+                        </div>
+
+
+                        <div class="row g-3">
+
+
+                            <!-- CURRENT STOCK -->
+
+                            <div class="col-12 col-md-4">
+
+                                <label
+                                    for="rawMaterialCurrentStock"
+                                    class="form-label">
+
+                                    Current Stock
+
+                                </label>
+
+                                <input
+                                    type="number"
+                                    class="form-control"
+                                    id="rawMaterialCurrentStock"
+                                    value="0"
+                                    min="0"
+                                    step="0.01">
+
+                                <div class="form-text">
+
+                                    Normally updated through
+                                    Receiving and Production.
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- REORDER LEVEL -->
+
+                            <div class="col-12 col-md-4">
+
+                                <label
+                                    for="rawMaterialReorderLevel"
+                                    class="form-label">
+
+                                    Reorder Level
+
+                                </label>
+
+                                <input
+                                    type="number"
+                                    class="form-control"
+                                    id="rawMaterialReorderLevel"
+                                    value="0"
+                                    min="0"
+                                    step="0.01">
+
+                            </div>
+
+
+                            <!-- UNIT COST -->
+
+                            <div class="col-12 col-md-4">
+
+                                <label
+                                    for="rawMaterialCost"
+                                    class="form-label">
+
+                                    Unit Cost
+
+                                </label>
+
+                                <div class="input-group">
+
+                                    <span class="input-group-text">
+
+                                        ₱
+
+                                    </span>
+
+                                    <input
+                                        type="number"
+                                        class="form-control"
+                                        id="rawMaterialCost"
+                                        value="0.00"
+                                        min="0"
+                                        step="0.01">
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <hr class="my-4">
+
+
+                    <!-- ==========================================
+                         SUPPLIER INFORMATION
+                    =========================================== -->
+
+                    <div class="raw-material-modal-section">
+
+                        <div class="raw-material-modal-section-title">
+
+                            <i class="fa-solid fa-truck-field"></i>
+
+                            Supplier Information
+
+                        </div>
+
+
+                        <div class="row g-3">
+
+
+                            <!-- SUPPLIER -->
+
+                            <div class="col-12 col-md-6">
+
+                                <label
+                                    for="rawMaterialSupplier"
+                                    class="form-label">
+
+                                    Supplier
+
+                                </label>
+
+                                <select
+                                    class="form-select"
+                                    id="rawMaterialSupplier">
+
+                                    <option value="">
+
+                                        Select Supplier
+
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                            <!-- SUPPLIER NAME -->
+
+                            <div class="col-12 col-md-6">
+
+                                <label
+                                    for="rawMaterialSupplierName"
+                                    class="form-label">
+
+                                    Supplier Name
+
+                                </label>
+
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    id="rawMaterialSupplierName"
+                                    placeholder="Supplier name">
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <hr class="my-4">
+
+
+                    <!-- ==========================================
+                         NOTES
+                    =========================================== -->
+
+                    <div class="raw-material-modal-section">
+
+                        <div class="raw-material-modal-section-title">
+
+                            <i class="fa-solid fa-note-sticky"></i>
+
+                            Notes
+
+                        </div>
+
+
+                        <label
+                            for="rawMaterialNotes"
+                            class="form-label">
+
+                            Remarks
+
+                        </label>
+
+                        <textarea
+                            class="form-control"
+                            id="rawMaterialNotes"
+                            rows="3"
+                            placeholder="Additional information..."></textarea>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ==================================================
+                     MODAL FOOTER
+                =================================================== -->
+
+                <div class="modal-footer">
+
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+
+                        <i class="fa-solid fa-xmark"></i>
+
+                        Cancel
+
+                    </button>
+
+
+                    <button
+                        type="reset"
+                        class="btn btn-outline-secondary"
+                        id="rawMaterialResetBtn">
+
+                        <i class="fa-solid fa-rotate-left"></i>
+
+                        Reset
+
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        class="btn btn-danger"
+                        id="rawMaterialSaveBtn">
+
+                        <i class="fa-solid fa-floppy-disk"></i>
+
+                        <span id="rawMaterialSaveText">
+
+                            Save Raw Material
+
+                        </span>
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
