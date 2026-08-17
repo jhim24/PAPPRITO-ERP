@@ -1,6 +1,6 @@
 // ==========================================================
 // PAPPRITO ERP
-// APP / NAVIGATION ENGINE V7
+// APP / NAVIGATION ENGINE V8
 // File : assets/js/app.js
 //
 // MAIN FUNCTIONS:
@@ -10,6 +10,7 @@
 // - Product Loader
 // - Category Loader
 // - Receiving Orders Loader
+// - Inventory Loader
 // - Mobile Sidebar
 // - Page Navigation
 // - Safe Script Loading
@@ -30,6 +31,8 @@ let productScriptsLoaded = false;
 let categoryScriptsLoaded = false;
 
 let receivingOrdersScriptsLoaded = false;
+
+let inventoryScriptsLoaded = false;
 
 
 // ==========================================================
@@ -70,6 +73,13 @@ const categoryScripts = [
 const receivingOrdersScripts = [
 
     "assets/js/receiving-orders/receiving-orders.js"
+
+];
+
+
+const inventoryScripts = [
+
+    "assets/js/inventory/inventory.js"
 
 ];
 
@@ -393,6 +403,33 @@ async function loadReceivingOrdersScripts() {
 
 
 // ==========================================================
+// INVENTORY
+// ==========================================================
+
+async function loadInventoryScripts() {
+
+    if (
+        inventoryScriptsLoaded
+    ) {
+
+        return;
+
+    }
+
+
+    await loadScriptGroup(
+        inventoryScripts,
+        "INVENTORY"
+    );
+
+
+    inventoryScriptsLoaded =
+        true;
+
+}
+
+
+// ==========================================================
 // HTML ESCAPE
 // ==========================================================
 
@@ -534,6 +571,35 @@ async function loadPage(
 
 
         // ==================================================
+        // STOP OLD INVENTORY LISTENER
+        // ==================================================
+
+        if (
+            page !==
+            "pages/inventory.html" &&
+            typeof stopInventoryListener ===
+            "function"
+        ) {
+
+            try {
+
+                stopInventoryListener();
+
+            }
+
+            catch (error) {
+
+                console.warn(
+                    "Unable to stop inventory listener:",
+                    error
+                );
+
+            }
+
+        }
+
+
+        // ==================================================
         // LOAD PAGE HTML
         // ==================================================
 
@@ -669,8 +735,8 @@ async function loadPage(
 
             case "pages/inventory.html":
 
-                safeInitialize(
-                    "initializeInventory"
+                await initializeInventoryModule(
+                    content
                 );
 
                 break;
@@ -1205,16 +1271,8 @@ async function initializeReceivingOrdersModule(
         );
 
 
-        // ==================================================
-        // LOAD RECEIVING ORDERS JAVASCRIPT
-        // ==================================================
-
         await loadReceivingOrdersScripts();
 
-
-        // ==================================================
-        // INITIALIZE RECEIVING ORDERS PAGE
-        // ==================================================
 
         if (
             typeof initializeReceivingOrders ===
@@ -1251,6 +1309,85 @@ async function initializeReceivingOrdersModule(
         showModuleError(
             content,
             "Receiving Orders",
+            error
+        );
+
+    }
+
+}
+
+
+// ==========================================================
+// INVENTORY INITIALIZATION
+// ==========================================================
+
+async function initializeInventoryModule(
+    content
+) {
+
+    try {
+
+        console.log(
+            "=========================================="
+        );
+
+
+        console.log(
+            "INITIALIZING INVENTORY"
+        );
+
+
+        console.log(
+            "=========================================="
+        );
+
+
+        // ==================================================
+        // LOAD INVENTORY JAVASCRIPT
+        // ==================================================
+
+        await loadInventoryScripts();
+
+
+        // ==================================================
+        // INITIALIZE INVENTORY PAGE
+        // ==================================================
+
+        if (
+            typeof initializeInventory ===
+            "function"
+        ) {
+
+            await initializeInventory();
+
+        }
+
+        else {
+
+            throw new Error(
+                "initializeInventory() not found."
+            );
+
+        }
+
+
+        console.log(
+            "Inventory initialized."
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Inventory Module Error:",
+            error
+        );
+
+
+        showModuleError(
+            content,
+            "Inventory",
             error
         );
 
@@ -1851,6 +1988,7 @@ document.addEventListener(
 
         console.log(
             "=========================================="
+
         );
 
     }
@@ -1889,6 +2027,10 @@ window.loadReceivingOrdersScripts =
     loadReceivingOrdersScripts;
 
 
+window.loadInventoryScripts =
+    loadInventoryScripts;
+
+
 window.loadPage =
     loadPage;
 
@@ -1911,6 +2053,10 @@ window.initializeCategoryModule =
 
 window.initializeReceivingOrdersModule =
     initializeReceivingOrdersModule;
+
+
+window.initializeInventoryModule =
+    initializeInventoryModule;
 
 
 window.toggleSidebar =
@@ -2006,5 +2152,5 @@ window.logoutERP =
 
 
 console.log(
-    "PAPPRITO ERP app.js V7 loaded."
+    "PAPPRITO ERP app.js V8 loaded."
 );
