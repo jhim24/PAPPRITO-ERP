@@ -1,6 +1,6 @@
 // ==========================================================
 // PAPPRITO ERP
-// SUPPLIER MASTER ENGINE V1
+// SUPPLIER MASTER ENGINE V2
 // File: assets/js/suppliers/suppliers.js
 //
 // FUNCTIONS:
@@ -13,6 +13,7 @@
 // - Auto Supplier Code
 // - Firebase Realtime Database
 // - Supplier Summary
+// - Listener Cleanup
 // ==========================================================
 
 "use strict";
@@ -486,7 +487,7 @@ function renderSuppliers() {
 
                     id,
 
-                    ...supplier
+                    ...(supplier || {})
 
                 };
 
@@ -526,7 +527,11 @@ function renderSuppliers() {
 
                             supplier.supplierType,
 
-                            supplier.paymentTerms
+                            supplier.paymentTerms,
+
+                            supplier.taxId,
+
+                            supplier.notes
 
                         ]
                         .join(
@@ -829,7 +834,8 @@ function renderSuppliers() {
                                     type="button"
                                     class="btn btn-edit"
                                     title="Edit Supplier"
-                                    onclick="editSupplier('${escapeSupplierHTML(supplier.id)}')">
+                                    onclick="editSupplier('${escapeSupplierHTML(supplier.id)}')"
+                                >
 
                                     <i class="fa-solid fa-pen"></i>
 
@@ -840,7 +846,8 @@ function renderSuppliers() {
                                     type="button"
                                     class="btn btn-delete"
                                     title="Delete Supplier"
-                                    onclick="deleteSupplier('${escapeSupplierHTML(supplier.id)}')">
+                                    onclick="deleteSupplier('${escapeSupplierHTML(supplier.id)}')"
+                                >
 
                                     <i class="fa-solid fa-trash"></i>
 
@@ -1153,6 +1160,12 @@ async function saveSupplier(event) {
         );
 
 
+    let isEditing =
+        Boolean(
+            editingSupplierId
+        );
+
+
     try {
 
         if (saveButton) {
@@ -1273,7 +1286,7 @@ async function saveSupplier(event) {
 
 
         alert(
-            editingSupplierId
+            isEditing
                 ? "Supplier updated successfully."
                 : "Supplier added successfully."
         );
@@ -1310,6 +1323,10 @@ async function saveSupplier(event) {
         // RESET
         // ==================================================
 
+        editingSupplierId =
+            null;
+
+
         resetSupplierForm();
 
 
@@ -1318,10 +1335,6 @@ async function saveSupplier(event) {
         // ==================================================
 
         await loadSuppliers();
-
-
-        editingSupplierId =
-            null;
 
     }
 
@@ -1356,7 +1369,7 @@ async function saveSupplier(event) {
         if (saveText) {
 
             saveText.textContent =
-                editingSupplierId
+                isEditing
                     ? "Update Supplier"
                     : "Save Supplier";
 
@@ -1751,6 +1764,10 @@ async function refreshSuppliers() {
             error
         );
 
+        alert(
+            "Unable to refresh suppliers."
+        );
+
     }
 
 }
@@ -1882,6 +1899,19 @@ function bindSupplierEvents() {
 
 
 // ==========================================================
+// STOP SUPPLIERS LISTENER
+// ==========================================================
+
+function stopSuppliersListener() {
+
+    console.log(
+        "PAPPRITO Supplier listener stopped."
+    );
+
+}
+
+
+// ==========================================================
 // INITIALIZE
 // ==========================================================
 
@@ -1891,9 +1921,11 @@ async function initializeSuppliers() {
         "=========================================="
     );
 
+
     console.log(
         "PAPPRITO SUPPLIERS INITIALIZING..."
     );
+
 
     console.log(
         "=========================================="
@@ -1947,28 +1979,39 @@ async function initializeSuppliers() {
 window.initializeSuppliers =
     initializeSuppliers;
 
+
 window.loadSuppliers =
     loadSuppliers;
+
 
 window.openSupplierModal =
     openSupplierModal;
 
+
 window.resetSupplierForm =
     resetSupplierForm;
+
 
 window.saveSupplier =
     saveSupplier;
 
+
 window.editSupplier =
     editSupplier;
 
+
 window.deleteSupplier =
     deleteSupplier;
+
 
 window.refreshSuppliers =
     refreshSuppliers;
 
 
+window.stopSuppliersListener =
+    stopSuppliersListener;
+
+
 console.log(
-    "PAPPRITO Supplier Master Engine V1 loaded."
+    "PAPPRITO Supplier Master Engine V2 loaded."
 );
