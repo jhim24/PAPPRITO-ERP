@@ -1,0 +1,866 @@
+<!-- ==========================================================
+     PAPPRITO ERP
+     SUPPLIER MASTER
+     File: pages/suppliers.html
+     ========================================================== -->
+
+<div class="container-fluid suppliers-page">
+
+
+    <!-- ======================================================
+         PAGE HEADER
+    ====================================================== -->
+
+    <div class="suppliers-page-header">
+
+        <div>
+
+            <div class="suppliers-breadcrumb">
+
+                <span>
+                    Master Files
+                </span>
+
+                <i class="fa-solid fa-chevron-right"></i>
+
+                <strong>
+                    Suppliers
+                </strong>
+
+            </div>
+
+            <h2 class="suppliers-title">
+
+                <i class="fa-solid fa-truck"></i>
+
+                Supplier Master
+
+            </h2>
+
+            <p class="suppliers-subtitle">
+
+                Manage suppliers for raw materials, purchases,
+                and inventory receiving.
+
+            </p>
+
+        </div>
+
+
+        <div class="suppliers-header-actions">
+
+            <button
+                type="button"
+                id="supplierRefreshBtn"
+                class="btn btn-outline-secondary">
+
+                <i class="fa-solid fa-rotate"></i>
+
+                <span>
+                    Refresh
+                </span>
+
+            </button>
+
+
+            <button
+                type="button"
+                id="addSupplierBtn"
+                class="btn btn-danger">
+
+                <i class="fa-solid fa-plus"></i>
+
+                <span>
+                    Add Supplier
+                </span>
+
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- ======================================================
+         SUMMARY CARDS
+    ====================================================== -->
+
+    <div class="row g-3 mb-4">
+
+
+        <!-- TOTAL -->
+
+        <div class="col-12 col-sm-6 col-xl-3">
+
+            <div class="supplier-summary-card">
+
+                <div class="supplier-summary-icon">
+
+                    <i class="fa-solid fa-truck"></i>
+
+                </div>
+
+                <div>
+
+                    <div class="supplier-summary-label">
+
+                        Total Suppliers
+
+                    </div>
+
+                    <div
+                        id="supplierTotal"
+                        class="supplier-summary-value">
+
+                        0
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ACTIVE -->
+
+        <div class="col-12 col-sm-6 col-xl-3">
+
+            <div class="supplier-summary-card">
+
+                <div class="supplier-summary-icon active">
+
+                    <i class="fa-solid fa-circle-check"></i>
+
+                </div>
+
+                <div>
+
+                    <div class="supplier-summary-label">
+
+                        Active
+
+                    </div>
+
+                    <div
+                        id="supplierActive"
+                        class="supplier-summary-value">
+
+                        0
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- INACTIVE -->
+
+        <div class="col-12 col-sm-6 col-xl-3">
+
+            <div class="supplier-summary-card">
+
+                <div class="supplier-summary-icon inactive">
+
+                    <i class="fa-solid fa-circle-xmark"></i>
+
+                </div>
+
+                <div>
+
+                    <div class="supplier-summary-label">
+
+                        Inactive
+
+                    </div>
+
+                    <div
+                        id="supplierInactive"
+                        class="supplier-summary-value">
+
+                        0
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- WITH CONTACT -->
+
+        <div class="col-12 col-sm-6 col-xl-3">
+
+            <div class="supplier-summary-card">
+
+                <div class="supplier-summary-icon contact">
+
+                    <i class="fa-solid fa-address-book"></i>
+
+                </div>
+
+                <div>
+
+                    <div class="supplier-summary-label">
+
+                        With Contact
+
+                    </div>
+
+                    <div
+                        id="supplierWithContact"
+                        class="supplier-summary-value">
+
+                        0
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ======================================================
+         SEARCH / FILTER
+    ====================================================== -->
+
+    <div class="supplier-toolbar">
+
+        <div class="supplier-search">
+
+            <i class="fa-solid fa-magnifying-glass"></i>
+
+            <input
+                type="search"
+                id="supplierSearch"
+                class="form-control"
+                placeholder="Search supplier, code, contact, phone...">
+
+        </div>
+
+
+        <div class="supplier-filter">
+
+            <select
+                id="supplierStatusFilter"
+                class="form-select">
+
+                <option value="">
+                    All Status
+                </option>
+
+                <option value="Active">
+                    Active
+                </option>
+
+                <option value="Inactive">
+                    Inactive
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="supplier-record-count">
+
+            <span id="supplierRecordCount">
+                0 Suppliers
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <!-- ======================================================
+         SUPPLIER TABLE
+    ====================================================== -->
+
+    <div class="supplier-table-card">
+
+        <div class="supplier-table-wrapper">
+
+            <table
+                class="table supplier-table align-middle">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Supplier Code
+                        </th>
+
+                        <th>
+                            Supplier Name
+                        </th>
+
+                        <th>
+                            Contact Person
+                        </th>
+
+                        <th>
+                            Contact Number
+                        </th>
+
+                        <th>
+                            Email
+                        </th>
+
+                        <th>
+                            Supplier Type
+                        </th>
+
+                        <th>
+                            Payment Terms
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th class="text-center">
+                            Actions
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="supplierTableBody">
+
+                    <tr>
+
+                        <td
+                            colspan="9"
+                            class="text-center py-5">
+
+                            <div class="spinner-border text-danger">
+                            </div>
+
+                            <div class="mt-2 text-muted">
+
+                                Loading suppliers...
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ==========================================================
+     SUPPLIER MODAL
+========================================================== -->
+
+<div
+    class="modal fade"
+    id="supplierModal"
+    tabindex="-1"
+    aria-hidden="true">
+
+    <div
+        class="modal-dialog modal-lg modal-dialog-centered">
+
+        <div class="modal-content supplier-modal-content">
+
+
+            <!-- ==================================================
+                 MODAL HEADER
+            ================================================== -->
+
+            <div class="modal-header supplier-modal-header">
+
+                <div>
+
+                    <h5
+                        class="modal-title"
+                        id="supplierModalTitle">
+
+                        <i class="fa-solid fa-truck"></i>
+
+                        Add Supplier
+
+                    </h5>
+
+                    <div class="supplier-modal-subtitle">
+
+                        Supplier information
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close">
+                </button>
+
+            </div>
+
+
+            <!-- ==================================================
+                 FORM
+            ================================================== -->
+
+            <form id="supplierForm">
+
+                <div class="modal-body">
+
+
+                    <!-- Hidden ID -->
+
+                    <input
+                        type="hidden"
+                        id="supplierId"
+                        value="">
+
+
+                    <!-- ==================================================
+                         BASIC INFORMATION
+                    ================================================== -->
+
+                    <div class="supplier-form-section">
+
+                        <div class="supplier-form-section-title">
+
+                            <i class="fa-solid fa-building"></i>
+
+                            Basic Information
+
+                        </div>
+
+
+                        <div class="row g-3">
+
+
+                            <!-- SUPPLIER CODE -->
+
+                            <div class="col-md-4">
+
+                                <label
+                                    for="supplierCode"
+                                    class="form-label">
+
+                                    Supplier Code
+
+                                    <span class="text-danger">
+                                        *
+                                    </span>
+
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="supplierCode"
+                                    class="form-control"
+                                    placeholder="SUP-0001"
+                                    required>
+
+                            </div>
+
+
+                            <!-- SUPPLIER TYPE -->
+
+                            <div class="col-md-4">
+
+                                <label
+                                    for="supplierType"
+                                    class="form-label">
+
+                                    Supplier Type
+
+                                </label>
+
+                                <select
+                                    id="supplierType"
+                                    class="form-select">
+
+                                    <option value="Raw Materials">
+                                        Raw Materials
+                                    </option>
+
+                                    <option value="Food">
+                                        Food
+                                    </option>
+
+                                    <option value="Beverage">
+                                        Beverage
+                                    </option>
+
+                                    <option value="Packaging">
+                                        Packaging
+                                    </option>
+
+                                    <option value="Equipment">
+                                        Equipment
+                                    </option>
+
+                                    <option value="Services">
+                                        Services
+                                    </option>
+
+                                    <option value="Other">
+                                        Other
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                            <!-- STATUS -->
+
+                            <div class="col-md-4">
+
+                                <label
+                                    for="supplierStatus"
+                                    class="form-label">
+
+                                    Status
+
+                                </label>
+
+                                <select
+                                    id="supplierStatus"
+                                    class="form-select">
+
+                                    <option value="Active">
+                                        Active
+                                    </option>
+
+                                    <option value="Inactive">
+                                        Inactive
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                            <!-- COMPANY NAME -->
+
+                            <div class="col-12">
+
+                                <label
+                                    for="supplierName"
+                                    class="form-label">
+
+                                    Supplier / Company Name
+
+                                    <span class="text-danger">
+                                        *
+                                    </span>
+
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="supplierName"
+                                    class="form-control"
+                                    placeholder="Enter supplier or company name"
+                                    required>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ==================================================
+                         CONTACT INFORMATION
+                    ================================================== -->
+
+                    <div class="supplier-form-section">
+
+                        <div class="supplier-form-section-title">
+
+                            <i class="fa-solid fa-address-book"></i>
+
+                            Contact Information
+
+                        </div>
+
+
+                        <div class="row g-3">
+
+
+                            <!-- CONTACT PERSON -->
+
+                            <div class="col-md-6">
+
+                                <label
+                                    for="supplierContactPerson"
+                                    class="form-label">
+
+                                    Contact Person
+
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="supplierContactPerson"
+                                    class="form-control"
+                                    placeholder="Contact person">
+
+                            </div>
+
+
+                            <!-- CONTACT NUMBER -->
+
+                            <div class="col-md-6">
+
+                                <label
+                                    for="supplierContactNumber"
+                                    class="form-label">
+
+                                    Contact Number
+
+                                </label>
+
+                                <input
+                                    type="tel"
+                                    id="supplierContactNumber"
+                                    class="form-control"
+                                    placeholder="Contact number">
+
+                            </div>
+
+
+                            <!-- EMAIL -->
+
+                            <div class="col-md-6">
+
+                                <label
+                                    for="supplierEmail"
+                                    class="form-label">
+
+                                    Email Address
+
+                                </label>
+
+                                <input
+                                    type="email"
+                                    id="supplierEmail"
+                                    class="form-control"
+                                    placeholder="supplier@example.com">
+
+                            </div>
+
+
+                            <!-- ADDRESS -->
+
+                            <div class="col-md-6">
+
+                                <label
+                                    for="supplierAddress"
+                                    class="form-label">
+
+                                    Address
+
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="supplierAddress"
+                                    class="form-control"
+                                    placeholder="Supplier address">
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ==================================================
+                         PAYMENT INFORMATION
+                    ================================================== -->
+
+                    <div class="supplier-form-section">
+
+                        <div class="supplier-form-section-title">
+
+                            <i class="fa-solid fa-money-check-dollar"></i>
+
+                            Payment Information
+
+                        </div>
+
+
+                        <div class="row g-3">
+
+
+                            <!-- PAYMENT TERMS -->
+
+                            <div class="col-md-6">
+
+                                <label
+                                    for="supplierPaymentTerms"
+                                    class="form-label">
+
+                                    Payment Terms
+
+                                </label>
+
+                                <select
+                                    id="supplierPaymentTerms"
+                                    class="form-select">
+
+                                    <option value="Cash">
+                                        Cash
+                                    </option>
+
+                                    <option value="COD">
+                                        COD
+                                    </option>
+
+                                    <option value="7 Days">
+                                        7 Days
+                                    </option>
+
+                                    <option value="15 Days">
+                                        15 Days
+                                    </option>
+
+                                    <option value="30 Days">
+                                        30 Days
+                                    </option>
+
+                                    <option value="45 Days">
+                                        45 Days
+                                    </option>
+
+                                    <option value="60 Days">
+                                        60 Days
+                                    </option>
+
+                                    <option value="Other">
+                                        Other
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                            <!-- TAX ID -->
+
+                            <div class="col-md-6">
+
+                                <label
+                                    for="supplierTaxId"
+                                    class="form-label">
+
+                                    Tax / Business ID
+
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="supplierTaxId"
+                                    class="form-control"
+                                    placeholder="Optional">
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ==================================================
+                         NOTES
+                    ================================================== -->
+
+                    <div class="supplier-form-section">
+
+                        <div class="supplier-form-section-title">
+
+                            <i class="fa-solid fa-note-sticky"></i>
+
+                            Notes
+
+                        </div>
+
+
+                        <textarea
+                            id="supplierNotes"
+                            class="form-control"
+                            rows="3"
+                            placeholder="Additional notes..."></textarea>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ==================================================
+                     MODAL FOOTER
+                ================================================== -->
+
+                <div class="modal-footer">
+
+                    <button
+                        type="button"
+                        class="btn btn-light"
+                        id="supplierCancelBtn"
+                        data-bs-dismiss="modal">
+
+                        <i class="fa-solid fa-xmark"></i>
+
+                        Cancel
+
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        class="btn btn-danger"
+                        id="supplierSaveBtn">
+
+                        <i class="fa-solid fa-floppy-disk"></i>
+
+                        <span id="supplierSaveText">
+
+                            Save Supplier
+
+                        </span>
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
