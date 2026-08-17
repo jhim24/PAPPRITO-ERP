@@ -1,24 +1,18 @@
 /* ==========================================================
    PAPPRITO ERP
-   SUPPLIER MASTER CSS V2
-   File: assets/css/suppliers.css
+   SUPPLIER MASTER CSS
+   Mobile Responsive V2
    ========================================================== */
 
 
 /* ==========================================================
-   PAGE
+   SUPPLIER PAGE
    ========================================================== */
 
 .supplier-page {
     width: 100%;
+    min-width: 0;
     padding: 24px;
-    box-sizing: border-box;
-}
-
-.supplier-page *,
-.supplier-page *::before,
-.supplier-page *::after {
-    box-sizing: border-box;
 }
 
 
@@ -26,30 +20,21 @@
    HEADER
    ========================================================== */
 
-.supplier-breadcrumb {
-    font-size: 14px;
-    color: #6b7280;
-    margin-bottom: 6px;
+.supplier-page-header {
+    margin-bottom: 20px;
 }
 
-.supplier-title {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+.supplier-page-header h1 {
     margin: 0;
-    color: #111827;
-    font-size: 30px;
+    font-size: 28px;
     font-weight: 700;
+    color: #1f2937;
 }
 
-.supplier-title i {
-    color: #c8102e;
-}
-
-.supplier-description {
-    margin: 8px 0 20px;
+.supplier-page-header p {
+    margin: 6px 0 0;
     color: #6b7280;
-    font-size: 15px;
+    font-size: 14px;
 }
 
 
@@ -63,6 +48,7 @@
     justify-content: space-between;
     gap: 12px;
     margin-bottom: 20px;
+    flex-wrap: wrap;
 }
 
 .supplier-toolbar-left,
@@ -70,6 +56,7 @@
     display: flex;
     align-items: center;
     gap: 10px;
+    flex-wrap: wrap;
 }
 
 
@@ -80,24 +67,24 @@
 .supplier-page .btn {
     border-radius: 8px;
     font-weight: 600;
+    min-height: 40px;
 }
 
+.supplier-page .btn-primary,
 #addSupplierBtn {
-    background: #c8102e;
-    border-color: #c8102e;
-    color: #fff;
-    min-height: 42px;
-    padding: 9px 18px;
+    background: #C8102E;
+    border-color: #C8102E;
+    color: #ffffff;
 }
 
+.supplier-page .btn-primary:hover,
 #addSupplierBtn:hover {
-    background: #a90d26;
-    border-color: #a90d26;
+    background: #a80d26;
+    border-color: #a80d26;
 }
 
 #supplierRefreshBtn {
-    min-height: 42px;
-    padding: 9px 18px;
+    min-width: 120px;
 }
 
 
@@ -107,9 +94,10 @@
 
 .supplier-summary {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
     gap: 16px;
-    margin-bottom: 22px;
+    margin-bottom: 20px;
 }
 
 .supplier-summary-card {
@@ -117,32 +105,31 @@
     border: 1px solid #e5e7eb;
     border-radius: 12px;
     padding: 18px;
-    min-height: 110px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    min-width: 0;
+    box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .supplier-summary-icon {
-    width: 38px;
-    height: 38px;
-    border-radius: 9px;
+    width: 40px;
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #fff1f2;
-    color: #c8102e;
+    border-radius: 10px;
     margin-bottom: 10px;
 }
 
-.supplier-summary-label {
+.supplier-summary-title {
     color: #6b7280;
     font-size: 13px;
+    margin-bottom: 4px;
 }
 
 .supplier-summary-value {
-    color: #111827;
-    font-size: 24px;
+    font-size: 25px;
     font-weight: 700;
-    margin-top: 2px;
+    color: #111827;
 }
 
 
@@ -150,17 +137,17 @@
    SEARCH / FILTER
    ========================================================== */
 
-.supplier-filter-bar {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-bottom: 14px;
+.supplier-filters {
+    display: grid;
+    grid-template-columns:
+        minmax(0, 1fr)
+        180px;
+    gap: 12px;
+    margin-bottom: 16px;
 }
 
 .supplier-search-wrapper {
     position: relative;
-    flex: 1 1 300px;
 }
 
 .supplier-search-wrapper i {
@@ -174,36 +161,37 @@
 
 #supplierSearch {
     width: 100%;
-    min-height: 42px;
-    padding: 9px 14px 9px 40px;
+    min-height: 44px;
+    padding-left: 42px;
     border: 1px solid #d1d5db;
-    border-radius: 8px;
-    background: #fff;
+    border-radius: 9px;
+    background: #ffffff;
     outline: none;
 }
 
 #supplierSearch:focus {
-    border-color: #c8102e;
-    box-shadow: 0 0 0 3px rgba(200, 16, 46, 0.10);
+    border-color: #C8102E;
+    box-shadow:
+        0 0 0 3px rgba(200, 16, 46, 0.10);
 }
 
 #supplierStatusFilter {
-    min-height: 42px;
-    min-width: 150px;
+    width: 100%;
+    min-height: 44px;
     border: 1px solid #d1d5db;
-    border-radius: 8px;
-    padding: 8px 12px;
-    background: #fff;
+    border-radius: 9px;
+    padding: 0 12px;
+    background: #ffffff;
 }
 
 
 /* ==========================================================
-   TABLE CONTAINER
+   TABLE CARD
    ========================================================== */
 
 .supplier-table-card {
     width: 100%;
-    background: #fff;
+    background: #ffffff;
     border: 1px solid #e5e7eb;
     border-radius: 12px;
     overflow: hidden;
@@ -215,11 +203,18 @@
     align-items: center;
     padding: 16px 18px;
     border-bottom: 1px solid #e5e7eb;
+    gap: 10px;
 }
 
-.supplier-record-count {
+.supplier-table-header h3 {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 700;
+}
+
+#supplierRecordCount {
     color: #6b7280;
-    font-size: 14px;
+    font-size: 13px;
 }
 
 
@@ -230,6 +225,7 @@
 .supplier-table-wrapper {
     width: 100%;
     overflow-x: auto;
+    overflow-y: hidden;
     -webkit-overflow-scrolling: touch;
 }
 
@@ -239,36 +235,44 @@
     border-collapse: collapse;
 }
 
+.supplier-table th,
+.supplier-table td {
+    padding: 13px 14px;
+    border-bottom: 1px solid #e5e7eb;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
 .supplier-table th {
-    background: #f9fafb;
+    background: #f8fafc;
     color: #374151;
     font-size: 13px;
     font-weight: 700;
-    padding: 13px 14px;
-    text-align: left;
-    white-space: nowrap;
-    border-bottom: 1px solid #e5e7eb;
 }
 
 .supplier-table td {
-    padding: 13px 14px;
     color: #374151;
     font-size: 14px;
-    vertical-align: middle;
-    border-bottom: 1px solid #f1f5f9;
 }
 
 .supplier-table tbody tr:hover {
-    background: #fffafa;
+    background: #f9fafb;
 }
 
+
+/* ==========================================================
+   SUPPLIER NAME
+   ========================================================== */
+
 .supplier-name {
-    font-weight: 600;
+    font-weight: 700;
     color: #111827;
+    white-space: normal;
+    min-width: 150px;
 }
 
 .supplier-email {
-    color: #c8102e;
+    color: #C8102E;
     text-decoration: none;
 }
 
@@ -278,17 +282,18 @@
 
 
 /* ==========================================================
-   STATUS
+   BADGES
    ========================================================== */
 
-.supplier-status {
+.supplier-status,
+.supplier-type-badge {
     display: inline-flex;
     align-items: center;
     gap: 6px;
     padding: 5px 9px;
     border-radius: 999px;
     font-size: 12px;
-    font-weight: 700;
+    font-weight: 600;
     white-space: nowrap;
 }
 
@@ -302,19 +307,9 @@
     background: #fee2e2;
 }
 
-
-/* ==========================================================
-   SUPPLIER TYPE
-   ========================================================== */
-
 .supplier-type-badge {
-    display: inline-block;
-    padding: 5px 9px;
-    border-radius: 6px;
-    background: #f3f4f6;
     color: #374151;
-    font-size: 12px;
-    font-weight: 600;
+    background: #f3f4f6;
 }
 
 
@@ -332,11 +327,11 @@
 .supplier-actions .btn {
     width: 34px;
     height: 34px;
+    min-height: 34px;
     padding: 0;
-    display: inline-flex;
+    display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 7px;
 }
 
 .supplier-actions .btn-edit {
@@ -345,18 +340,10 @@
     color: #c2410c;
 }
 
-.supplier-actions .btn-edit:hover {
-    background: #ffedd5;
-}
-
 .supplier-actions .btn-delete {
     background: #fef2f2;
     border: 1px solid #fecaca;
     color: #dc2626;
-}
-
-.supplier-actions .btn-delete:hover {
-    background: #fee2e2;
 }
 
 
@@ -366,73 +353,38 @@
 
 #supplierModal .modal-dialog {
     max-width: 720px;
-    margin: 1.25rem auto;
+    margin: 24px auto;
 }
 
 #supplierModal .modal-content {
     border: 0;
     border-radius: 16px;
     overflow: hidden;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.20);
+    box-shadow:
+        0 20px 50px rgba(0, 0, 0, 0.20);
 }
 
 #supplierModal .modal-header {
     padding: 18px 22px;
+    background: #ffffff;
     border-bottom: 1px solid #e5e7eb;
-    background: #fff;
 }
 
 #supplierModal .modal-title {
-    color: #111827;
     font-size: 20px;
     font-weight: 700;
-}
-
-#supplierModal .modal-title i {
-    color: #c8102e;
-    margin-right: 7px;
+    color: #111827;
 }
 
 #supplierModal .modal-body {
     padding: 22px;
-    max-height: calc(100vh - 220px);
+    max-height: 70vh;
     overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
 }
 
 #supplierModal .modal-footer {
-    padding: 14px 22px;
+    padding: 15px 22px;
     border-top: 1px solid #e5e7eb;
-    background: #fafafa;
-}
-
-
-/* ==========================================================
-   MODAL SECTIONS
-   ========================================================== */
-
-.supplier-form-section {
-    margin-bottom: 22px;
-}
-
-.supplier-form-section:last-child {
-    margin-bottom: 0;
-}
-
-.supplier-form-section-title {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: #111827;
-    font-size: 16px;
-    font-weight: 700;
-    margin-bottom: 14px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid #f1f5f9;
-}
-
-.supplier-form-section-title i {
-    color: #c8102e;
 }
 
 
@@ -440,12 +392,10 @@
    FORM
    ========================================================== */
 
-#supplierForm label {
-    display: block;
-    margin-bottom: 6px;
-    color: #374151;
-    font-size: 14px;
+#supplierForm .form-label {
     font-weight: 600;
+    color: #374151;
+    margin-bottom: 6px;
 }
 
 #supplierForm .form-control,
@@ -455,8 +405,6 @@
     border: 1px solid #d1d5db;
     border-radius: 9px;
     padding: 9px 12px;
-    font-size: 14px;
-    background: #fff;
 }
 
 #supplierForm textarea.form-control {
@@ -466,54 +414,28 @@
 
 #supplierForm .form-control:focus,
 #supplierForm .form-select:focus {
-    border-color: #c8102e;
-    box-shadow: 0 0 0 3px rgba(200, 16, 46, 0.10);
-}
-
-#supplierForm .required {
-    color: #dc2626;
+    border-color: #C8102E;
+    box-shadow:
+        0 0 0 3px rgba(200, 16, 46, 0.10);
 }
 
 
 /* ==========================================================
-   SAVE BUTTON
+   FORM SECTION
    ========================================================== */
 
-#supplierSaveBtn {
-    min-height: 42px;
-    min-width: 150px;
-    background: #c8102e;
-    border-color: #c8102e;
-    color: #fff;
+.supplier-form-section {
+    margin-bottom: 22px;
+}
+
+.supplier-form-section-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+    font-size: 16px;
     font-weight: 700;
-}
-
-#supplierSaveBtn:hover {
-    background: #a90d26;
-    border-color: #a90d26;
-}
-
-#supplierSaveBtn:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-}
-
-
-/* ==========================================================
-   EMPTY STATE
-   ========================================================== */
-
-.supplier-empty {
-    padding: 50px 20px;
-    text-align: center;
-    color: #6b7280;
-}
-
-.supplier-empty i {
-    display: block;
-    font-size: 38px;
-    margin-bottom: 10px;
-    color: #9ca3af;
+    color: #111827;
 }
 
 
@@ -521,25 +443,65 @@
    MOBILE
    ========================================================== */
 
-@media (max-width: 768px) {
+@media (max-width: 992px) {
 
     .supplier-page {
-        padding: 14px;
+        padding: 18px;
     }
 
-    .supplier-title {
-        font-size: 24px;
+    .supplier-summary {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
     }
 
-    .supplier-description {
-        font-size: 14px;
+    .supplier-filters {
+        grid-template-columns: 1fr;
+    }
+
+    .supplier-table {
+        min-width: 900px;
+    }
+
+}
+
+
+/* ==========================================================
+   TABLET / SMALL MOBILE
+   ========================================================== */
+
+@media (max-width: 576px) {
+
+    .supplier-page {
+        padding: 12px;
+    }
+
+
+    /* ------------------------------------------------------
+       HEADER
+    ------------------------------------------------------ */
+
+    .supplier-page-header {
+        margin-bottom: 15px;
+    }
+
+    .supplier-page-header h1 {
+        font-size: 22px;
+    }
+
+    .supplier-page-header p {
+        font-size: 13px;
         line-height: 1.5;
     }
 
+
+    /* ------------------------------------------------------
+       TOOLBAR
+    ------------------------------------------------------ */
+
     .supplier-toolbar {
-        display: flex;
-        flex-direction: column;
-        align-items: stretch;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 8px;
     }
 
     .supplier-toolbar-left,
@@ -547,158 +509,223 @@
         width: 100%;
     }
 
+    .supplier-toolbar .btn,
     #addSupplierBtn,
     #supplierRefreshBtn {
         width: 100%;
     }
 
+
+    /* ------------------------------------------------------
+       SUMMARY
+    ------------------------------------------------------ */
+
     .supplier-summary {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 10px;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
     }
 
     .supplier-summary-card {
-        min-height: 95px;
-        padding: 14px;
+        padding: 12px;
+        border-radius: 10px;
+    }
+
+    .supplier-summary-icon {
+        width: 34px;
+        height: 34px;
+        margin-bottom: 7px;
+    }
+
+    .supplier-summary-title {
+        font-size: 11px;
     }
 
     .supplier-summary-value {
-        font-size: 21px;
+        font-size: 20px;
     }
 
-    .supplier-filter-bar {
-        display: flex;
-        flex-direction: column;
-        align-items: stretch;
+
+    /* ------------------------------------------------------
+       FILTERS
+    ------------------------------------------------------ */
+
+    .supplier-filters {
+        grid-template-columns: 1fr;
+        gap: 8px;
     }
 
-    .supplier-search-wrapper {
-        width: 100%;
-        flex-basis: auto;
-    }
-
+    #supplierSearch,
     #supplierStatusFilter {
-        width: 100%;
+        min-height: 44px;
     }
+
+
+    /* ------------------------------------------------------
+       TABLE
+    ------------------------------------------------------ */
 
     .supplier-table-card {
         border-radius: 9px;
     }
 
-    .supplier-table {
-        min-width: 950px;
+    .supplier-table-header {
+        padding: 12px;
     }
 
-    /* ==============================
-       MOBILE MODAL
-       ============================== */
+    .supplier-table-header h3 {
+        font-size: 15px;
+    }
+
+    .supplier-table-wrapper {
+        overflow-x: auto;
+    }
+
+    .supplier-table {
+        min-width: 900px;
+    }
+
+    .supplier-table th,
+    .supplier-table td {
+        padding: 11px 10px;
+        font-size: 13px;
+    }
+
+
+    /* ------------------------------------------------------
+       MODAL
+    ------------------------------------------------------ */
+
+    #supplierModal {
+        padding: 0 !important;
+    }
 
     #supplierModal .modal-dialog {
-        width: auto;
+        width: 100%;
         max-width: none;
-        margin: 10px;
+        margin: 0;
+        min-height: 100%;
+        display: flex;
+        align-items: flex-end;
     }
 
     #supplierModal .modal-content {
-        border-radius: 18px;
+        width: 100%;
+        border-radius: 18px 18px 0 0;
+        max-height: 94vh;
     }
 
     #supplierModal .modal-header {
-        padding: 15px 17px;
+        padding: 15px 16px;
     }
 
     #supplierModal .modal-title {
-        font-size: 18px;
+        font-size: 19px;
     }
 
     #supplierModal .modal-body {
         padding: 16px;
-        max-height: calc(100vh - 170px);
+        max-height: calc(94vh - 130px);
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
     }
 
     #supplierModal .modal-footer {
         padding: 12px 16px;
+        display: flex;
         gap: 8px;
     }
 
     #supplierModal .modal-footer .btn {
         flex: 1;
-        min-height: 42px;
+        min-height: 44px;
     }
 
-}
 
+    /* ------------------------------------------------------
+       FORM
+    ------------------------------------------------------ */
 
-/* ==========================================================
-   SMALL MOBILE
-   ========================================================== */
-
-@media (max-width: 480px) {
-
-    .supplier-page {
-        padding: 12px;
+    #supplierForm .row {
+        margin-left: 0;
+        margin-right: 0;
     }
 
-    .supplier-title {
-        font-size: 22px;
+    #supplierForm .row > * {
+        padding-left: 0;
+        padding-right: 0;
     }
 
-    .supplier-summary {
-        grid-template-columns: 1fr 1fr;
-    }
-
-    .supplier-summary-card {
-        padding: 12px;
-    }
-
-    .supplier-summary-icon {
-        width: 32px;
-        height: 32px;
-        margin-bottom: 7px;
-    }
-
-    .supplier-summary-label {
-        font-size: 12px;
-    }
-
-    .supplier-summary-value {
-        font-size: 19px;
-    }
-
-    #supplierModal .modal-dialog {
-        margin: 6px;
-    }
-
-    #supplierModal .modal-body {
-        padding: 14px;
-        max-height: calc(100vh - 145px);
+    #supplierForm .form-label {
+        font-size: 14px;
     }
 
     #supplierForm .form-control,
     #supplierForm .form-select {
-        min-height: 42px;
-        font-size: 14px;
+        min-height: 46px;
+        font-size: 16px;
     }
 
     #supplierForm textarea.form-control {
-        min-height: 85px;
+        min-height: 90px;
     }
 
 }
 
 
 /* ==========================================================
-   VERY SMALL DEVICES
+   VERY SMALL PHONES
    ========================================================== */
 
-@media (max-width: 360px) {
+@media (max-width: 380px) {
+
+    .supplier-page {
+        padding: 10px;
+    }
 
     .supplier-summary {
-        grid-template-columns: 1fr;
+        gap: 6px;
     }
 
-    #supplierModal .modal-dialog {
-        margin: 4px;
+    .supplier-summary-card {
+        padding: 10px;
     }
 
+    .supplier-summary-value {
+        font-size: 18px;
+    }
+
+    #supplierModal .modal-header {
+        padding: 13px;
+    }
+
+    #supplierModal .modal-body {
+        padding: 13px;
+    }
+
+    #supplierModal .modal-footer {
+        padding: 10px 13px;
+    }
+
+}
+
+
+/* ==========================================================
+   MOBILE SAFETY
+   ========================================================== */
+
+html,
+body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+#content {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.supplier-page,
+.supplier-table-card,
+.supplier-table-wrapper {
+    max-width: 100%;
 }
