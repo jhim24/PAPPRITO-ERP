@@ -729,3 +729,210 @@ body {
 .supplier-table-wrapper {
     max-width: 100%;
 }
+/* ==========================================================
+   SUPPLIER MASTER
+   MOBILE 2-COLUMN FORM
+   ========================================================== */
+
+@media (max-width: 576px) {
+
+    /* ------------------------------------------------------
+       FORM ROW
+       Left + Right
+    ------------------------------------------------------ */
+
+    #supplierForm .row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin: 0;
+    }
+
+
+    #supplierForm .row > * {
+        width: 100%;
+        padding: 0;
+        margin: 0;
+    }
+
+
+    /* ------------------------------------------------------
+       LABELS
+    ------------------------------------------------------ */
+
+    #supplierForm .form-label {
+        display: block;
+        margin-bottom: 6px;
+
+        font-size: 14px;
+        font-weight: 800;
+
+        color: #1f2937;
+    }
+
+
+    /* ------------------------------------------------------
+       INPUT BOXES
+    ------------------------------------------------------ */
+
+    #supplierForm .form-control,
+    #supplierForm .form-select {
+
+        width: 100%;
+
+        min-height: 46px;
+
+        padding: 9px 11px;
+
+        border-radius: 9px;
+
+        font-size: 15px;
+
+        font-weight: 700;
+
+        color: #111827;
+
+        background: #ffffff;
+
+        border: 1px solid #d1d5db;
+    }
+
+
+    /* ------------------------------------------------------
+       PLACEHOLDER
+    ------------------------------------------------------ */
+
+    #supplierForm .form-control::placeholder {
+
+        color: #6b7280;
+
+        font-weight: 600;
+
+        opacity: 1;
+    }
+
+
+    /* ------------------------------------------------------
+       SELECT TEXT
+    ------------------------------------------------------ */
+
+    #supplierForm .form-select {
+
+        font-weight: 700;
+
+    }
+
+
+    /* ------------------------------------------------------
+       TEXTAREA
+    ------------------------------------------------------ */
+
+    #supplierForm textarea.form-control {
+
+        min-height: 90px;
+
+        font-weight: 700;
+
+    }
+
+
+    /* ------------------------------------------------------
+       FULL-WIDTH FIELDS
+       For address and notes
+    ------------------------------------------------------ */
+
+    #supplierForm .supplier-full-width {
+
+        grid-column: 1 / -1;
+
+    }
+
+
+    /* ------------------------------------------------------
+       SECTION TITLE
+    ------------------------------------------------------ */
+
+    .supplier-form-section-title {
+
+        font-size: 17px;
+
+        font-weight: 800;
+
+        color: #111827;
+
+        margin-bottom: 14px;
+
+    }
+
+
+    /* ------------------------------------------------------
+       MODAL
+    ------------------------------------------------------ */
+
+    #supplierModal .modal-body {
+
+        padding: 16px;
+
+    }
+
+
+    /* ------------------------------------------------------
+       MODAL TITLE
+    ------------------------------------------------------ */
+
+    #supplierModal .modal-title {
+
+        font-size: 20px;
+
+        font-weight: 800;
+
+    }
+
+
+    /* ------------------------------------------------------
+       BUTTONS
+    ------------------------------------------------------ */
+
+    #supplierModal .modal-footer .btn {
+
+        font-weight: 800;
+
+        min-height: 46px;
+
+    }
+
+}
+
+
+/* ==========================================================
+   EXTRA SMALL PHONE
+   ========================================================== */
+
+@media (max-width: 380px) {
+
+    #supplierForm .row {
+
+        gap: 8px;
+
+    }
+
+
+    #supplierForm .form-label {
+
+        font-size: 13px;
+
+    }
+
+
+    #supplierForm .form-control,
+    #supplierForm .form-select {
+
+        font-size: 14px;
+
+        padding-left: 9px;
+
+        padding-right: 9px;
+
+    }
+
+}
