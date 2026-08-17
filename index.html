@@ -148,6 +148,15 @@
 
 
     <!-- ==========================================================
+         SUPPLIERS CSS
+    ========================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="./assets/css/suppliers.css">
+
+
+    <!-- ==========================================================
          GLOBAL RESPONSIVE CSS
     ========================================================== -->
 
@@ -294,6 +303,18 @@
 
 
 <!-- ==========================================================
+     SUPPLIER MASTER ENGINE
+     IMPORTANT:
+     Must load before app.js because
+     app.js calls initializeSuppliers().
+========================================================== -->
+
+<script
+    src="./assets/js/suppliers/suppliers.js">
+</script>
+
+
+<!-- ==========================================================
      PAPPRITO ERP APP
 ========================================================== -->
 
@@ -427,6 +448,16 @@ window.addEventListener(
         console.log(
             "Raw Materials Engine:",
             typeof initializeRawMaterials === "function"
+        );
+
+
+        /* ------------------------------------------
+           SUPPLIER ENGINE
+        ------------------------------------------ */
+
+        console.log(
+            "Supplier Engine:",
+            typeof initializeSuppliers === "function"
         );
 
 
