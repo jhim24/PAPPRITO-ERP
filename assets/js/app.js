@@ -1,6 +1,6 @@
 // ==========================================================
 // PAPPRITO ERP
-// APP / NAVIGATION ENGINE V9
+// APP / NAVIGATION ENGINE V10
 // File : assets/js/app.js
 //
 // MAIN FUNCTIONS:
@@ -12,6 +12,7 @@
 // - Receiving Orders Loader
 // - Inventory Loader
 // - Raw Materials Loader
+// - Suppliers Loader
 // - Mobile Sidebar
 // - Page Navigation
 // - Safe Script Loading
@@ -36,6 +37,8 @@ let receivingOrdersScriptsLoaded = false;
 let inventoryScriptsLoaded = false;
 
 let rawMaterialsScriptsLoaded = false;
+
+let suppliersScriptsLoaded = false;
 
 
 // ==========================================================
@@ -90,6 +93,13 @@ const inventoryScripts = [
 const rawMaterialsScripts = [
 
     "assets/js/raw-materials/raw-materials.js"
+
+];
+
+
+const suppliersScripts = [
+
+    "assets/js/suppliers/suppliers.js"
 
 ];
 
@@ -467,6 +477,33 @@ async function loadRawMaterialsScripts() {
 
 
 // ==========================================================
+// SUPPLIERS
+// ==========================================================
+
+async function loadSuppliersScripts() {
+
+    if (
+        suppliersScriptsLoaded
+    ) {
+
+        return;
+
+    }
+
+
+    await loadScriptGroup(
+        suppliersScripts,
+        "SUPPLIERS"
+    );
+
+
+    suppliersScriptsLoaded =
+        true;
+
+}
+
+
+// ==========================================================
 // HTML ESCAPE
 // ==========================================================
 
@@ -657,6 +694,35 @@ async function loadPage(
 
                 console.warn(
                     "Unable to stop raw materials listener:",
+                    error
+                );
+
+            }
+
+        }
+
+
+        // ==================================================
+        // STOP OLD SUPPLIER LISTENER
+        // ==================================================
+
+        if (
+            page !==
+            "pages/suppliers.html" &&
+            typeof stopSuppliersListener ===
+            "function"
+        ) {
+
+            try {
+
+                stopSuppliersListener();
+
+            }
+
+            catch (error) {
+
+                console.warn(
+                    "Unable to stop supplier listener:",
                     error
                 );
 
@@ -866,8 +932,8 @@ async function loadPage(
 
             case "pages/suppliers.html":
 
-                safeInitialize(
-                    "initializeSuppliers"
+                await initializeSuppliersModule(
+                    content
                 );
 
                 break;
@@ -1492,16 +1558,8 @@ async function initializeRawMaterialsModule(
         );
 
 
-        // ==================================================
-        // LOAD RAW MATERIALS JAVASCRIPT
-        // ==================================================
-
         await loadRawMaterialsScripts();
 
-
-        // ==================================================
-        // INITIALIZE RAW MATERIALS PAGE
-        // ==================================================
 
         if (
             typeof initializeRawMaterials ===
@@ -1547,13 +1605,83 @@ async function initializeRawMaterialsModule(
 
 
 // ==========================================================
+// SUPPLIERS INITIALIZATION
+// ==========================================================
+
+async function initializeSuppliersModule(
+    content
+) {
+
+    try {
+
+        console.log(
+            "=========================================="
+        );
+
+
+        console.log(
+            "INITIALIZING SUPPLIERS"
+        );
+
+
+        console.log(
+            "=========================================="
+        );
+
+
+        await loadSuppliersScripts();
+
+
+        if (
+            typeof initializeSuppliers ===
+            "function"
+        ) {
+
+            await initializeSuppliers();
+
+        }
+
+        else {
+
+            throw new Error(
+                "initializeSuppliers() not found."
+            );
+
+        }
+
+
+        console.log(
+            "Suppliers initialized."
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Suppliers Module Error:",
+            error
+        );
+
+
+        showModuleError(
+            content,
+            "Suppliers",
+            error
+        );
+
+    }
+
+}
+
+
+// ==========================================================
 // NAVIGATION
 // ==========================================================
 
 function openDashboard() {
 
     closeSidebarMobile();
-
 
     loadPage(
         "pages/dashboard.html"
@@ -1574,7 +1702,6 @@ function openReceivingOrders() {
 
     closeSidebarMobile();
 
-
     loadPage(
         "pages/receiving-orders.html"
     );
@@ -1585,7 +1712,6 @@ function openReceivingOrders() {
 function openKitchen() {
 
     closeSidebarMobile();
-
 
     loadPage(
         "pages/kitchen.html"
@@ -1598,7 +1724,6 @@ function openTables() {
 
     closeSidebarMobile();
 
-
     loadPage(
         "pages/tables.html"
     );
@@ -1609,7 +1734,6 @@ function openTables() {
 function openProducts() {
 
     closeSidebarMobile();
-
 
     loadPage(
         "pages/products.html"
@@ -1622,7 +1746,6 @@ function openCategory() {
 
     closeSidebarMobile();
 
-
     loadPage(
         "pages/categories.html"
     );
@@ -1633,7 +1756,6 @@ function openCategory() {
 function openInventory() {
 
     closeSidebarMobile();
-
 
     loadPage(
         "pages/inventory.html"
@@ -1650,7 +1772,6 @@ function openRawMaterials() {
 
     closeSidebarMobile();
 
-
     loadPage(
         "pages/raw-materials.html"
     );
@@ -1658,10 +1779,13 @@ function openRawMaterials() {
 }
 
 
+// ==========================================================
+// STOCK IN
+// ==========================================================
+
 function openStockIn() {
 
     closeSidebarMobile();
-
 
     loadPage(
         "pages/stock-in.html"
@@ -1670,10 +1794,13 @@ function openStockIn() {
 }
 
 
+// ==========================================================
+// STOCK OUT
+// ==========================================================
+
 function openStockOut() {
 
     closeSidebarMobile();
-
 
     loadPage(
         "pages/stock-out.html"
@@ -1682,10 +1809,13 @@ function openStockOut() {
 }
 
 
+// ==========================================================
+// PURCHASE ORDERS
+// ==========================================================
+
 function openPurchaseOrders() {
 
     closeSidebarMobile();
-
 
     loadPage(
         "pages/purchase-orders.html"
@@ -1694,10 +1824,13 @@ function openPurchaseOrders() {
 }
 
 
+// ==========================================================
+// SUPPLIERS
+// ==========================================================
+
 function openSuppliers() {
 
     closeSidebarMobile();
-
 
     loadPage(
         "pages/suppliers.html"
@@ -1706,10 +1839,13 @@ function openSuppliers() {
 }
 
 
+// ==========================================================
+// CUSTOMERS
+// ==========================================================
+
 function openCustomers() {
 
     closeSidebarMobile();
-
 
     loadPage(
         "pages/customers.html"
@@ -1718,10 +1854,13 @@ function openCustomers() {
 }
 
 
+// ==========================================================
+// SALES
+// ==========================================================
+
 function openSales() {
 
     closeSidebarMobile();
-
 
     loadPage(
         "pages/sales.html"
@@ -1730,10 +1869,13 @@ function openSales() {
 }
 
 
+// ==========================================================
+// REPORTS
+// ==========================================================
+
 function openReports() {
 
     closeSidebarMobile();
-
 
     loadPage(
         "pages/reports.html"
@@ -1742,10 +1884,13 @@ function openReports() {
 }
 
 
+// ==========================================================
+// EMPLOYEES
+// ==========================================================
+
 function openEmployees() {
 
     closeSidebarMobile();
-
 
     loadPage(
         "pages/employees.html"
@@ -1754,10 +1899,13 @@ function openEmployees() {
 }
 
 
+// ==========================================================
+// ATTENDANCE
+// ==========================================================
+
 function openAttendance() {
 
     closeSidebarMobile();
-
 
     loadPage(
         "pages/attendance.html"
@@ -1766,10 +1914,13 @@ function openAttendance() {
 }
 
 
+// ==========================================================
+// PAYROLL
+// ==========================================================
+
 function openPayroll() {
 
     closeSidebarMobile();
-
 
     loadPage(
         "pages/payroll.html"
@@ -1778,10 +1929,13 @@ function openPayroll() {
 }
 
 
+// ==========================================================
+// SETTINGS
+// ==========================================================
+
 function openSettings() {
 
     closeSidebarMobile();
-
 
     loadPage(
         "pages/settings.html"
@@ -1790,10 +1944,13 @@ function openSettings() {
 }
 
 
+// ==========================================================
+// COMPANY PROFILE
+// ==========================================================
+
 function openCompanyProfile() {
 
     closeSidebarMobile();
-
 
     loadPage(
         "pages/company-profile.html"
@@ -2201,6 +2358,10 @@ window.loadRawMaterialsScripts =
     loadRawMaterialsScripts;
 
 
+window.loadSuppliersScripts =
+    loadSuppliersScripts;
+
+
 window.loadPage =
     loadPage;
 
@@ -2231,6 +2392,10 @@ window.initializeInventoryModule =
 
 window.initializeRawMaterialsModule =
     initializeRawMaterialsModule;
+
+
+window.initializeSuppliersModule =
+    initializeSuppliersModule;
 
 
 window.toggleSidebar =
@@ -2330,5 +2495,5 @@ window.logoutERP =
 
 
 console.log(
-    "PAPPRITO ERP app.js V9 loaded."
+    "PAPPRITO ERP app.js V10 loaded."
 );
