@@ -1,6 +1,6 @@
 // ==========================================================
 // PAPPRITO ERP
-// APP / NAVIGATION ENGINE V10
+// APP / NAVIGATION ENGINE V11
 // File : assets/js/app.js
 //
 // MAIN FUNCTIONS:
@@ -13,6 +13,7 @@
 // - Inventory Loader
 // - Raw Materials Loader
 // - Suppliers Loader
+// - Stock In Loader
 // - Mobile Sidebar
 // - Page Navigation
 // - Safe Script Loading
@@ -39,6 +40,8 @@ let inventoryScriptsLoaded = false;
 let rawMaterialsScriptsLoaded = false;
 
 let suppliersScriptsLoaded = false;
+
+let stockInScriptsLoaded = false;
 
 
 // ==========================================================
@@ -100,6 +103,13 @@ const rawMaterialsScripts = [
 const suppliersScripts = [
 
     "assets/js/suppliers/suppliers.js"
+
+];
+
+
+const stockInScripts = [
+
+    "assets/js/stock-in/stock-in.js"
 
 ];
 
@@ -504,6 +514,33 @@ async function loadSuppliersScripts() {
 
 
 // ==========================================================
+// STOCK IN
+// ==========================================================
+
+async function loadStockInScripts() {
+
+    if (
+        stockInScriptsLoaded
+    ) {
+
+        return;
+
+    }
+
+
+    await loadScriptGroup(
+        stockInScripts,
+        "STOCK IN"
+    );
+
+
+    stockInScriptsLoaded =
+        true;
+
+}
+
+
+// ==========================================================
 // HTML ESCAPE
 // ==========================================================
 
@@ -732,6 +769,35 @@ async function loadPage(
 
 
         // ==================================================
+        // STOP OLD STOCK IN LISTENER
+        // ==================================================
+
+        if (
+            page !==
+            "pages/stock-in.html" &&
+            typeof stopStockInListener ===
+            "function"
+        ) {
+
+            try {
+
+                stopStockInListener();
+
+            }
+
+            catch (error) {
+
+                console.warn(
+                    "Unable to stop stock in listener:",
+                    error
+                );
+
+            }
+
+        }
+
+
+        // ==================================================
         // LOAD PAGE HTML
         // ==================================================
 
@@ -893,8 +959,8 @@ async function loadPage(
 
             case "pages/stock-in.html":
 
-                safeInitialize(
-                    "initializeStockIn"
+                await initializeStockInModule(
+                    content
                 );
 
                 break;
@@ -1676,6 +1742,77 @@ async function initializeSuppliersModule(
 
 
 // ==========================================================
+// STOCK IN INITIALIZATION
+// ==========================================================
+
+async function initializeStockInModule(
+    content
+) {
+
+    try {
+
+        console.log(
+            "=========================================="
+        );
+
+
+        console.log(
+            "INITIALIZING STOCK IN"
+        );
+
+
+        console.log(
+            "=========================================="
+        );
+
+
+        await loadStockInScripts();
+
+
+        if (
+            typeof initializeStockIn ===
+            "function"
+        ) {
+
+            await initializeStockIn();
+
+        }
+
+        else {
+
+            throw new Error(
+                "initializeStockIn() not found."
+            );
+
+        }
+
+
+        console.log(
+            "Stock In initialized."
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Stock In Module Error:",
+            error
+        );
+
+
+        showModuleError(
+            content,
+            "Stock In",
+            error
+        );
+
+    }
+
+}
+
+
+// ==========================================================
 // NAVIGATION
 // ==========================================================
 
@@ -2362,6 +2499,10 @@ window.loadSuppliersScripts =
     loadSuppliersScripts;
 
 
+window.loadStockInScripts =
+    loadStockInScripts;
+
+
 window.loadPage =
     loadPage;
 
@@ -2396,6 +2537,10 @@ window.initializeRawMaterialsModule =
 
 window.initializeSuppliersModule =
     initializeSuppliersModule;
+
+
+window.initializeStockInModule =
+    initializeStockInModule;
 
 
 window.toggleSidebar =
@@ -2494,6 +2639,10 @@ window.logoutERP =
     logoutERP;
 
 
+// ==========================================================
+// READY
+// ==========================================================
+
 console.log(
-    "PAPPRITO ERP app.js V10 loaded."
+    "PAPPRITO ERP app.js V11 loaded."
 );
