@@ -21,7 +21,7 @@
 
 
     <!-- ==========================================================
-         BOOTSTRAP
+         BOOTSTRAP CSS
     ========================================================== -->
 
     <link
@@ -82,6 +82,7 @@
 
     <!-- ======================================================
          POS HEADER
+         LOGO REMOVED
     ======================================================= -->
 
     <header class="pos-header">
@@ -105,29 +106,19 @@
             </button>
 
 
-            <!-- ==================================================
-                 BRAND
-                 LOGO REMOVED
-            ================================================== -->
+            <div class="pos-brand-text">
 
-            <div class="pos-brand">
+                <div class="pos-brand-name">
+                    PAPPRITO POS
+                </div>
 
-                <div class="pos-brand-text">
-
-                    <div class="pos-brand-name">
-                        PAPPRITO POS
-                    </div>
-
-                    <div class="pos-brand-subtitle">
-                        Restaurant POS
-                    </div>
-
+                <div class="pos-brand-subtitle">
+                    Restaurant POS
                 </div>
 
             </div>
 
         </div>
-
 
 
         <!-- ==================================================
@@ -154,7 +145,6 @@
             </div>
 
         </div>
-
 
 
         <!-- ==================================================
@@ -287,10 +277,11 @@
 
 
             <!-- ==================================================
-                 SUMMARY
+                 ORDER SUMMARY
             ================================================== -->
 
             <div class="pos-order-summary">
+
 
                 <div class="pos-summary-row">
 
@@ -370,7 +361,9 @@
             </div>
 
 
-            <!-- CATEGORY BUTTONS -->
+            <!-- ==================================================
+                 CATEGORY BUTTONS
+            ================================================== -->
 
             <div
                 id="posCategories"
@@ -406,78 +399,114 @@
 
                 <div class="pos-keypad">
 
+
                     <button
                         type="button"
                         data-key="7">
+
                         7
+
                     </button>
+
 
                     <button
                         type="button"
                         data-key="8">
+
                         8
+
                     </button>
+
 
                     <button
                         type="button"
                         data-key="9">
+
                         9
+
                     </button>
+
 
                     <button
                         type="button"
                         data-key="4">
+
                         4
+
                     </button>
+
 
                     <button
                         type="button"
                         data-key="5">
+
                         5
+
                     </button>
+
 
                     <button
                         type="button"
                         data-key="6">
+
                         6
+
                     </button>
+
 
                     <button
                         type="button"
                         data-key="1">
+
                         1
+
                     </button>
+
 
                     <button
                         type="button"
                         data-key="2">
+
                         2
+
                     </button>
+
 
                     <button
                         type="button"
                         data-key="3">
+
                         3
+
                     </button>
+
 
                     <button
                         type="button"
                         data-key="0"
                         class="key-zero">
+
                         0
+
                     </button>
+
 
                     <button
                         type="button"
                         data-key=".">
+
                         .
+
                     </button>
+
 
                     <button
                         type="button"
                         data-key="clear"
                         class="key-clear">
+
                         C
+
                     </button>
 
                 </div>
@@ -496,13 +525,17 @@
         <section class="pos-product-panel">
 
 
-            <!-- PRODUCT TOOLBAR -->
+            <!-- ==================================================
+                 PRODUCT TOOLBAR
+            ================================================== -->
 
             <div class="pos-product-toolbar">
+
 
                 <div class="pos-search-wrapper">
 
                     <i class="fa-solid fa-magnifying-glass"></i>
+
 
                     <input
                         type="search"
@@ -527,7 +560,9 @@
             </div>
 
 
-            <!-- PRODUCTS -->
+            <!-- ==================================================
+                 PRODUCTS
+            ================================================== -->
 
             <div
                 id="posProducts"
@@ -558,7 +593,9 @@
     <section class="pos-payment-bar">
 
 
-        <!-- CUSTOMER -->
+        <!-- ==================================================
+             CUSTOMER
+        ================================================== -->
 
         <div class="pos-payment-customer">
 
@@ -581,7 +618,9 @@
 
 
 
-        <!-- PAYMENT METHOD -->
+        <!-- ==================================================
+             PAYMENT METHOD
+        ================================================== -->
 
         <div class="pos-payment-method">
 
@@ -591,6 +630,7 @@
 
 
             <div class="pos-payment-buttons">
+
 
                 <button
                     type="button"
@@ -645,7 +685,9 @@
 
 
 
-        <!-- AMOUNT RECEIVED -->
+        <!-- ==================================================
+             AMOUNT RECEIVED
+        ================================================== -->
 
         <div class="pos-payment-input">
 
@@ -674,7 +716,9 @@
 
 
 
-        <!-- CHANGE -->
+        <!-- ==================================================
+             CHANGE
+        ================================================== -->
 
         <div class="pos-change-box">
 
@@ -691,7 +735,9 @@
 
 
 
-        <!-- PAY -->
+        <!-- ==================================================
+             PAY
+        ================================================== -->
 
         <button
             type="button"
@@ -724,6 +770,7 @@
 
             <div class="modal-content pos-payment-modal">
 
+
                 <div class="modal-header">
 
                     <h5 class="modal-title">
@@ -746,11 +793,13 @@
 
                 <div class="modal-body">
 
+
                     <div class="pos-modal-total">
 
                         <span>
                             Total
                         </span>
+
 
                         <strong id="posModalTotal">
                             ₱0.00
@@ -760,7 +809,9 @@
 
 
                     <label class="form-label">
+
                         Amount Received
+
                     </label>
 
 
@@ -778,6 +829,7 @@
                         <span>
                             Change
                         </span>
+
 
                         <strong id="posModalChange">
                             ₱0.00
@@ -835,6 +887,7 @@
 
             <div class="modal-content">
 
+
                 <div class="modal-header">
 
                     <h5 class="modal-title">
@@ -858,6 +911,7 @@
                 <div
                     id="posReceiptContent"
                     class="modal-body">
+
                 </div>
 
 
@@ -909,6 +963,45 @@
 
 
 <!-- ==========================================================
+     FIREBASE
+     IMPORTANT:
+     Firebase App MUST LOAD FIRST
+========================================================== -->
+
+<script
+    src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js">
+</script>
+
+
+<!-- ==========================================================
+     FIREBASE REALTIME DATABASE
+========================================================== -->
+
+<script
+    src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js">
+</script>
+
+
+<!-- ==========================================================
+     FIREBASE STORAGE
+========================================================== -->
+
+<script
+    src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js">
+</script>
+
+
+<!-- ==========================================================
+     FIREBASE CONFIG
+========================================================== -->
+
+<script
+    src="../firebase/firebase-config.js">
+</script>
+
+
+
+<!-- ==========================================================
      BOOTSTRAP JS
 ========================================================== -->
 
@@ -919,7 +1012,7 @@
 
 
 <!-- ==========================================================
-     POS DATE/TIME
+     POS DATE / TIME
 ========================================================== -->
 
 <script>
@@ -935,7 +1028,9 @@
 
 
         if (!element) {
+
             return;
+
         }
 
 
@@ -975,11 +1070,68 @@
 
 
 <!-- ==========================================================
-     POS JS
+     POS ENGINE
 ========================================================== -->
 
 <script
     src="../assets/js/pos/pos.js">
+</script>
+
+
+<!-- ==========================================================
+     POS STARTUP
+     Required when pos.html is opened directly
+========================================================== -->
+
+<script>
+
+(function () {
+
+    function startPOS() {
+
+        if (
+            typeof initializePOS ===
+            "function"
+        ) {
+
+            initializePOS();
+
+        }
+
+        else {
+
+            console.error(
+                "PAPPRITO POS: initializePOS() not found."
+            );
+
+        }
+
+    }
+
+
+    if (
+        document.readyState ===
+        "loading"
+    ) {
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            startPOS,
+            {
+                once: true
+            }
+        );
+
+    }
+
+    else {
+
+        startPOS();
+
+    }
+
+})();
+
 </script>
 
 
