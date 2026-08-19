@@ -1,6 +1,6 @@
 // ==========================================================
 // PAPPRITO ERP
-// APP / NAVIGATION ENGINE V10
+// APP / NAVIGATION ENGINE V11
 // File : assets/js/app.js
 //
 // MAIN FUNCTIONS:
@@ -13,6 +13,8 @@
 // - Inventory Loader
 // - Raw Materials Loader
 // - Stock In Loader
+// - POS Loader
+// - Supplier Loader
 // - Mobile Sidebar
 // - Page Navigation
 // - Safe Script Loading
@@ -39,6 +41,10 @@ let inventoryScriptsLoaded = false;
 let rawMaterialsScriptsLoaded = false;
 
 let stockInScriptsLoaded = false;
+
+let posScriptsLoaded = false;
+
+let suppliersScriptsLoaded = false;
 
 
 // ==========================================================
@@ -100,6 +106,20 @@ const rawMaterialsScripts = [
 const stockInScripts = [
 
     "assets/js/stock-in/stock-in.js"
+
+];
+
+
+const posScripts = [
+
+    "assets/js/pos/pos.js"
+
+];
+
+
+const suppliersScripts = [
+
+    "assets/js/suppliers/suppliers.js"
 
 ];
 
@@ -504,6 +524,60 @@ async function loadStockInScripts() {
 
 
 // ==========================================================
+// POS
+// ==========================================================
+
+async function loadPOSScripts() {
+
+    if (
+        posScriptsLoaded
+    ) {
+
+        return;
+
+    }
+
+
+    await loadScriptGroup(
+        posScripts,
+        "POS"
+    );
+
+
+    posScriptsLoaded =
+        true;
+
+}
+
+
+// ==========================================================
+// SUPPLIERS
+// ==========================================================
+
+async function loadSuppliersScripts() {
+
+    if (
+        suppliersScriptsLoaded
+    ) {
+
+        return;
+
+    }
+
+
+    await loadScriptGroup(
+        suppliersScripts,
+        "SUPPLIERS"
+    );
+
+
+    suppliersScriptsLoaded =
+        true;
+
+}
+
+
+// ==========================================================
 // HTML ESCAPE
 // ==========================================================
 
@@ -674,7 +748,7 @@ async function loadPage(
 
 
         // ==================================================
-        // STOP RAW MATERIAL LISTENER
+        // STOP RAW MATERIALS LISTENER
         // ==================================================
 
         if (
@@ -790,6 +864,19 @@ async function loadPage(
             case "pages/dashboard.html":
 
                 await initializeDashboardModule(
+                    content
+                );
+
+                break;
+
+
+            // ==================================================
+            // POS
+            // ==================================================
+
+            case "pages/pos.html":
+
+                await initializePOSModule(
                     content
                 );
 
@@ -932,8 +1019,8 @@ async function loadPage(
 
             case "pages/suppliers.html":
 
-                safeInitialize(
-                    "initializeSuppliers"
+                await initializeSuppliersModule(
+                    content
                 );
 
                 break;
@@ -1232,10 +1319,10 @@ async function initializeDashboardModule(
 
 
 // ==========================================================
-// PRODUCT INITIALIZATION
+// POS INITIALIZATION
 // ==========================================================
 
-async function initializeProductModule(
+async function initializePOSModule(
     content
 ) {
 
@@ -1247,7 +1334,7 @@ async function initializeProductModule(
 
 
         console.log(
-            "INITIALIZING PRODUCT MASTER"
+            "INITIALIZING POS CASHIER"
         );
 
 
@@ -1255,6 +1342,70 @@ async function initializeProductModule(
             "=========================================="
         );
 
+
+        // ==================================================
+        // LOAD POS JAVASCRIPT
+        // ==================================================
+
+        await loadPOSScripts();
+
+
+        // ==================================================
+        // INITIALIZE POS
+        // ==================================================
+
+        if (
+            typeof initializePOS ===
+            "function"
+        ) {
+
+            await initializePOS();
+
+        }
+
+        else {
+
+            throw new Error(
+                "initializePOS() not found."
+            );
+
+        }
+
+
+        console.log(
+            "POS Cashier initialized."
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "POS Module Error:",
+            error
+        );
+
+
+        showModuleError(
+            content,
+            "POS Cashier",
+            error
+        );
+
+    }
+
+}
+
+
+// ==========================================================
+// PRODUCT INITIALIZATION
+// ==========================================================
+
+async function initializeProductModule(
+    content
+) {
+
+    try {
 
         await loadProductScripts();
 
@@ -1294,11 +1445,6 @@ async function initializeProductModule(
 
         }
 
-
-        console.log(
-            "Product Master initialized."
-        );
-
     }
 
     catch (error) {
@@ -1330,21 +1476,6 @@ async function initializeCategoryModule(
 
     try {
 
-        console.log(
-            "=========================================="
-        );
-
-
-        console.log(
-            "INITIALIZING CATEGORY MASTER"
-        );
-
-
-        console.log(
-            "=========================================="
-        );
-
-
         await loadCategoryScripts();
 
 
@@ -1359,16 +1490,11 @@ async function initializeCategoryModule(
 
         else {
 
-            console.error(
+            throw new Error(
                 "initializeCategoryPage() not found."
             );
 
         }
-
-
-        console.log(
-            "Category Master initialized."
-        );
 
     }
 
@@ -1401,21 +1527,6 @@ async function initializeReceivingOrdersModule(
 
     try {
 
-        console.log(
-            "=========================================="
-        );
-
-
-        console.log(
-            "INITIALIZING RECEIVING ORDERS"
-        );
-
-
-        console.log(
-            "=========================================="
-        );
-
-
         await loadReceivingOrdersScripts();
 
 
@@ -1435,11 +1546,6 @@ async function initializeReceivingOrdersModule(
             );
 
         }
-
-
-        console.log(
-            "Receiving Orders initialized."
-        );
 
     }
 
@@ -1472,21 +1578,6 @@ async function initializeInventoryModule(
 
     try {
 
-        console.log(
-            "=========================================="
-        );
-
-
-        console.log(
-            "INITIALIZING INVENTORY"
-        );
-
-
-        console.log(
-            "=========================================="
-        );
-
-
         await loadInventoryScripts();
 
 
@@ -1506,11 +1597,6 @@ async function initializeInventoryModule(
             );
 
         }
-
-
-        console.log(
-            "Inventory initialized."
-        );
 
     }
 
@@ -1543,21 +1629,6 @@ async function initializeRawMaterialsModule(
 
     try {
 
-        console.log(
-            "=========================================="
-        );
-
-
-        console.log(
-            "INITIALIZING RAW MATERIALS"
-        );
-
-
-        console.log(
-            "=========================================="
-        );
-
-
         await loadRawMaterialsScripts();
 
 
@@ -1577,11 +1648,6 @@ async function initializeRawMaterialsModule(
             );
 
         }
-
-
-        console.log(
-            "Raw Materials initialized."
-        );
 
     }
 
@@ -1614,31 +1680,8 @@ async function initializeStockInModule(
 
     try {
 
-        console.log(
-            "=========================================="
-        );
-
-
-        console.log(
-            "INITIALIZING STOCK IN"
-        );
-
-
-        console.log(
-            "=========================================="
-        );
-
-
-        // ==================================================
-        // LOAD STOCK IN JAVASCRIPT
-        // ==================================================
-
         await loadStockInScripts();
 
-
-        // ==================================================
-        // INITIALIZE STOCK IN PAGE
-        // ==================================================
 
         if (
             typeof initializeStockIn ===
@@ -1656,11 +1699,6 @@ async function initializeStockInModule(
             );
 
         }
-
-
-        console.log(
-            "Stock In initialized."
-        );
 
     }
 
@@ -1684,13 +1722,63 @@ async function initializeStockInModule(
 
 
 // ==========================================================
+// SUPPLIER INITIALIZATION
+// ==========================================================
+
+async function initializeSuppliersModule(
+    content
+) {
+
+    try {
+
+        await loadSuppliersScripts();
+
+
+        if (
+            typeof initializeSuppliers ===
+            "function"
+        ) {
+
+            await initializeSuppliers();
+
+        }
+
+        else {
+
+            throw new Error(
+                "initializeSuppliers() not found."
+            );
+
+        }
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Supplier Module Error:",
+            error
+        );
+
+
+        showModuleError(
+            content,
+            "Suppliers",
+            error
+        );
+
+    }
+
+}
+
+
+// ==========================================================
 // NAVIGATION
 // ==========================================================
 
 function openDashboard() {
 
     closeSidebarMobile();
-
 
     loadPage(
         "pages/dashboard.html"
@@ -1701,8 +1789,11 @@ function openDashboard() {
 
 function openPOS() {
 
-    window.location.href =
-        "pages/pos.html";
+    closeSidebarMobile();
+
+    loadPage(
+        "pages/pos.html"
+    );
 
 }
 
@@ -1710,7 +1801,6 @@ function openPOS() {
 function openReceivingOrders() {
 
     closeSidebarMobile();
-
 
     loadPage(
         "pages/receiving-orders.html"
@@ -1723,7 +1813,6 @@ function openKitchen() {
 
     closeSidebarMobile();
 
-
     loadPage(
         "pages/kitchen.html"
     );
@@ -1734,7 +1823,6 @@ function openKitchen() {
 function openTables() {
 
     closeSidebarMobile();
-
 
     loadPage(
         "pages/tables.html"
@@ -1747,7 +1835,6 @@ function openProducts() {
 
     closeSidebarMobile();
 
-
     loadPage(
         "pages/products.html"
     );
@@ -1758,7 +1845,6 @@ function openProducts() {
 function openCategory() {
 
     closeSidebarMobile();
-
 
     loadPage(
         "pages/categories.html"
@@ -1771,7 +1857,6 @@ function openInventory() {
 
     closeSidebarMobile();
 
-
     loadPage(
         "pages/inventory.html"
     );
@@ -1782,7 +1867,6 @@ function openInventory() {
 function openRawMaterials() {
 
     closeSidebarMobile();
-
 
     loadPage(
         "pages/raw-materials.html"
@@ -1795,7 +1879,6 @@ function openStockIn() {
 
     closeSidebarMobile();
 
-
     loadPage(
         "pages/stock-in.html"
     );
@@ -1806,7 +1889,6 @@ function openStockIn() {
 function openStockOut() {
 
     closeSidebarMobile();
-
 
     loadPage(
         "pages/stock-out.html"
@@ -1819,7 +1901,6 @@ function openPurchaseOrders() {
 
     closeSidebarMobile();
 
-
     loadPage(
         "pages/purchase-orders.html"
     );
@@ -1830,7 +1911,6 @@ function openPurchaseOrders() {
 function openSuppliers() {
 
     closeSidebarMobile();
-
 
     loadPage(
         "pages/suppliers.html"
@@ -1843,7 +1923,6 @@ function openCustomers() {
 
     closeSidebarMobile();
 
-
     loadPage(
         "pages/customers.html"
     );
@@ -1854,7 +1933,6 @@ function openCustomers() {
 function openSales() {
 
     closeSidebarMobile();
-
 
     loadPage(
         "pages/sales.html"
@@ -1867,7 +1945,6 @@ function openReports() {
 
     closeSidebarMobile();
 
-
     loadPage(
         "pages/reports.html"
     );
@@ -1878,7 +1955,6 @@ function openReports() {
 function openEmployees() {
 
     closeSidebarMobile();
-
 
     loadPage(
         "pages/employees.html"
@@ -1891,7 +1967,6 @@ function openAttendance() {
 
     closeSidebarMobile();
 
-
     loadPage(
         "pages/attendance.html"
     );
@@ -1902,7 +1977,6 @@ function openAttendance() {
 function openPayroll() {
 
     closeSidebarMobile();
-
 
     loadPage(
         "pages/payroll.html"
@@ -1915,7 +1989,6 @@ function openSettings() {
 
     closeSidebarMobile();
 
-
     loadPage(
         "pages/settings.html"
     );
@@ -1926,7 +1999,6 @@ function openSettings() {
 function openCompanyProfile() {
 
     closeSidebarMobile();
-
 
     loadPage(
         "pages/company-profile.html"
@@ -2301,170 +2373,140 @@ document.addEventListener(
 window.loadComponent =
     loadComponent;
 
-
 window.loadScript =
     loadScript;
-
 
 window.loadScriptGroup =
     loadScriptGroup;
 
-
 window.loadDashboardScripts =
     loadDashboardScripts;
-
 
 window.loadProductScripts =
     loadProductScripts;
 
-
 window.loadCategoryScripts =
     loadCategoryScripts;
-
 
 window.loadReceivingOrdersScripts =
     loadReceivingOrdersScripts;
 
-
 window.loadInventoryScripts =
     loadInventoryScripts;
-
 
 window.loadRawMaterialsScripts =
     loadRawMaterialsScripts;
 
-
 window.loadStockInScripts =
     loadStockInScripts;
 
+window.loadPOSScripts =
+    loadPOSScripts;
+
+window.loadSuppliersScripts =
+    loadSuppliersScripts;
 
 window.loadPage =
     loadPage;
 
-
 window.safeInitialize =
     safeInitialize;
-
 
 window.initializeDashboardModule =
     initializeDashboardModule;
 
+window.initializePOSModule =
+    initializePOSModule;
 
 window.initializeProductModule =
     initializeProductModule;
 
-
 window.initializeCategoryModule =
     initializeCategoryModule;
-
 
 window.initializeReceivingOrdersModule =
     initializeReceivingOrdersModule;
 
-
 window.initializeInventoryModule =
     initializeInventoryModule;
-
 
 window.initializeRawMaterialsModule =
     initializeRawMaterialsModule;
 
-
 window.initializeStockInModule =
     initializeStockInModule;
 
+window.initializeSuppliersModule =
+    initializeSuppliersModule;
 
 window.toggleSidebar =
     toggleSidebar;
 
-
 window.closeSidebarMobile =
     closeSidebarMobile;
-
 
 window.openDashboard =
     openDashboard;
 
-
 window.openPOS =
     openPOS;
-
 
 window.openReceivingOrders =
     openReceivingOrders;
 
-
 window.openKitchen =
     openKitchen;
-
 
 window.openTables =
     openTables;
 
-
 window.openProducts =
     openProducts;
-
 
 window.openCategory =
     openCategory;
 
-
 window.openInventory =
     openInventory;
-
 
 window.openRawMaterials =
     openRawMaterials;
 
-
 window.openStockIn =
     openStockIn;
-
 
 window.openStockOut =
     openStockOut;
 
-
 window.openPurchaseOrders =
     openPurchaseOrders;
-
 
 window.openSuppliers =
     openSuppliers;
 
-
 window.openCustomers =
     openCustomers;
-
 
 window.openSales =
     openSales;
 
-
 window.openReports =
     openReports;
-
 
 window.openEmployees =
     openEmployees;
 
-
 window.openAttendance =
     openAttendance;
-
 
 window.openPayroll =
     openPayroll;
 
-
 window.openSettings =
     openSettings;
 
-
 window.openCompanyProfile =
     openCompanyProfile;
-
 
 window.logoutERP =
     logoutERP;
@@ -2475,5 +2517,5 @@ window.logoutERP =
 // ==========================================================
 
 console.log(
-    "PAPPRITO ERP app.js V10 loaded."
+    "PAPPRITO ERP app.js V11 loaded."
 );
