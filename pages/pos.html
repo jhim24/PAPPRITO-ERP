@@ -17,11 +17,19 @@
         name="theme-color"
         content="#C8102E">
 
+    <meta
+        name="apple-mobile-web-app-capable"
+        content="yes">
+
+    <meta
+        name="mobile-web-app-capable"
+        content="yes">
+
     <title>PAPPRITO POS</title>
 
 
     <!-- ==========================================================
-         BOOTSTRAP CSS
+         BOOTSTRAP
     ========================================================== -->
 
     <link
@@ -39,33 +47,335 @@
 
 
     <!-- ==========================================================
-         PAPPRITO GLOBAL CSS
-    ========================================================== -->
-
-    <link
-        rel="stylesheet"
-        href="../assets/css/style.css">
-
-    <link
-        rel="stylesheet"
-        href="../assets/css/sidebar.css">
-
-    <link
-        rel="stylesheet"
-        href="../assets/css/navbar.css">
-
-    <link
-        rel="stylesheet"
-        href="../assets/css/responsive.css">
-
-
-    <!-- ==========================================================
-         POS CSS
+         POS CSS ONLY
+         Sidebar / Navbar CSS intentionally removed
     ========================================================== -->
 
     <link
         rel="stylesheet"
         href="../assets/css/pos.css">
+
+
+    <!-- ==========================================================
+         FULL SCREEN POS OVERRIDES
+    ========================================================== -->
+
+    <style>
+
+        /* ======================================================
+           FULL SCREEN
+        ====================================================== */
+
+        html,
+        body {
+
+            width: 100%;
+            height: 100%;
+
+            margin: 0;
+            padding: 0;
+
+            overflow: hidden;
+
+            background: #f4f5f7;
+
+        }
+
+
+        body.papprito-pos-page {
+
+            width: 100%;
+            height: 100vh;
+
+            min-height: 100vh;
+
+            margin: 0;
+            padding: 0;
+
+            overflow: hidden;
+
+        }
+
+
+        /* ======================================================
+           POS APPLICATION
+        ====================================================== */
+
+        #pappritoPOS {
+
+            width: 100%;
+            height: 100vh;
+
+            min-height: 100vh;
+
+            margin: 0;
+            padding: 0;
+
+            display: flex;
+
+            flex-direction: column;
+
+            overflow: hidden;
+
+        }
+
+
+        /* ======================================================
+           POS HEADER
+        ====================================================== */
+
+        .pos-header {
+
+            flex: 0 0 auto;
+
+            width: 100%;
+
+            min-height: 64px;
+
+            margin: 0;
+
+            border-radius: 0 !important;
+
+        }
+
+
+        /* ======================================================
+           REMOVE SIDEBAR RELATED ELEMENTS
+        ====================================================== */
+
+        #sidebar,
+        .sidebar,
+        .sidebar-overlay,
+        #sidebarOverlay {
+
+            display: none !important;
+
+        }
+
+
+        /* ======================================================
+           POS MAIN
+        ====================================================== */
+
+        .pos-main {
+
+            flex: 1 1 auto;
+
+            width: 100%;
+
+            min-width: 0;
+            min-height: 0;
+
+            margin: 0;
+
+            overflow: hidden;
+
+        }
+
+
+        /* ======================================================
+           PAYMENT BAR
+        ====================================================== */
+
+        .pos-payment-bar {
+
+            flex: 0 0 auto;
+
+            width: 100%;
+
+            margin: 0;
+
+            border-radius: 0 !important;
+
+        }
+
+
+        /* ======================================================
+           NO SIDEBAR OPEN STATE
+        ====================================================== */
+
+        body.sidebar-open {
+
+            overflow: hidden !important;
+
+        }
+
+
+        body.sidebar-open #pappritoPOS {
+
+            margin-left: 0 !important;
+
+            width: 100% !important;
+
+        }
+
+
+        /* ======================================================
+           DESKTOP
+        ====================================================== */
+
+        @media (min-width: 993px) {
+
+            .pos-main {
+
+                height: auto;
+
+            }
+
+        }
+
+
+        /* ======================================================
+           TABLET / MOBILE
+        ====================================================== */
+
+        @media (max-width: 992px) {
+
+            html,
+            body {
+
+                overflow-y: auto;
+                overflow-x: hidden;
+
+            }
+
+
+            body.papprito-pos-page {
+
+                height: auto;
+
+                min-height: 100vh;
+
+                overflow-y: auto;
+
+            }
+
+
+            #pappritoPOS {
+
+                height: auto;
+
+                min-height: 100vh;
+
+                overflow: visible;
+
+            }
+
+
+            .pos-header {
+
+                position: sticky;
+
+                top: 0;
+
+                z-index: 1000;
+
+            }
+
+
+            .pos-main {
+
+                height: auto;
+
+                overflow: visible;
+
+            }
+
+
+            .pos-payment-bar {
+
+                position: sticky;
+
+                bottom: 0;
+
+                z-index: 1000;
+
+            }
+
+        }
+
+
+        /* ======================================================
+           SMALL MOBILE
+        ====================================================== */
+
+        @media (max-width: 600px) {
+
+            .pos-header {
+
+                min-height: 56px;
+
+            }
+
+
+            .pos-header-center {
+
+                display: none;
+
+            }
+
+
+            .pos-header-right {
+
+                gap: 4px;
+
+            }
+
+
+            .pos-header-action span {
+
+                display: none;
+
+            }
+
+        }
+
+
+        /* ======================================================
+           HIDE MENU BUTTON
+           Since there is NO sidebar
+        ====================================================== */
+
+        .pos-menu-btn {
+
+            display: none !important;
+
+        }
+
+
+        /* ======================================================
+           POS BRAND
+        ====================================================== */
+
+        .pos-brand-text {
+
+            display: flex;
+
+            flex-direction: column;
+
+            justify-content: center;
+
+        }
+
+
+        .pos-brand-name {
+
+            font-weight: 900;
+
+            line-height: 1.1;
+
+        }
+
+
+        .pos-brand-subtitle {
+
+            font-size: 11px;
+
+            opacity: .75;
+
+        }
+
+    </style>
 
 </head>
 
@@ -82,38 +392,32 @@
 
     <!-- ======================================================
          POS HEADER
-         LOGO REMOVED
     ======================================================= -->
 
     <header class="pos-header">
 
 
-        <!-- ==================================================
-             LEFT
-        ================================================== -->
+        <!-- LEFT -->
 
         <div class="pos-header-left">
 
-            <button
-                type="button"
-                class="pos-menu-btn"
-                id="posMenuBtn"
-                onclick="toggleSidebar()"
-                aria-label="Menu">
 
-                <i class="fa-solid fa-bars"></i>
-
-            </button>
+            <!-- Menu intentionally removed -->
 
 
             <div class="pos-brand-text">
 
                 <div class="pos-brand-name">
+
                     PAPPRITO POS
+
                 </div>
 
+
                 <div class="pos-brand-subtitle">
+
                     Restaurant POS
+
                 </div>
 
             </div>
@@ -121,9 +425,8 @@
         </div>
 
 
-        <!-- ==================================================
-             CENTER
-        ================================================== -->
+
+        <!-- CENTER -->
 
         <div class="pos-header-center">
 
@@ -147,11 +450,11 @@
         </div>
 
 
-        <!-- ==================================================
-             RIGHT
-        ================================================== -->
+
+        <!-- RIGHT -->
 
         <div class="pos-header-right">
+
 
             <button
                 type="button"
@@ -207,7 +510,6 @@
 
 
         <!-- ==================================================
-             LEFT
              CURRENT ORDER
         ================================================== -->
 
@@ -251,9 +553,8 @@
             </div>
 
 
-            <!-- ==================================================
-                 CART
-            ================================================== -->
+
+            <!-- CART -->
 
             <div
                 id="posCart"
@@ -276,9 +577,8 @@
             </div>
 
 
-            <!-- ==================================================
-                 ORDER SUMMARY
-            ================================================== -->
+
+            <!-- SUMMARY -->
 
             <div class="pos-order-summary">
 
@@ -341,7 +641,6 @@
 
 
         <!-- ==================================================
-             CENTER
              CATEGORIES
         ================================================== -->
 
@@ -361,10 +660,6 @@
             </div>
 
 
-            <!-- ==================================================
-                 CATEGORY BUTTONS
-            ================================================== -->
-
             <div
                 id="posCategories"
                 class="pos-categories">
@@ -382,9 +677,8 @@
             </div>
 
 
-            <!-- ==================================================
-                 QUICK ENTRY
-            ================================================== -->
+
+            <!-- QUICK ENTRY -->
 
             <div class="pos-keypad-section">
 
@@ -518,16 +812,11 @@
 
 
         <!-- ==================================================
-             RIGHT
              PRODUCTS
         ================================================== -->
 
         <section class="pos-product-panel">
 
-
-            <!-- ==================================================
-                 PRODUCT TOOLBAR
-            ================================================== -->
 
             <div class="pos-product-toolbar">
 
@@ -560,9 +849,6 @@
             </div>
 
 
-            <!-- ==================================================
-                 PRODUCTS
-            ================================================== -->
 
             <div
                 id="posProducts"
@@ -593,9 +879,7 @@
     <section class="pos-payment-bar">
 
 
-        <!-- ==================================================
-             CUSTOMER
-        ================================================== -->
+        <!-- CUSTOMER -->
 
         <div class="pos-payment-customer">
 
@@ -618,9 +902,7 @@
 
 
 
-        <!-- ==================================================
-             PAYMENT METHOD
-        ================================================== -->
+        <!-- PAYMENT METHOD -->
 
         <div class="pos-payment-method">
 
@@ -685,9 +967,7 @@
 
 
 
-        <!-- ==================================================
-             AMOUNT RECEIVED
-        ================================================== -->
+        <!-- AMOUNT RECEIVED -->
 
         <div class="pos-payment-input">
 
@@ -716,9 +996,7 @@
 
 
 
-        <!-- ==================================================
-             CHANGE
-        ================================================== -->
+        <!-- CHANGE -->
 
         <div class="pos-change-box">
 
@@ -735,9 +1013,7 @@
 
 
 
-        <!-- ==================================================
-             PAY
-        ================================================== -->
+        <!-- PAY -->
 
         <button
             type="button"
@@ -911,7 +1187,6 @@
                 <div
                     id="posReceiptContent"
                     class="modal-body">
-
                 </div>
 
 
@@ -949,7 +1224,7 @@
 
 
     <!-- ======================================================
-         POS STATUS
+         STATUS
     ======================================================= -->
 
     <div
@@ -964,8 +1239,6 @@
 
 <!-- ==========================================================
      FIREBASE
-     IMPORTANT:
-     Firebase App MUST LOAD FIRST
 ========================================================== -->
 
 <script
@@ -973,27 +1246,15 @@
 </script>
 
 
-<!-- ==========================================================
-     FIREBASE REALTIME DATABASE
-========================================================== -->
-
 <script
     src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js">
 </script>
 
 
-<!-- ==========================================================
-     FIREBASE STORAGE
-========================================================== -->
-
 <script
     src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js">
 </script>
 
-
-<!-- ==========================================================
-     FIREBASE CONFIG
-========================================================== -->
 
 <script
     src="../firebase/firebase-config.js">
@@ -1012,7 +1273,7 @@
 
 
 <!-- ==========================================================
-     POS DATE / TIME
+     DATE / TIME
 ========================================================== -->
 
 <script>
@@ -1078,9 +1339,9 @@
 </script>
 
 
+
 <!-- ==========================================================
      POS STARTUP
-     Required when pos.html is opened directly
 ========================================================== -->
 
 <script>
