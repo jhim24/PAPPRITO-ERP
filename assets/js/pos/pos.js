@@ -1,59 +1,71 @@
 /* ==========================================================
    PAPPRITO ERP
-   RESTAURANT POS
-   POS ENGINE V2 — FULL RESET
+   POS V2 — CONSOLIDATED POS ENGINE
    File:
    assets/js/pos/pos.js
 
-   FEATURES
-   ----------------------------------------------------------
-   ✓ Firebase Products
-   ✓ Firebase Categories
-   ✓ Product Search
-   ✓ Category Filter
-   ✓ Shopping Cart
-   ✓ Quantity + / -
-   ✓ Remove Item
-   ✓ Clear Order
-   ✓ Discount
-   ✓ Tax Ready
-   ✓ Cash / Card / GCash / Other
-   ✓ Amount Received
-   ✓ Change Calculation
-   ✓ Save Sale to Firebase
-   ✓ Deduct Product Stock
-   ✓ Receipt
-   ✓ Print Receipt
-   ✓ Refresh Products
-   ✓ Quick Keypad
-   ✓ Fullscreen
-   ✓ Date / Time
-   ✓ Mobile Responsive
+   ARCHITECTURE:
+
+   pos.html
+        ↓
+   pos.css
+        ↓
+   pos.js
+        ↓
+   Firebase Realtime Database
+
+   FEATURES:
+   - Load products
+   - Load categories
+   - Search products
+   - Category filtering
+   - Add to cart
+   - Quantity controls
+   - Remove items
+   - Discount
+   - Payment methods
+   - Amount received
+   - Change calculation
+   - Save sales
+   - Update stock
+   - Receipt
+   - Print receipt
+   - Date/time
+   - Refresh
+   - Mobile responsive
+   - Standalone fullscreen POS
 ========================================================== */
 
 "use strict";
 
 
 /* ==========================================================
-   GLOBAL STATE
+   GLOBAL POS STATE
 ========================================================== */
 
-let posProducts = {};
-let posCategories = {};
-let posCart = [];
+let PAPPRITO_POS = {
 
-let posPaymentMethod = "Cash";
+    products: {},
 
-let posDiscount = 0;
-let posTaxRate = 0;
+    categories: {},
 
-let posCurrentOrderNumber = "";
-let posCurrentReceipt = null;
+    cart: [],
 
-let posInitialized = false;
-let posProcessingPayment = false;
+    currentCategory: "all",
 
-let currentPOSCategory = "all";
+    paymentMethod: "Cash",
+
+    discount: 0,
+
+    customer: "Walk-in Customer",
+
+    initialized: false,
+
+    processing: false,
+
+    lastSale: null
+
+};
 
 
 /* ==========================================================
@@ -75,7 +87,7 @@ function posFirebaseReady() {
    ELEMENT HELPER
 ========================================================== */
 
-function posElement(id) {
+function posEl(id) {
 
     return document.getElementById(id);
 
@@ -83,53 +95,12 @@ function posElement(id) {
 
 
 /* ==========================================================
-   MULTIPLE ELEMENT ID HELPER
-========================================================== */
-
-function posFirstElement(...ids) {
-
-    for (const id of ids) {
-
-        const element =
-            document.getElementById(id);
-
-        if (element) {
-
-            return element;
-
-        }
-
-    }
-
-    return null;
-
-}
-
-
-/* ==========================================================
-   HTML ESCAPE
-========================================================== */
-
-function escapePOSHTML(value) {
-
-    return String(value ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-
-}
-
-
-/* ==========================================================
-   NUMBER
+   SAFE NUMBER
 ========================================================== */
 
 function posNumber(value) {
 
-    const number =
-        Number(value);
+    const number = Number(value);
 
     return Number.isFinite(number)
         ? number
@@ -162,84 +133,82 @@ function posMoney(value) {
 
 
 /* ==========================================================
-   ORDER NUMBER
+   ESCAPE HTML
 ========================================================== */
 
-function generatePOSOrderNumber() {
+function posEscape(value) {
 
-    const now =
-        new Date();
-
-    const year =
-        now.getFullYear();
-
-    const month =
-        String(
-            now.getMonth() + 1
-        ).padStart(2, "0");
-
-    const day =
-        String(
-            now.getDate()
-        ).padStart(2, "0");
-
-    const hour =
-        String(
-            now.getHours()
-        ).padStart(2, "0");
-
-    const minute =
-        String(
-            now.getMinutes()
-        ).padStart(2, "0");
-
-    const second =
-        String(
-            now.getSeconds()
-        ).padStart(2, "0");
-
-    const random =
-        String(
-            Math.floor(
-                Math.random() * 100
-            )
-        ).padStart(2, "0");
-
-    return (
-        "POS-" +
-        year +
-        month +
-        day +
-        "-" +
-        hour +
-        minute +
-        second +
-        random
-    );
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 
 }
 
 
 /* ==========================================================
-   RESET ORDER NUMBER
+   SHOW STATUS
 ========================================================== */
 
-function resetPOSOrderNumber() {
-
-    posCurrentOrderNumber =
-        generatePOSOrderNumber();
+function posStatus(message) {
 
     const element =
-        posElement(
-            "posOrderNumber"
+        posEl("posStatus");
+
+    if (!element) {
+
+        console.log(
+            "POS:",
+            message
         );
 
-    if (element) {
-
-        element.textContent =
-            posCurrentOrderNumber;
+        return;
 
     }
+
+    element.textContent =
+        message;
+
+    element.classList.add(
+        "show"
+    );
+
+    clearTimeout(
+        window.pappritoPOSTimer
+    );
+
+    window.pappritoPOSTimer =
+        setTimeout(
+            function () {
+
+                element.classList.remove(
+                    "show"
+                );
+
+            },
+            2500
+        );
+
+}
+
+
+/* ==========================================================
+   ERROR
+========================================================== */
+
+function posError(message, error) {
+
+    console.error(
+        "PAPPRITO POS:",
+        message,
+        error || ""
+    );
+
+    posStatus(
+        message
+    );
 
 }
 
@@ -250,11 +219,17 @@ function resetPOSOrderNumber() {
 
 function getPOSProductName(product) {
 
+    if (!product) {
+
+        return "Unnamed Product";
+
+    }
+
     return (
-        product?.name ||
-        product?.productName ||
-        product?.itemName ||
-        product?.title ||
+        product.name ||
+        product.productName ||
+        product.itemName ||
+        product.title ||
         "Unnamed Product"
     );
 
@@ -267,30 +242,19 @@ function getPOSProductName(product) {
 
 function getPOSProductPrice(product) {
 
+    if (!product) {
+
+        return 0;
+
+    }
+
     return posNumber(
-        product?.sellingPrice ??
-        product?.salePrice ??
-        product?.unitPrice ??
-        product?.price ??
-        product?.selling_price ??
+        product.price ??
+        product.sellingPrice ??
+        product.salePrice ??
+        product.unitPrice ??
+        product.srp ??
         0
-    );
-
-}
-
-
-/* ==========================================================
-   PRODUCT IMAGE
-========================================================== */
-
-function getPOSProductImage(product) {
-
-    return (
-        product?.image ||
-        product?.imageUrl ||
-        product?.photo ||
-        product?.photoUrl ||
-        "../assets/img/no-image.png"
     );
 
 }
@@ -302,12 +266,40 @@ function getPOSProductImage(product) {
 
 function getPOSProductCategory(product) {
 
+    if (!product) {
+
+        return "Other";
+
+    }
+
     return String(
-        product?.category ||
-        product?.categoryName ||
-        product?.categoryId ||
-        product?.category_name ||
+        product.categoryName ??
+        product.category ??
+        product.categoryId ??
         "Other"
+    );
+
+}
+
+
+/* ==========================================================
+   PRODUCT IMAGE
+========================================================== */
+
+function getPOSProductImage(product) {
+
+    if (!product) {
+
+        return "../assets/img/no-image.png";
+
+    }
+
+    return (
+        product.image ||
+        product.imageUrl ||
+        product.photo ||
+        product.photoUrl ||
+        "../assets/img/no-image.png"
     );
 
 }
@@ -319,10 +311,16 @@ function getPOSProductCategory(product) {
 
 function getPOSProductStock(product) {
 
+    if (!product) {
+
+        return null;
+
+    }
+
     if (
-        product?.stock !== undefined &&
-        product?.stock !== null &&
-        product?.stock !== ""
+        product.stock !== undefined &&
+        product.stock !== null &&
+        product.stock !== ""
     ) {
 
         return posNumber(
@@ -332,9 +330,9 @@ function getPOSProductStock(product) {
     }
 
     if (
-        product?.quantity !== undefined &&
-        product?.quantity !== null &&
-        product?.quantity !== ""
+        product.quantity !== undefined &&
+        product.quantity !== null &&
+        product.quantity !== ""
     ) {
 
         return posNumber(
@@ -349,62 +347,99 @@ function getPOSProductStock(product) {
 
 
 /* ==========================================================
-   PRODUCT ACTIVE CHECK
+   GENERATE ORDER NUMBER
 ========================================================== */
 
-function isPOSProductActive(product) {
+function generatePOSOrderNumber() {
 
-    if (!product) {
+    const now =
+        new Date();
 
-        return false;
+    const year =
+        now.getFullYear();
 
-    }
-
-    const status =
+    const month =
         String(
-            product.status ??
-            "active"
-        )
-        .trim()
-        .toLowerCase();
+            now.getMonth() + 1
+        ).padStart(
+            2,
+            "0"
+        );
+
+    const day =
+        String(
+            now.getDate()
+        ).padStart(
+            2,
+            "0"
+        );
+
+    const hours =
+        String(
+            now.getHours()
+        ).padStart(
+            2,
+            "0"
+        );
+
+    const minutes =
+        String(
+            now.getMinutes()
+        ).padStart(
+            2,
+            "0"
+        );
+
+    const seconds =
+        String(
+            now.getSeconds()
+        ).padStart(
+            2,
+            "0"
+        );
+
+    const milliseconds =
+        String(
+            now.getMilliseconds()
+        ).padStart(
+            3,
+            "0"
+        );
 
     return (
-        status !== "inactive" &&
-        status !== "disabled" &&
-        status !== "archived"
+        "POS-" +
+        year +
+        month +
+        day +
+        "-" +
+        hours +
+        minutes +
+        seconds +
+        milliseconds
     );
 
 }
 
 
 /* ==========================================================
-   LOAD PRODUCTS
+   UPDATE ORDER NUMBER
 ========================================================== */
 
-async function loadPOSProducts() {
+function updatePOSOrderNumber() {
 
-    if (!posFirebaseReady()) {
-
-        throw new Error(
-            "Firebase Database is not initialized."
+    const element =
+        posEl(
+            "posOrderNumber"
         );
+
+    if (!element) {
+
+        return;
 
     }
 
-    const snapshot =
-        await db
-            .ref("products")
-            .once("value");
-
-    posProducts =
-        snapshot.val() || {};
-
-    console.log(
-        "POS Products:",
-        Object.keys(posProducts).length
-    );
-
-    return posProducts;
+    element.textContent =
+        generatePOSOrderNumber();
 
 }
 
@@ -423,44 +458,90 @@ async function loadPOSCategories() {
 
     }
 
-    const snapshot =
-        await db
-            .ref("categories")
-            .once("value");
+    try {
 
-    posCategories =
-        snapshot.val() || {};
+        const snapshot =
+            await db
+                .ref("categories")
+                .once("value");
 
-    console.log(
-        "POS Categories:",
-        Object.keys(posCategories).length
-    );
+        PAPPRITO_POS.categories =
+            snapshot.val() || {};
 
-    return posCategories;
+        console.log(
+            "POS Categories:",
+            Object.keys(
+                PAPPRITO_POS.categories
+            ).length
+        );
+
+        renderPOSCategories();
+
+        return PAPPRITO_POS.categories;
+
+    }
+
+    catch (error) {
+
+        posError(
+            "Unable to load categories.",
+            error
+        );
+
+        throw error;
+
+    }
 
 }
 
 
 /* ==========================================================
-   CATEGORY NAME
+   LOAD PRODUCTS
 ========================================================== */
 
-function getPOSCategoryName(category) {
+async function loadPOSProducts() {
 
-    if (
-        typeof category === "string"
-    ) {
+    if (!posFirebaseReady()) {
 
-        return category;
+        throw new Error(
+            "Firebase Database is not initialized."
+        );
 
     }
 
-    return (
-        category?.name ||
-        category?.categoryName ||
-        category?.title ||
-        "Other"
-    );
+    try {
+
+        const snapshot =
+            await db
+                .ref("products")
+                .once("value");
+
+        PAPPRITO_POS.products =
+            snapshot.val() || {};
+
+        console.log(
+            "POS Products:",
+            Object.keys(
+                PAPPRITO_POS.products
+            ).length
+        );
+
+        renderPOSProducts();
+
+        return PAPPRITO_POS.products;
+
+    }
+
+    catch (error) {
+
+        posError(
+            "Unable to load products.",
+            error
+        );
+
+        throw error;
+
+    }
 
 }
 
@@ -472,7 +553,7 @@ function getPOSCategoryName(category) {
 function renderPOSCategories() {
 
     const container =
-        posElement(
+        posEl(
             "posCategories"
         );
 
@@ -482,19 +563,13 @@ function renderPOSCategories() {
 
     }
 
-    const categoryMap =
-        new Map();
-
-
-    /* ------------------------------------------------------
-       FIREBASE CATEGORIES
-    ------------------------------------------------------ */
+    const categories = [];
 
     Object.entries(
-        posCategories || {}
+        PAPPRITO_POS.categories
     )
     .forEach(
-        ([id, category]) => {
+        function ([id, category]) {
 
             if (!category) {
 
@@ -503,130 +578,86 @@ function renderPOSCategories() {
             }
 
             const name =
-                getPOSCategoryName(
-                    category
-                );
+                category.name ||
+                category.categoryName ||
+                category.title ||
+                "Other";
 
-            if (!name) {
+            categories.push({
 
-                return;
+                id: id,
 
-            }
+                name: String(
+                    name
+                )
 
-            categoryMap.set(
-                String(name).trim(),
-                name
+            });
+
+        }
+    );
+
+
+    categories.sort(
+        function (a, b) {
+
+            return a.name.localeCompare(
+                b.name
             );
 
         }
     );
 
 
-    /* ------------------------------------------------------
-       ALSO GET CATEGORIES FROM PRODUCTS
-       This makes POS work even when categories node
-       is incomplete.
-    ------------------------------------------------------ */
-
-    Object.values(
-        posProducts || {}
-    )
-    .forEach(
-        product => {
-
-            if (!product) {
-
-                return;
-
-            }
-
-            const category =
-                getPOSProductCategory(
-                    product
-                );
-
-            if (
-                category &&
-                category !== "Other"
-            ) {
-
-                categoryMap.set(
-                    String(category).trim(),
-                    category
-                );
-
-            }
-
-        }
-    );
+    let html = "";
 
 
-    let categories =
-        Array.from(
-            categoryMap.values()
-        );
+    /* ======================================================
+       ALL PRODUCTS
+    ====================================================== */
 
-
-    categories.sort(
-        (a, b) =>
-            String(a)
-                .localeCompare(
-                    String(b)
-                )
-    );
-
-
-    let html = `
+    html += `
 
         <button
             type="button"
-            class="pos-category-btn ${
-                currentPOSCategory === "all"
-                    ? "active"
-                    : ""
-            }"
-            data-category="all">
+            class="pos-category-btn active"
+            data-category="all"
+            onclick="filterPOSCategory('all')">
 
             <i class="fa-solid fa-border-all"></i>
 
-            <span>All Products</span>
+            <span>
+                All Products
+            </span>
 
         </button>
 
     `;
 
 
+    /* ======================================================
+       CATEGORIES
+    ====================================================== */
+
     categories.forEach(
-        category => {
+        function (category) {
 
-            const active =
-                String(
-                    currentPOSCategory
-                )
-                .toLowerCase() ===
-                String(category)
-                    .toLowerCase();
-
+            const encoded =
+                posEscape(
+                    category.name
+                );
 
             html += `
 
                 <button
                     type="button"
-                    class="pos-category-btn ${
-                        active
-                            ? "active"
-                            : ""
-                    }"
-                    data-category="${escapePOSHTML(
-                        category
-                    )}">
+                    class="pos-category-btn"
+                    data-category="${encoded}"
+                    onclick="filterPOSCategory('${encoded}')">
 
-                    <i class="fa-solid fa-layer-group"></i>
+                    <i class="fa-solid fa-tag"></i>
 
                     <span>
-                        ${escapePOSHTML(
-                            category
-                        )}
+                        ${encoded}
                     </span>
 
                 </button>
@@ -641,23 +672,27 @@ function renderPOSCategories() {
         html;
 
 
-    container
+    /* ======================================================
+       RESTORE ACTIVE CATEGORY
+    ====================================================== */
+
+    document
         .querySelectorAll(
             ".pos-category-btn"
         )
         .forEach(
-            button => {
+            function (button) {
 
-                button.addEventListener(
-                    "click",
-                    () => {
+                const category =
+                    String(
+                        button.dataset.category ||
+                        ""
+                    );
 
-                        filterPOSCategory(
-                            button.dataset.category ||
-                            "all"
-                        );
-
-                    }
+                button.classList.toggle(
+                    "active",
+                    category.toLowerCase() ===
+                    PAPPRITO_POS.currentCategory.toLowerCase()
                 );
 
             }
@@ -672,11 +707,30 @@ function renderPOSCategories() {
 
 function filterPOSCategory(category) {
 
-    currentPOSCategory =
-        category ||
-        "all";
+    PAPPRITO_POS.currentCategory =
+        category || "all";
 
-    renderPOSCategories();
+    document
+        .querySelectorAll(
+            ".pos-category-btn"
+        )
+        .forEach(
+            function (button) {
+
+                const buttonCategory =
+                    String(
+                        button.dataset.category ||
+                        ""
+                    );
+
+                button.classList.toggle(
+                    "active",
+                    buttonCategory.toLowerCase() ===
+                    PAPPRITO_POS.currentCategory.toLowerCase()
+                );
+
+            }
+        );
 
     renderPOSProducts();
 
@@ -684,155 +738,51 @@ function filterPOSCategory(category) {
 
 
 /* ==========================================================
-   PRODUCT SEARCH TEXT
+   SEARCH MATCH
 ========================================================== */
 
-function getPOSProductSearchText(product) {
+function POSProductMatchesSearch(
+    product,
+    search
+) {
 
-    return [
+    if (!search) {
 
-        product?.name,
+        return true;
 
-        product?.productName,
+    }
 
-        product?.itemName,
+    const text = [
 
-        product?.title,
+        product.name,
 
-        product?.code,
+        product.productName,
 
-        product?.productCode,
+        product.itemName,
 
-        product?.sku,
+        product.title,
 
-        product?.barcode,
+        product.code,
 
-        product?.category,
+        product.productCode,
 
-        product?.categoryName
+        product.sku,
+
+        product.category,
+
+        product.categoryName
 
     ]
-    .filter(Boolean)
-    .join(" ")
-    .toLowerCase();
-
-}
-
-
-/* ==========================================================
-   PRODUCT FILTER
-========================================================== */
-
-function getFilteredPOSProducts() {
-
-    const searchInput =
-        posFirstElement(
-            "posProductSearch",
-            "posSearch"
-        );
-
-    const search =
-        String(
-            searchInput?.value ||
-            ""
+        .filter(
+            value =>
+                value !== undefined &&
+                value !== null
         )
-        .trim()
+        .join(" ")
         .toLowerCase();
 
-
-    return Object.entries(
-        posProducts || {}
-    )
-    .map(
-        ([id, product]) => ({
-
-            id,
-
-            ...(product || {})
-
-        })
-    )
-    .filter(
-        product => {
-
-            /* ----------------------------------------------
-               STATUS
-            ---------------------------------------------- */
-
-            if (
-                !isPOSProductActive(
-                    product
-                )
-            ) {
-
-                return false;
-
-            }
-
-
-            /* ----------------------------------------------
-               SEARCH
-            ---------------------------------------------- */
-
-            if (search) {
-
-                const searchText =
-                    getPOSProductSearchText(
-                        product
-                    );
-
-                if (
-                    !searchText.includes(
-                        search
-                    )
-                ) {
-
-                    return false;
-
-                }
-
-            }
-
-
-            /* ----------------------------------------------
-               CATEGORY
-            ---------------------------------------------- */
-
-            if (
-                currentPOSCategory !==
-                "all"
-            ) {
-
-                const productCategory =
-                    getPOSProductCategory(
-                        product
-                    )
-                    .trim()
-                    .toLowerCase();
-
-                const selectedCategory =
-                    String(
-                        currentPOSCategory
-                    )
-                    .trim()
-                    .toLowerCase();
-
-
-                if (
-                    productCategory !==
-                    selectedCategory
-                ) {
-
-                    return false;
-
-                }
-
-            }
-
-
-            return true;
-
-        }
+    return text.includes(
+        search
     );
 
 }
@@ -845,7 +795,7 @@ function getFilteredPOSProducts() {
 function renderPOSProducts() {
 
     const container =
-        posElement(
+        posEl(
             "posProducts"
         );
 
@@ -856,9 +806,116 @@ function renderPOSProducts() {
     }
 
 
-    const products =
-        getFilteredPOSProducts();
+    const searchInput =
+        posEl(
+            "posProductSearch"
+        );
 
+    const search =
+        String(
+            searchInput?.value || ""
+        )
+        .trim()
+        .toLowerCase();
+
+
+    const category =
+        PAPPRITO_POS.currentCategory;
+
+
+    const products =
+        Object.entries(
+            PAPPRITO_POS.products
+        )
+        .map(
+            function ([id, product]) {
+
+                return {
+
+                    id: id,
+
+                    ...(product || {})
+
+                };
+
+            }
+        )
+        .filter(
+            function (product) {
+
+                /* ==========================================
+                   ACTIVE STATUS
+                ========================================== */
+
+                const status =
+                    String(
+                        product.status ??
+                        "active"
+                    )
+                    .toLowerCase();
+
+                if (
+                    status === "inactive" ||
+                    status === "disabled" ||
+                    status === "deleted"
+                ) {
+
+                    return false;
+
+                }
+
+
+                /* ==========================================
+                   SEARCH
+                ========================================== */
+
+                if (
+                    !POSProductMatchesSearch(
+                        product,
+                        search
+                    )
+                ) {
+
+                    return false;
+
+                }
+
+
+                /* ==========================================
+                   CATEGORY
+                ========================================== */
+
+                if (
+                    category !== "all"
+                ) {
+
+                    const productCategory =
+                        getPOSProductCategory(
+                            product
+                        )
+                        .toLowerCase();
+
+                    if (
+                        productCategory !==
+                        category.toLowerCase()
+                    ) {
+
+                        return false;
+
+                    }
+
+                }
+
+
+                return true;
+
+            }
+        );
+
+
+    /* ======================================================
+       NO PRODUCTS
+    ====================================================== */
 
     if (
         products.length === 0
@@ -866,13 +923,12 @@ function renderPOSProducts() {
 
         container.innerHTML = `
 
-            <div class="pos-products-loading">
+            <div class="pos-loading">
 
-                <i class="
-                    fa-solid
-                    fa-box-open
-                    fa-2x
-                "></i>
+                <i
+                    class="fa-solid fa-box-open"
+                    style="font-size:36px;">
+                </i>
 
                 <strong>
                     No products found
@@ -891,10 +947,14 @@ function renderPOSProducts() {
     }
 
 
+    /* ======================================================
+       PRODUCT CARDS
+    ====================================================== */
+
     container.innerHTML =
         products
         .map(
-            product => {
+            function (product) {
 
                 const name =
                     getPOSProductName(
@@ -917,78 +977,33 @@ function renderPOSProducts() {
                     );
 
 
-                let stockHTML = "";
-
-
-                if (
+                const stockHTML =
                     stock !== null
-                ) {
+                    ?
+                    `
 
-                    if (
-                        stock <= 0
-                    ) {
+                        <div class="pos-product-stock">
 
-                        stockHTML = `
+                            Stock:
+                            ${posEscape(stock)}
 
-                            <div
-                                class="pos-product-stock"
-                                style="
-                                    color:#c8102e;
-                                ">
+                        </div>
 
-                                Out of stock
-
-                            </div>
-
-                        `;
-
-                    }
-
-                    else {
-
-                        stockHTML = `
-
-                            <div class="pos-product-stock">
-
-                                Stock:
-                                ${escapePOSHTML(
-                                    stock
-                                )}
-
-                            </div>
-
-                        `;
-
-                    }
-
-                }
-
-
-                const outOfStock =
-                    stock !== null &&
-                    stock <= 0;
+                    `
+                    :
+                    "";
 
 
                 return `
 
                     <div
                         class="pos-product-card"
-                        data-product-id="${escapePOSHTML(
-                            product.id
-                        )}"
-                        ${
-                            outOfStock
-                                ? 'aria-disabled="true"'
-                                : ""
-                        }>
+                        data-product-id="${posEscape(product.id)}"
+                        onclick="addPOSToCart('${posEscape(product.id)}')">
 
                         <img
-                            src="${escapePOSHTML(
-                                image
-                            )}"
-                            alt="${escapePOSHTML(
-                                name
-                            )}"
+                            src="${posEscape(image)}"
+                            alt="${posEscape(name)}"
                             class="pos-product-image"
                             loading="lazy"
                             onerror="
@@ -1001,18 +1016,14 @@ function renderPOSProducts() {
 
                             <div class="pos-product-name">
 
-                                ${escapePOSHTML(
-                                    name
-                                )}
+                                ${posEscape(name)}
 
                             </div>
 
 
                             <div class="pos-product-price">
 
-                                ${posMoney(
-                                    price
-                                )}
+                                ${posMoney(price)}
 
                             </div>
 
@@ -1029,67 +1040,25 @@ function renderPOSProducts() {
         )
         .join("");
 
-
-    container
-        .querySelectorAll(
-            ".pos-product-card"
-        )
-        .forEach(
-            card => {
-
-                card.addEventListener(
-                    "click",
-                    () => {
-
-                        const productId =
-                            card.dataset.productId;
-
-                        addPOSToCart(
-                            productId
-                        );
-
-                    }
-                );
-
-            }
-        );
-
 }
 
 
 /* ==========================================================
-   ADD TO CART
+   ADD PRODUCT TO CART
 ========================================================== */
 
 function addPOSToCart(productId) {
 
     const product =
-        posProducts?.[
+        PAPPRITO_POS.products[
             productId
         ];
 
 
     if (!product) {
 
-        showPOSStatus(
-            "Product not found.",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    if (
-        !isPOSProductActive(
-            product
-        )
-    ) {
-
-        showPOSStatus(
-            "This product is inactive.",
-            "error"
+        posError(
+            "Product not found."
         );
 
         return;
@@ -1104,48 +1073,57 @@ function addPOSToCart(productId) {
 
 
     const existing =
-        posCart.find(
-            item =>
-                item.productId ===
-                productId
+        PAPPRITO_POS.cart.find(
+            function (item) {
+
+                return (
+                    item.productId ===
+                    productId
+                );
+
+            }
         );
 
 
+    const currentQuantity =
+        existing
+        ?
+        existing.quantity
+        :
+        0;
+
+
+    /* ======================================================
+       STOCK CHECK
+    ====================================================== */
+
     if (
-        stock !== null
+        stock !== null &&
+        currentQuantity >= stock
     ) {
 
-        const currentQty =
-            existing
-                ? existing.quantity
-                : 0;
+        posStatus(
+            "Not enough stock available."
+        );
 
-
-        if (
-            currentQty >= stock
-        ) {
-
-            showPOSStatus(
-                "Not enough stock available.",
-                "error"
-            );
-
-            return;
-
-        }
+        return;
 
     }
 
 
+    /* ======================================================
+       ADD / INCREASE
+    ====================================================== */
+
     if (existing) {
 
-        existing.quantity++;
+        existing.quantity += 1;
 
     }
 
     else {
 
-        posCart.push({
+        PAPPRITO_POS.cart.push({
 
             productId:
                 productId,
@@ -1177,9 +1155,8 @@ function addPOSToCart(productId) {
 
     updatePOSSummary();
 
-    showPOSStatus(
-        "Added to order.",
-        "success"
+    posStatus(
+        "Product added."
     );
 
 }
@@ -1192,7 +1169,7 @@ function addPOSToCart(productId) {
 function renderPOSCart() {
 
     const container =
-        posElement(
+        posEl(
             "posCart"
         );
 
@@ -1204,17 +1181,18 @@ function renderPOSCart() {
 
 
     if (
-        posCart.length === 0
+        PAPPRITO_POS.cart.length === 0
     ) {
 
         container.innerHTML = `
 
             <div class="pos-empty-cart">
 
-                <i class="
-                    fa-solid
-                    fa-cart-shopping
-                "></i>
+                <div class="pos-empty-icon">
+
+                    <i class="fa-solid fa-cart-shopping"></i>
+
+                </div>
 
                 <strong>
                     Cart is empty
@@ -1234,28 +1212,26 @@ function renderPOSCart() {
 
 
     container.innerHTML =
-        posCart
+        PAPPRITO_POS.cart
         .map(
-            (item, index) => {
+            function (item, index) {
 
-                const total =
-                    posNumber(
-                        item.price
-                    ) *
-                    posNumber(
-                        item.quantity
-                    );
+                const lineTotal =
+                    posNumber(item.price) *
+                    posNumber(item.quantity);
 
 
                 return `
 
-                    <div class="pos-cart-item">
+                    <div
+                        class="pos-cart-item"
+                        data-cart-index="${index}">
 
                         <div>
 
                             <div class="pos-cart-item-name">
 
-                                ${escapePOSHTML(
+                                ${posEscape(
                                     item.name
                                 )}
 
@@ -1275,7 +1251,7 @@ function renderPOSCart() {
                             <div class="pos-cart-item-total">
 
                                 ${posMoney(
-                                    total
+                                    lineTotal
                                 )}
 
                             </div>
@@ -1285,17 +1261,15 @@ function renderPOSCart() {
 
                         <div class="pos-cart-controls">
 
-
                             <button
                                 type="button"
-                                data-action="decrease"
-                                data-index="${index}"
+                                onclick="
+                                    event.stopPropagation();
+                                    decreasePOSItem(${index});
+                                "
                                 title="Decrease">
 
-                                <i class="
-                                    fa-solid
-                                    fa-minus
-                                "></i>
+                                <i class="fa-solid fa-minus"></i>
 
                             </button>
 
@@ -1309,31 +1283,28 @@ function renderPOSCart() {
 
                             <button
                                 type="button"
-                                data-action="increase"
-                                data-index="${index}"
+                                onclick="
+                                    event.stopPropagation();
+                                    increasePOSItem(${index});
+                                "
                                 title="Increase">
 
-                                <i class="
-                                    fa-solid
-                                    fa-plus
-                                "></i>
+                                <i class="fa-solid fa-plus"></i>
 
                             </button>
 
 
                             <button
                                 type="button"
-                                data-action="remove"
-                                data-index="${index}"
+                                onclick="
+                                    event.stopPropagation();
+                                    removePOSItem(${index});
+                                "
                                 title="Remove">
 
-                                <i class="
-                                    fa-solid
-                                    fa-trash
-                                "></i>
+                                <i class="fa-solid fa-trash"></i>
 
                             </button>
-
 
                         </div>
 
@@ -1345,80 +1316,19 @@ function renderPOSCart() {
         )
         .join("");
 
-
-    container
-        .querySelectorAll(
-            "button[data-action]"
-        )
-        .forEach(
-            button => {
-
-                button.addEventListener(
-                    "click",
-                    event => {
-
-                        event.stopPropagation();
-
-                        const index =
-                            Number(
-                                button.dataset.index
-                            );
-
-                        const action =
-                            button.dataset.action;
-
-
-                        if (
-                            action ===
-                            "increase"
-                        ) {
-
-                            increasePOSItem(
-                                index
-                            );
-
-                        }
-
-                        else if (
-                            action ===
-                            "decrease"
-                        ) {
-
-                            decreasePOSItem(
-                                index
-                            );
-
-                        }
-
-                        else if (
-                            action ===
-                            "remove"
-                        ) {
-
-                            removePOSItem(
-                                index
-                            );
-
-                        }
-
-                    }
-                );
-
-            }
-        );
-
 }
 
 
 /* ==========================================================
-   INCREASE ITEM
+   INCREASE CART ITEM
 ========================================================== */
 
 function increasePOSItem(index) {
 
     const item =
-        posCart[index];
-
+        PAPPRITO_POS.cart[
+            index
+        ];
 
     if (!item) {
 
@@ -1428,7 +1338,7 @@ function increasePOSItem(index) {
 
 
     const product =
-        posProducts?.[
+        PAPPRITO_POS.products[
             item.productId
         ];
 
@@ -1444,9 +1354,8 @@ function increasePOSItem(index) {
         item.quantity >= stock
     ) {
 
-        showPOSStatus(
-            "Maximum available stock reached.",
-            "error"
+        posStatus(
+            "Maximum available stock reached."
         );
 
         return;
@@ -1464,14 +1373,15 @@ function increasePOSItem(index) {
 
 
 /* ==========================================================
-   DECREASE ITEM
+   DECREASE CART ITEM
 ========================================================== */
 
 function decreasePOSItem(index) {
 
     const item =
-        posCart[index];
-
+        PAPPRITO_POS.cart[
+            index
+        ];
 
     if (!item) {
 
@@ -1487,7 +1397,7 @@ function decreasePOSItem(index) {
         item.quantity <= 0
     ) {
 
-        posCart.splice(
+        PAPPRITO_POS.cart.splice(
             index,
             1
         );
@@ -1503,13 +1413,13 @@ function decreasePOSItem(index) {
 
 
 /* ==========================================================
-   REMOVE ITEM
+   REMOVE CART ITEM
 ========================================================== */
 
 function removePOSItem(index) {
 
     if (
-        !posCart[index]
+        !PAPPRITO_POS.cart[index]
     ) {
 
         return;
@@ -1517,7 +1427,7 @@ function removePOSItem(index) {
     }
 
 
-    posCart.splice(
+    PAPPRITO_POS.cart.splice(
         index,
         1
     );
@@ -1534,10 +1444,12 @@ function removePOSItem(index) {
    CLEAR CART
 ========================================================== */
 
-function clearPOSCart(force = false) {
+function clearPOSCart(
+    askConfirmation = true
+) {
 
     if (
-        posCart.length === 0
+        PAPPRITO_POS.cart.length === 0
     ) {
 
         return;
@@ -1545,57 +1457,44 @@ function clearPOSCart(force = false) {
     }
 
 
-    if (!force) {
+    if (
+        askConfirmation &&
+        !window.confirm(
+            "Clear the current order?"
+        )
+    ) {
 
-        const confirmed =
-            window.confirm(
-                "Clear the current order?"
-            );
-
-
-        if (!confirmed) {
-
-            return;
-
-        }
+        return;
 
     }
 
 
-    posCart = [];
+    PAPPRITO_POS.cart = [];
 
-    posDiscount = 0;
+    PAPPRITO_POS.discount = 0;
 
 
-    const discountInput =
-        posFirstElement(
-            "posDiscountInput",
+    const discount =
+        posEl(
             "posDiscount"
         );
 
+    if (discount) {
 
-    if (
-        discountInput &&
-        discountInput.tagName ===
-        "INPUT"
-    ) {
-
-        discountInput.value =
+        discount.value =
             "";
 
     }
 
 
-    const amountInput =
-        posFirstElement(
-            "posAmountReceived",
-            "posPaymentAmount"
+    const payment =
+        posEl(
+            "posAmountReceived"
         );
 
+    if (payment) {
 
-    if (amountInput) {
-
-        amountInput.value =
+        payment.value =
             "";
 
     }
@@ -1605,12 +1504,7 @@ function clearPOSCart(force = false) {
 
     updatePOSSummary();
 
-    resetPOSOrderNumber();
-
-    showPOSStatus(
-        "Order cleared.",
-        "success"
-    );
+    updatePOSPayment();
 
 }
 
@@ -1621,18 +1515,14 @@ function clearPOSCart(force = false) {
 
 function getPOSSubtotal() {
 
-    return posCart.reduce(
-        (sum, item) => {
+    return PAPPRITO_POS.cart.reduce(
+        function (total, item) {
 
             return (
-                sum +
+                total +
                 (
-                    posNumber(
-                        item.price
-                    ) *
-                    posNumber(
-                        item.quantity
-                    )
+                    posNumber(item.price) *
+                    posNumber(item.quantity)
                 )
             );
 
@@ -1644,79 +1534,46 @@ function getPOSSubtotal() {
 
 
 /* ==========================================================
-   DISCOUNT INPUT
+   DISCOUNT
 ========================================================== */
 
 function getPOSDiscount() {
 
     const input =
-        posFirstElement(
-            "posDiscountInput",
+        posEl(
             "posDiscount"
         );
 
 
-    if (
-        input &&
-        input.tagName ===
-        "INPUT"
-    ) {
+    let discount =
+        input
+        ?
+        posNumber(input.value)
+        :
+        PAPPRITO_POS.discount;
 
-        const value =
-            posNumber(
-                input.value
-            );
 
-        return Math.max(
+    discount =
+        Math.max(
             0,
             Math.min(
-                value,
+                discount,
                 getPOSSubtotal()
             )
         );
 
-    }
+
+    PAPPRITO_POS.discount =
+        discount;
 
 
-    return posNumber(
-        posDiscount
-    );
-
-}
-
-
-/* ==========================================================
-   TAX
-========================================================== */
-
-function getPOSTax() {
-
-    const subtotal =
-        getPOSSubtotal();
-
-    const discount =
-        getPOSDiscount();
-
-    const taxableAmount =
-        Math.max(
-            0,
-            subtotal -
-            discount
-        );
-
-
-    return (
-        taxableAmount *
-        posNumber(
-            posTaxRate
-        )
-    );
+    return discount;
 
 }
 
 
 /* ==========================================================
-   GRAND TOTAL
+   TOTAL
 ========================================================== */
 
 function getPOSGrandTotal() {
@@ -1724,43 +1581,7 @@ function getPOSGrandTotal() {
     return Math.max(
         0,
         getPOSSubtotal() -
-        getPOSDiscount() +
-        getPOSTax()
-    );
-
-}
-
-
-/* ==========================================================
-   PAYMENT AMOUNT
-========================================================== */
-
-function getPOSPaymentAmount() {
-
-    const input =
-        posFirstElement(
-            "posAmountReceived",
-            "posPaymentAmount"
-        );
-
-
-    return posNumber(
-        input?.value
-    );
-
-}
-
-
-/* ==========================================================
-   CHANGE
-========================================================== */
-
-function getPOSChange() {
-
-    return Math.max(
-        0,
-        getPOSPaymentAmount() -
-        getPOSGrandTotal()
+        getPOSDiscount()
     );
 
 }
@@ -1778,19 +1599,12 @@ function updatePOSSummary() {
     const discount =
         getPOSDiscount();
 
-    const tax =
-        getPOSTax();
-
     const total =
         getPOSGrandTotal();
 
 
-    /* ------------------------------------------------------
-       SUBTOTAL
-    ------------------------------------------------------ */
-
     const subtotalElement =
-        posElement(
+        posEl(
             "posSubtotal"
         );
 
@@ -1804,15 +1618,35 @@ function updatePOSSummary() {
     }
 
 
-    /* ------------------------------------------------------
-       DISCOUNT DISPLAY
-    ------------------------------------------------------ */
-
-    const discountAmountElement =
-        posFirstElement(
-            "posDiscountAmount"
+    const discountElement =
+        posEl(
+            "posDiscount"
         );
 
+
+    /*
+       If posDiscount is an input,
+       do not replace its value with
+       formatted currency.
+    */
+
+    if (
+        discountElement &&
+        discountElement.tagName !== "INPUT"
+    ) {
+
+        discountElement.textContent =
+            posMoney(
+                discount
+            );
+
+    }
+
+
+    const discountAmountElement =
+        posEl(
+            "posDiscountAmount"
+        );
 
     if (discountAmountElement) {
 
@@ -1824,56 +1658,10 @@ function updatePOSSummary() {
     }
 
 
-    const discountDisplay =
-        posElement(
-            "posDiscount"
-        );
-
-
-    if (
-        discountDisplay &&
-        discountDisplay.tagName !==
-        "INPUT"
-    ) {
-
-        discountDisplay.textContent =
-            posMoney(
-                discount
-            );
-
-    }
-
-
-    /* ------------------------------------------------------
-       TAX
-    ------------------------------------------------------ */
-
-    const taxElement =
-        posFirstElement(
-            "posTax"
-        );
-
-
-    if (taxElement) {
-
-        taxElement.textContent =
-            posMoney(
-                tax
-            );
-
-    }
-
-
-    /* ------------------------------------------------------
-       TOTAL
-    ------------------------------------------------------ */
-
     const totalElement =
-        posFirstElement(
-            "posTotal",
-            "posGrandTotal"
+        posEl(
+            "posTotal"
         );
-
 
     if (totalElement) {
 
@@ -1885,7 +1673,156 @@ function updatePOSSummary() {
     }
 
 
+    const grandTotalElement =
+        posEl(
+            "posGrandTotal"
+        );
+
+    if (grandTotalElement) {
+
+        grandTotalElement.textContent =
+            posMoney(
+                total
+            );
+
+    }
+
+
     updatePOSPayment();
+
+}
+
+
+/* ==========================================================
+   PAYMENT METHOD
+========================================================== */
+
+function setPOSPaymentMethod(
+    method
+) {
+
+    let selected =
+        String(
+            method || "Cash"
+        )
+        .trim()
+        .toLowerCase();
+
+
+    if (
+        selected.includes("cash")
+    ) {
+
+        selected = "Cash";
+
+    }
+
+    else if (
+        selected.includes("card")
+    ) {
+
+        selected = "Card";
+
+    }
+
+    else if (
+        selected.includes("gcash")
+    ) {
+
+        selected = "GCash";
+
+    }
+
+    else {
+
+        selected = "Other";
+
+    }
+
+
+    PAPPRITO_POS.paymentMethod =
+        selected;
+
+
+    document
+        .querySelectorAll(
+            ".pos-payment-method-btn"
+        )
+        .forEach(
+            function (button) {
+
+                const buttonMethod =
+                    String(
+                        button.dataset.paymentMethod ||
+                        button.dataset.method ||
+                        button.textContent ||
+                        ""
+                    )
+                    .toLowerCase();
+
+
+                button.classList.toggle(
+                    "active",
+                    buttonMethod.includes(
+                        selected.toLowerCase()
+                    )
+                );
+
+            }
+        );
+
+
+    updatePOSPayment();
+
+}
+
+
+/* ==========================================================
+   GET PAYMENT AMOUNT
+========================================================== */
+
+function getPOSPaymentAmount() {
+
+    const input =
+        posEl(
+            "posAmountReceived"
+        );
+
+
+    if (!input) {
+
+        return 0;
+
+    }
+
+
+    return Math.max(
+        0,
+        posNumber(
+            input.value
+        )
+    );
+
+}
+
+
+/* ==========================================================
+   CHANGE
+========================================================== */
+
+function getPOSChange() {
+
+    const payment =
+        getPOSPaymentAmount();
+
+    const total =
+        getPOSGrandTotal();
+
+
+    return Math.max(
+        0,
+        payment - total
+    );
 
 }
 
@@ -1906,37 +1843,45 @@ function updatePOSPayment() {
         getPOSChange();
 
 
-    /* ------------------------------------------------------
-       TOTAL DISPLAY
-    ------------------------------------------------------ */
+    /* ======================================================
+       TOTAL
+    ====================================================== */
 
-    const paymentTotal =
-        posFirstElement(
-            "posPaymentTotal",
-            "posModalTotal"
-        );
+    const totalElements = [
 
+        posEl("posPaymentTotal"),
 
-    if (paymentTotal) {
+        posEl("posFinalTotal"),
 
-        paymentTotal.textContent =
-            posMoney(
-                total
-            );
+        posEl("posTotalPayment")
 
-    }
+    ];
 
 
-    /* ------------------------------------------------------
+    totalElements.forEach(
+        function (element) {
+
+            if (element) {
+
+                element.textContent =
+                    posMoney(
+                        total
+                    );
+
+            }
+
+        }
+    );
+
+
+    /* ======================================================
        CHANGE
-    ------------------------------------------------------ */
+    ====================================================== */
 
     const changeElement =
-        posFirstElement(
-            "posChange",
-            "posModalChange"
+        posEl(
+            "posChange"
         );
-
 
     if (changeElement) {
 
@@ -1948,23 +1893,55 @@ function updatePOSPayment() {
     }
 
 
-    /* ------------------------------------------------------
-       PAY BUTTON
-    ------------------------------------------------------ */
-
-    const payButton =
-        posElement(
-            "posPayBtn"
+    const modalChange =
+        posEl(
+            "posModalChange"
         );
 
+    if (modalChange) {
+
+        modalChange.textContent =
+            posMoney(
+                change
+            );
+
+    }
+
+
+    /* ======================================================
+       MODAL TOTAL
+    ====================================================== */
+
+    const modalTotal =
+        posEl(
+            "posModalTotal"
+        );
+
+    if (modalTotal) {
+
+        modalTotal.textContent =
+            posMoney(
+                total
+            );
+
+    }
+
+
+    /* ======================================================
+       PAY BUTTON
+    ====================================================== */
+
+    const payButton =
+        posEl(
+            "posPayBtn"
+        );
 
     if (payButton) {
 
         payButton.disabled =
-            posProcessingPayment ||
-            posCart.length === 0 ||
-            total <= 0 ||
-            payment < total;
+            PAPPRITO_POS.cart.length === 0 ||
+            payment < total ||
+            PAPPRITO_POS.processing;
 
     }
 
@@ -1972,99 +1949,28 @@ function updatePOSPayment() {
 
 
 /* ==========================================================
-   SET PAYMENT METHOD
+   CUSTOMER
 ========================================================== */
 
-function setPOSPaymentMethod(method) {
-
-    const normalized =
-        String(
-            method ||
-            "Cash"
-        )
-        .trim()
-        .toLowerCase();
-
-
-    const map = {
-
-        cash:
-            "Cash",
-
-        card:
-            "Card",
-
-        gcash:
-            "GCash",
-
-        other:
-            "Other"
-
-    };
-
-
-    posPaymentMethod =
-        map[
-            normalized
-        ] ||
-        method ||
-        "Cash";
-
-
-    document
-        .querySelectorAll(
-            ".pos-payment-method-btn"
-        )
-        .forEach(
-            button => {
-
-                const buttonMethod =
-                    String(
-                        button.dataset.paymentMethod ||
-                        button.dataset.method ||
-                        ""
-                    )
-                    .toLowerCase();
-
-
-                button.classList.toggle(
-                    "active",
-                    buttonMethod ===
-                    normalized
-                );
-
-            }
-        );
-
-
-    updatePOSPayment();
-
-}
-
-
-/* ==========================================================
-   CUSTOMER NAME
-========================================================== */
-
-function getPOSCustomerName() {
+function getPOSCustomer() {
 
     const input =
-        posFirstElement(
-            "posCustomerName",
-            "posCustomerInput"
+        posEl(
+            "posCustomerName"
         );
 
+    if (!input) {
 
-    const value =
-        String(
-            input?.value ||
-            ""
-        )
-        .trim();
+        return "Walk-in Customer";
+
+    }
 
 
     return (
-        value ||
+        String(
+            input.value || ""
+        ).trim()
+        ||
         "Walk-in Customer"
     );
 
@@ -2072,13 +1978,92 @@ function getPOSCustomerName() {
 
 
 /* ==========================================================
-   SAVE SALE
+   UPDATE CUSTOMER
+========================================================== */
+
+function updatePOSCustomer() {
+
+    PAPPRITO_POS.customer =
+        getPOSCustomer();
+
+}
+
+
+/* ==========================================================
+   STOCK VALIDATION
+========================================================== */
+
+function validatePOSCartStock() {
+
+    for (
+        const item of
+        PAPPRITO_POS.cart
+    ) {
+
+        const product =
+            PAPPRITO_POS.products[
+                item.productId
+            ];
+
+
+        if (!product) {
+
+            return {
+
+                valid: false,
+
+                message:
+                    `${item.name} is no longer available.`
+
+            };
+
+        }
+
+
+        const stock =
+            getPOSProductStock(
+                product
+            );
+
+
+        if (
+            stock !== null &&
+            item.quantity > stock
+        ) {
+
+            return {
+
+                valid: false,
+
+                message:
+                    `Insufficient stock for ${item.name}. Available: ${stock}.`
+
+            };
+
+        }
+
+    }
+
+
+    return {
+
+        valid: true,
+
+        message: ""
+
+    };
+
+}
+
+
+/* ==========================================================
+   PROCESS PAYMENT
 ========================================================== */
 
 async function processPOSPayment() {
 
     if (
-        posProcessingPayment
+        PAPPRITO_POS.processing
     ) {
 
         return;
@@ -2086,28 +2071,22 @@ async function processPOSPayment() {
     }
 
 
+    /* ======================================================
+       CART CHECK
+    ====================================================== */
+
     if (
-        posCart.length === 0
+        PAPPRITO_POS.cart.length === 0
     ) {
 
-        showPOSStatus(
-            "Please add products to the order.",
-            "error"
+        posStatus(
+            "Please add products to the order."
         );
 
         return;
 
     }
 
-
-    const subtotal =
-        getPOSSubtotal();
-
-    const discount =
-        getPOSDiscount();
-
-    const tax =
-        getPOSTax();
 
     const total =
         getPOSGrandTotal();
@@ -2115,49 +2094,53 @@ async function processPOSPayment() {
     const payment =
         getPOSPaymentAmount();
 
-    const change =
-        Math.max(
-            0,
-            payment -
-            total
-        );
 
-
-    if (
-        total <= 0
-    ) {
-
-        showPOSStatus(
-            "Order total must be greater than zero.",
-            "error"
-        );
-
-        return;
-
-    }
-
+    /* ======================================================
+       PAYMENT CHECK
+    ====================================================== */
 
     if (
         payment < total
     ) {
 
-        showPOSStatus(
-            "Amount received is not enough.",
-            "error"
+        posStatus(
+            "Payment amount is not enough."
         );
 
         return;
 
     }
+
+
+    /* ======================================================
+       FIREBASE CHECK
+    ====================================================== */
+
+    if (!posFirebaseReady()) {
+
+        posError(
+            "Firebase Database is not initialized."
+        );
+
+        return;
+
+    }
+
+
+    /* ======================================================
+       STOCK CHECK
+    ====================================================== */
+
+    const stockCheck =
+        validatePOSCartStock();
 
 
     if (
-        !posFirebaseReady()
+        !stockCheck.valid
     ) {
 
-        showPOSStatus(
-            "Firebase Database is not initialized.",
-            "error"
+        posStatus(
+            stockCheck.message
         );
 
         return;
@@ -2165,21 +2148,29 @@ async function processPOSPayment() {
     }
 
 
-    posProcessingPayment =
+    PAPPRITO_POS.processing =
         true;
 
 
     const payButton =
-        posElement(
+        posEl(
             "posPayBtn"
         );
 
 
-    const originalPayHTML =
-        payButton?.innerHTML;
+    const originalButtonHTML =
+        payButton
+        ?
+        payButton.innerHTML
+        :
+        "";
 
 
     try {
+
+        /* ==================================================
+           DISABLE PAY
+        ================================================== */
 
         if (payButton) {
 
@@ -2188,136 +2179,85 @@ async function processPOSPayment() {
 
             payButton.innerHTML = `
 
-                <i class="
-                    fa-solid
-                    fa-spinner
-                    fa-spin
-                "></i>
+                <i class="fa-solid fa-spinner fa-spin"></i>
 
-                PROCESSING...
+                PROCESSING
 
             `;
 
         }
 
 
-        /* --------------------------------------------------
-           VERIFY STOCK BEFORE PAYMENT
-        -------------------------------------------------- */
-
-        for (
-            const item of posCart
-        ) {
-
-            const product =
-                posProducts?.[
-                    item.productId
-                ];
-
-
-            if (!product) {
-
-                throw new Error(
-                    "A product in the cart no longer exists."
-                );
-
-            }
-
-
-            const stock =
-                getPOSProductStock(
-                    product
-                );
-
-
-            if (
-                stock !== null &&
-                item.quantity > stock
-            ) {
-
-                throw new Error(
-                    `${item.name} does not have enough stock.`
-                );
-
-            }
-
-        }
-
-
-        /* --------------------------------------------------
-           ORDER NUMBER
-        -------------------------------------------------- */
-
-        if (
-            !posCurrentOrderNumber
-        ) {
-
-            resetPOSOrderNumber();
-
-        }
+        updatePOSCustomer();
 
 
         const orderNumber =
-            posCurrentOrderNumber;
+            generatePOSOrderNumber();
 
-
-        /* --------------------------------------------------
-           SALE ID
-        -------------------------------------------------- */
 
         const saleRef =
-            db.ref(
-                "sales"
-            )
-            .push();
+            db
+                .ref("sales")
+                .push();
 
 
         const saleId =
             saleRef.key;
 
 
-        /* --------------------------------------------------
-           ITEMS
-        -------------------------------------------------- */
+        const subtotal =
+            getPOSSubtotal();
 
-        const items =
-            posCart.map(
-                item => ({
+        const discount =
+            getPOSDiscount();
 
-                    productId:
-                        item.productId,
+        const change =
+            payment - total;
 
-                    name:
-                        item.name,
 
-                    category:
-                        item.category,
+        const saleItems =
+            PAPPRITO_POS.cart
+            .map(
+                function (item) {
 
-                    price:
-                        posNumber(
-                            item.price
-                        ),
+                    return {
 
-                    quantity:
-                        posNumber(
-                            item.quantity
-                        ),
+                        productId:
+                            item.productId,
 
-                    total:
-                        posNumber(
-                            item.price
-                        ) *
-                        posNumber(
-                            item.quantity
-                        )
+                        name:
+                            item.name,
 
-                })
+                        category:
+                            item.category,
+
+                        price:
+                            posNumber(
+                                item.price
+                            ),
+
+                        quantity:
+                            posNumber(
+                                item.quantity
+                            ),
+
+                        total:
+                            posNumber(
+                                item.price
+                            ) *
+                            posNumber(
+                                item.quantity
+                            )
+
+                    };
+
+                }
             );
 
 
-        /* --------------------------------------------------
+        /* ==================================================
            SALE DATA
-        -------------------------------------------------- */
+        ================================================== */
 
         const saleData = {
 
@@ -2327,11 +2267,14 @@ async function processPOSPayment() {
             orderNumber:
                 orderNumber,
 
+            customer:
+                PAPPRITO_POS.customer,
+
             customerName:
-                getPOSCustomerName(),
+                PAPPRITO_POS.customer,
 
             items:
-                items,
+                saleItems,
 
             subtotal:
                 subtotal,
@@ -2340,25 +2283,22 @@ async function processPOSPayment() {
                 discount,
 
             tax:
-                tax,
-
-            taxRate:
-                posTaxRate,
+                0,
 
             total:
                 total,
 
-            amountReceived:
+            payment:
                 payment,
 
-            payment:
+            amountReceived:
                 payment,
 
             change:
                 change,
 
             paymentMethod:
-                posPaymentMethod,
+                PAPPRITO_POS.paymentMethod,
 
             status:
                 "Paid",
@@ -2367,80 +2307,66 @@ async function processPOSPayment() {
                 "POS",
 
             createdAt:
-                (
-                    typeof firebase !==
-                    "undefined" &&
-                    firebase.database &&
-                    firebase.database.ServerValue
-                )
-                ?
-                firebase
-                    .database
-                    .ServerValue
-                    .TIMESTAMP
-                :
-                Date.now()
+                firebase.database.ServerValue.TIMESTAMP
 
         };
 
 
-        /* --------------------------------------------------
+        /* ==================================================
            SAVE SALE
-        -------------------------------------------------- */
+        ================================================== */
 
         await saleRef.set(
             saleData
         );
 
 
-        /* --------------------------------------------------
+        /* ==================================================
            UPDATE STOCK
-        -------------------------------------------------- */
+        ================================================== */
 
         await updatePOSProductStocks();
 
 
-        /* --------------------------------------------------
-           STORE RECEIPT
-        -------------------------------------------------- */
+        /* ==================================================
+           SAVE LAST SALE
+        ================================================== */
 
-        posCurrentReceipt =
+        PAPPRITO_POS.lastSale =
             saleData;
+
 
         window.currentPOSReceipt =
             saleData;
 
 
-        /* --------------------------------------------------
+        /* ==================================================
            SHOW RECEIPT
-        -------------------------------------------------- */
+        ================================================== */
 
         showPOSReceipt(
             saleData
         );
 
 
-        /* --------------------------------------------------
-           RESET CART
-        -------------------------------------------------- */
+        /* ==================================================
+           RESET ORDER
+        ================================================== */
 
-        posCart = [];
+        PAPPRITO_POS.cart = [];
 
-        posDiscount = 0;
+        PAPPRITO_POS.discount = 0;
+
+        PAPPRITO_POS.customer =
+            "Walk-in Customer";
 
 
         const discountInput =
-            posFirstElement(
-                "posDiscountInput",
+            posEl(
                 "posDiscount"
             );
 
-
-        if (
-            discountInput &&
-            discountInput.tagName ===
-            "INPUT"
-        ) {
+        if (discountInput) {
 
             discountInput.value =
                 "";
@@ -2448,27 +2374,23 @@ async function processPOSPayment() {
         }
 
 
-        const amountInput =
-            posFirstElement(
-                "posAmountReceived",
-                "posPaymentAmount"
+        const paymentInput =
+            posEl(
+                "posAmountReceived"
             );
 
+        if (paymentInput) {
 
-        if (amountInput) {
-
-            amountInput.value =
+            paymentInput.value =
                 "";
 
         }
 
 
         const customerInput =
-            posFirstElement(
-                "posCustomerName",
-                "posCustomerInput"
+            posEl(
+                "posCustomerName"
             );
-
 
         if (customerInput) {
 
@@ -2482,16 +2404,19 @@ async function processPOSPayment() {
 
         updatePOSSummary();
 
-        resetPOSOrderNumber();
+        updatePOSPayment();
+
+        updatePOSOrderNumber();
+
+        /* ==================================================
+           REFRESH STOCK / PRODUCTS
+        ================================================== */
 
         await loadPOSProducts();
 
-        renderPOSProducts();
 
-
-        showPOSStatus(
-            "Payment completed successfully.",
-            "success"
+        posStatus(
+            "Payment completed successfully."
         );
 
     }
@@ -2499,43 +2424,50 @@ async function processPOSPayment() {
     catch (error) {
 
         console.error(
-            "PAPPRITO POS PAYMENT ERROR:",
+            "POS PAYMENT ERROR:",
             error
         );
 
 
-        showPOSStatus(
-            error?.message ||
-            "Unable to complete payment.",
-            "error"
+        posStatus(
+            "Unable to complete payment."
+        );
+
+
+        alert(
+            "Unable to complete payment.\n\n" +
+            (
+                error.message ||
+                error
+            )
         );
 
     }
 
     finally {
 
-        posProcessingPayment =
+        PAPPRITO_POS.processing =
             false;
 
 
         if (payButton) {
 
+            payButton.disabled =
+                false;
+
             payButton.innerHTML =
-                originalPayHTML ||
+                originalButtonHTML ||
                 `
 
                     <i class="fa-solid fa-check"></i>
 
-                    <span>
-                        PAY
-                    </span>
+                    PAY
 
                 `;
 
+            updatePOSPayment();
+
         }
-
-
-        updatePOSPayment();
 
     }
 
@@ -2543,31 +2475,21 @@ async function processPOSPayment() {
 
 
 /* ==========================================================
-   UPDATE STOCK
+   UPDATE PRODUCT STOCKS
 ========================================================== */
 
 async function updatePOSProductStocks() {
-
-    if (
-        !posFirebaseReady()
-    ) {
-
-        throw new Error(
-            "Firebase Database is not initialized."
-        );
-
-    }
-
 
     const updates = {};
 
 
     for (
-        const item of posCart
+        const item of
+        PAPPRITO_POS.cart
     ) {
 
         const product =
-            posProducts?.[
+            PAPPRITO_POS.products[
                 item.productId
             ];
 
@@ -2579,19 +2501,18 @@ async function updatePOSProductStocks() {
         }
 
 
-        const stock =
+        const currentStock =
             getPOSProductStock(
                 product
             );
 
 
-        /* --------------------------------------------------
-           If product has no stock field,
-           don't create one automatically.
-        -------------------------------------------------- */
+        /* ==================================================
+           Products without stock tracking
+        ================================================== */
 
         if (
-            stock === null
+            currentStock === null
         ) {
 
             continue;
@@ -2602,7 +2523,7 @@ async function updatePOSProductStocks() {
         const newStock =
             Math.max(
                 0,
-                stock -
+                currentStock -
                 item.quantity
             );
 
@@ -2612,13 +2533,17 @@ async function updatePOSProductStocks() {
         ] =
             newStock;
 
+
+        updates[
+            `products/${item.productId}/updatedAt`
+        ] =
+            firebase.database.ServerValue.TIMESTAMP;
+
     }
 
 
     if (
-        Object.keys(
-            updates
-        ).length === 0
+        Object.keys(updates).length === 0
     ) {
 
         return;
@@ -2636,78 +2561,91 @@ async function updatePOSProductStocks() {
 
 
 /* ==========================================================
-   RECEIPT
+   RECEIPT HTML
 ========================================================== */
 
-function showPOSReceipt(sale) {
+function buildPOSReceiptHTML(
+    sale
+) {
 
-    const container =
-        posFirstElement(
-            "posReceiptContent",
-            "posReceipt"
-        );
-
-
-    if (!container) {
-
-        return;
-
-    }
-
-
-    const itemsHTML =
-        sale.items
+    const items =
+        (sale.items || [])
         .map(
-            item => `
+            function (item) {
 
-                <div
-                    style="
-                        display:flex;
-                        justify-content:space-between;
-                        gap:10px;
-                        padding:4px 0;
-                    ">
+                return `
 
-                    <span>
+                    <div
+                        style="
+                            display:flex;
+                            justify-content:space-between;
+                            gap:10px;
+                            padding:5px 0;
+                            border-bottom:1px dashed #ddd;
+                        ">
 
-                        ${escapePOSHTML(
-                            item.name
-                        )}
+                        <div>
 
-                        ×
-                        ${item.quantity}
+                            <div
+                                style="
+                                    font-weight:700;
+                                ">
 
-                    </span>
+                                ${posEscape(
+                                    item.name
+                                )}
 
-                    <strong>
+                            </div>
 
-                        ${posMoney(
-                            item.total
-                        )}
+                            <div
+                                style="
+                                    font-size:11px;
+                                    color:#777;
+                                ">
 
-                    </strong>
+                                ${item.quantity}
+                                ×
+                                ${posMoney(
+                                    item.price
+                                )}
 
-                </div>
+                            </div>
 
-            `
+                        </div>
+
+
+                        <strong>
+
+                            ${posMoney(
+                                item.total
+                            )}
+
+                        </strong>
+
+                    </div>
+
+                `;
+
+            }
         )
         .join("");
 
 
-    container.innerHTML = `
+    return `
 
         <div
             style="
-                font-family:Arial,sans-serif;
                 max-width:380px;
                 margin:auto;
+                font-family:Arial,sans-serif;
+                color:#222;
             ">
 
 
             <div
                 style="
                     text-align:center;
-                    margin-bottom:12px;
+                    padding-bottom:10px;
                 ">
 
                 <div
@@ -2725,10 +2663,10 @@ function showPOSReceipt(sale) {
                 <div
                     style="
                         font-size:12px;
-                        color:#666;
+                        font-weight:700;
                     ">
 
-                    Restaurant
+                    RESTAURANT
 
                 </div>
 
@@ -2746,15 +2684,13 @@ function showPOSReceipt(sale) {
                 ">
 
                 <span>
-                    Order No.
+                    Order
                 </span>
 
                 <strong>
-
-                    ${escapePOSHTML(
+                    ${posEscape(
                         sale.orderNumber
                     )}
-
                 </strong>
 
             </div>
@@ -2773,11 +2709,10 @@ function showPOSReceipt(sale) {
                 </span>
 
                 <strong>
-
-                    ${escapePOSHTML(
-                        sale.customerName
+                    ${posEscape(
+                        sale.customer ||
+                        "Walk-in Customer"
                     )}
-
                 </strong>
 
             </div>
@@ -2796,11 +2731,9 @@ function showPOSReceipt(sale) {
                 </span>
 
                 <strong>
-
-                    ${escapePOSHTML(
+                    ${posEscape(
                         sale.paymentMethod
                     )}
-
                 </strong>
 
             </div>
@@ -2811,7 +2744,7 @@ function showPOSReceipt(sale) {
 
             <div>
 
-                ${itemsHTML}
+                ${items}
 
             </div>
 
@@ -2863,40 +2796,18 @@ function showPOSReceipt(sale) {
                 style="
                     display:flex;
                     justify-content:space-between;
-                    padding:3px 0;
+                    padding:8px 0;
+                    border-top:2px solid #222;
+                    font-size:18px;
+                    font-weight:900;
                 ">
 
                 <span>
-                    Tax
+                    TOTAL
                 </span>
 
-                <strong>
-                    ${posMoney(
-                        sale.tax
-                    )}
-                </strong>
-
-            </div>
-
-
-            <div
-                style="
-                    display:flex;
-                    justify-content:space-between;
-                    margin-top:7px;
-                    padding-top:8px;
-                    border-top:2px solid #222;
-                    font-size:20px;
-                ">
-
-                <strong>
-                    TOTAL
-                </strong>
-
                 <strong
-                    style="
-                        color:#c8102e;
-                    ">
+                    style="color:#c8102e;">
 
                     ${posMoney(
                         sale.total
@@ -2911,7 +2822,7 @@ function showPOSReceipt(sale) {
                 style="
                     display:flex;
                     justify-content:space-between;
-                    margin-top:8px;
+                    padding:3px 0;
                 ">
 
                 <span>
@@ -2931,6 +2842,7 @@ function showPOSReceipt(sale) {
                 style="
                     display:flex;
                     justify-content:space-between;
+                    padding:3px 0;
                 ">
 
                 <span>
@@ -2946,18 +2858,27 @@ function showPOSReceipt(sale) {
             </div>
 
 
-            <hr>
+            <div
+                style="
+                    text-align:center;
+                    margin-top:18px;
+                    font-weight:700;
+                ">
+
+                Thank you for dining with us!
+
+            </div>
 
 
             <div
                 style="
                     text-align:center;
-                    font-size:12px;
-                    color:#666;
-                    margin-top:10px;
+                    margin-top:5px;
+                    font-size:10px;
+                    color:#777;
                 ">
 
-                Thank you for dining with us!
+                PAPPRITO Restaurant POS
 
             </div>
 
@@ -2965,30 +2886,70 @@ function showPOSReceipt(sale) {
 
     `;
 
+}
 
-    /* ------------------------------------------------------
-       SHOW BOOTSTRAP MODAL
-    ------------------------------------------------------ */
+
+/* ==========================================================
+   SHOW RECEIPT
+========================================================== */
+
+function showPOSReceipt(
+    sale
+) {
+
+    const content =
+        posEl(
+            "posReceiptContent"
+        );
+
+
+    /*
+       New HTML uses:
+       #posReceiptContent
+    */
+
+    if (content) {
+
+        content.innerHTML =
+            buildPOSReceiptHTML(
+                sale
+            );
+
+    }
+
 
     const modal =
-        posElement(
+        posEl(
             "posReceiptModal"
         );
 
 
     if (
         modal &&
-        typeof bootstrap !==
-        "undefined"
+        typeof bootstrap !== "undefined"
     ) {
 
-        bootstrap.Modal
-            .getOrCreateInstance(
-                modal
-            )
-            .show();
+        const instance =
+            bootstrap.Modal
+                .getOrCreateInstance(
+                    modal
+                );
+
+        instance.show();
+
+        return;
 
     }
+
+
+    /*
+       If no Bootstrap modal exists,
+       print directly.
+    */
+
+    printPOSReceipt(
+        sale
+    );
 
 }
 
@@ -2998,14 +2959,22 @@ function showPOSReceipt(sale) {
 ========================================================== */
 
 function printPOSReceipt(
-    sale = posCurrentReceipt
+    sale
 ) {
 
     if (!sale) {
 
-        showPOSStatus(
-            "No receipt available.",
-            "error"
+        sale =
+            PAPPRITO_POS.lastSale ||
+            window.currentPOSReceipt;
+
+    }
+
+
+    if (!sale) {
+
+        posStatus(
+            "No receipt available."
         );
 
         return;
@@ -3013,47 +2982,13 @@ function printPOSReceipt(
     }
 
 
-    const items =
-        sale.items
-        .map(
-            item => `
-
-                <tr>
-
-                    <td>
-                        ${escapePOSHTML(
-                            item.name
-                        )}
-                    </td>
-
-                    <td
-                        style="
-                            text-align:center;
-                        ">
-
-                        ${item.quantity}
-
-                    </td>
-
-                    <td
-                        style="
-                            text-align:right;
-                        ">
-
-                        ${posMoney(
-                            item.total
-                        )}
-
-                    </td>
-
-                </tr>
-
-            `
-        )
-        .join("");
+    const receipt =
+        buildPOSReceiptHTML(
+            sale
+        );
 
 
-    const receiptWindow =
+    const printWindow =
         window.open(
             "",
             "_blank",
@@ -3061,7 +2996,7 @@ function printPOSReceipt(
         );
 
 
-    if (!receiptWindow) {
+    if (!printWindow) {
 
         alert(
             "Please allow pop-ups to print the receipt."
@@ -3072,13 +3007,15 @@ function printPOSReceipt(
     }
 
 
-    receiptWindow.document.write(`
+    printWindow.document.write(`
 
         <!DOCTYPE html>
 
         <html>
 
         <head>
+
+            <meta charset="UTF-8">
 
             <title>
                 PAPPRITO Receipt
@@ -3087,101 +3024,35 @@ function printPOSReceipt(
 
             <style>
 
-                * {
-                    box-sizing:border-box;
+                @page {
+
+                    margin: 5mm;
+
                 }
+
 
                 body {
 
-                    width:300px;
+                    margin: 0;
 
-                    margin:0 auto;
-
-                    padding:15px 0;
+                    padding: 10px;
 
                     font-family:
                         Arial,
-                        Helvetica,
                         sans-serif;
 
-                    font-size:12px;
-
-                    color:#111;
+                    font-size: 12px;
 
                 }
 
-                h2 {
 
-                    text-align:center;
+                @media print {
 
-                    margin:0;
+                    body {
 
-                    font-size:24px;
+                        width: 80mm;
 
-                }
-
-                .center {
-
-                    text-align:center;
-
-                }
-
-                .muted {
-
-                    color:#666;
-
-                    font-size:11px;
-
-                }
-
-                hr {
-
-                    border:0;
-
-                    border-top:
-                        1px dashed #000;
-
-                    margin:
-                        10px 0;
-
-                }
-
-                table {
-
-                    width:100%;
-
-                    border-collapse:
-                        collapse;
-
-                }
-
-                td {
-
-                    padding:
-                        4px 0;
-
-                    vertical-align:
-                        top;
-
-                }
-
-                .total {
-
-                    font-size:18px;
-
-                    font-weight:900;
-
-                    border-top:
-                        2px solid #000;
-
-                    padding-top:
-                        7px;
-
-                }
-
-                .red {
-
-                    color:#c8102e;
+                    }
 
                 }
 
@@ -3192,246 +3063,18 @@ function printPOSReceipt(
 
         <body>
 
-
-            <h2>
-                PAPPRITO
-            </h2>
-
-
-            <div class="center muted">
-                Restaurant
-            </div>
-
-
-            <hr>
-
-
-            <div class="center">
-
-                <strong>
-                    ${escapePOSHTML(
-                        sale.orderNumber
-                    )}
-                </strong>
-
-            </div>
-
-
-            <div class="center muted">
-
-                ${escapePOSHTML(
-                    sale.customerName
-                )}
-
-            </div>
-
-
-            <hr>
-
-
-            <table>
-
-                <thead>
-
-                    <tr>
-
-                        <th
-                            style="
-                                text-align:left;
-                            ">
-
-                            Item
-
-                        </th>
-
-                        <th>
-                            Qty
-                        </th>
-
-                        <th
-                            style="
-                                text-align:right;
-                            ">
-
-                            Amount
-
-                        </th>
-
-                    </tr>
-
-                </thead>
-
-
-                <tbody>
-
-                    ${items}
-
-                </tbody>
-
-            </table>
-
-
-            <hr>
-
-
-            <table>
-
-                <tr>
-
-                    <td>
-                        Subtotal
-                    </td>
-
-                    <td
-                        style="
-                            text-align:right;
-                        ">
-
-                        ${posMoney(
-                            sale.subtotal
-                        )}
-
-                    </td>
-
-                </tr>
-
-
-                <tr>
-
-                    <td>
-                        Discount
-                    </td>
-
-                    <td
-                        style="
-                            text-align:right;
-                        ">
-
-                        ${posMoney(
-                            sale.discount
-                        )}
-
-                    </td>
-
-                </tr>
-
-
-                <tr>
-
-                    <td>
-                        Tax
-                    </td>
-
-                    <td
-                        style="
-                            text-align:right;
-                        ">
-
-                        ${posMoney(
-                            sale.tax
-                        )}
-
-                    </td>
-
-                </tr>
-
-
-                <tr>
-
-                    <td class="total">
-                        TOTAL
-                    </td>
-
-                    <td
-                        class="total red"
-                        style="
-                            text-align:right;
-                        ">
-
-                        ${posMoney(
-                            sale.total
-                        )}
-
-                    </td>
-
-                </tr>
-
-
-                <tr>
-
-                    <td>
-                        Payment
-                    </td>
-
-                    <td
-                        style="
-                            text-align:right;
-                        ">
-
-                        ${posMoney(
-                            sale.amountReceived
-                        )}
-
-                    </td>
-
-                </tr>
-
-
-                <tr>
-
-                    <td>
-                        Change
-                    </td>
-
-                    <td
-                        style="
-                            text-align:right;
-                        ">
-
-                        ${posMoney(
-                            sale.change
-                        )}
-
-                    </td>
-
-                </tr>
-
-            </table>
-
-
-            <hr>
-
-
-            <div class="center">
-
-                ${escapePOSHTML(
-                    sale.paymentMethod
-                )}
-
-            </div>
-
-
-            <div
-                class="center"
-                style="
-                    margin-top:12px;
-                ">
-
-                Thank you!
-
-            </div>
+            ${receipt}
 
 
             <script>
 
-                window.onload = function() {
+                window.onload = function () {
 
                     window.print();
 
                 };
 
             <\/script>
-
 
         </body>
 
@@ -3440,7 +3083,7 @@ function printPOSReceipt(
     `);
 
 
-    receiptWindow.document.close();
+    printWindow.document.close();
 
 }
 
@@ -3451,84 +3094,72 @@ function printPOSReceipt(
 
 async function refreshPOS() {
 
-    const button =
-        posFirstElement(
-            "posRefreshBtn",
+    const refreshButton =
+        posEl(
             "posRefreshProductsBtn"
         );
 
 
-    if (button) {
-
-        button.disabled =
-            true;
-
-        button.innerHTML = `
-
-            <i class="
-                fa-solid
-                fa-spinner
-                fa-spin
-            "></i>
-
-        `;
-
-    }
+    const originalHTML =
+        refreshButton
+        ?
+        refreshButton.innerHTML
+        :
+        "";
 
 
     try {
 
+        if (refreshButton) {
+
+            refreshButton.disabled =
+                true;
+
+            refreshButton.innerHTML = `
+
+                <i class="fa-solid fa-spinner fa-spin"></i>
+
+            `;
+
+        }
+
+
         await Promise.all([
 
-            loadPOSProducts(),
+            loadPOSCategories(),
 
-            loadPOSCategories()
+            loadPOSProducts()
 
         ]);
 
 
-        renderPOSCategories();
-
-        renderPOSProducts();
-
-
-        showPOSStatus(
-            "Products refreshed.",
-            "success"
+        posStatus(
+            "POS data refreshed."
         );
 
     }
 
     catch (error) {
 
-        console.error(
-            "POS Refresh Error:",
+        posError(
+            "Unable to refresh POS.",
             error
-        );
-
-
-        showPOSStatus(
-            "Unable to refresh POS data.",
-            "error"
         );
 
     }
 
     finally {
 
-        if (button) {
+        if (refreshButton) {
 
-            button.disabled =
+            refreshButton.disabled =
                 false;
 
-            button.innerHTML = `
-
-                <i class="
-                    fa-solid
-                    fa-rotate
-                "></i>
-
-            `;
+            refreshButton.innerHTML =
+                originalHTML ||
+                `
+                    <i class="fa-solid fa-rotate"></i>
+                `;
 
         }
 
@@ -3538,123 +3169,608 @@ async function refreshPOS() {
 
 
 /* ==========================================================
-   STATUS MESSAGE
+   QUICK ENTRY
 ========================================================== */
 
-function showPOSStatus(
-    message,
-    type = "info"
-) {
+function initializePOSKeypad() {
 
-    const status =
-        posElement(
-            "posStatus"
+    const keys =
+        document.querySelectorAll(
+            ".pos-key, [data-key]"
         );
 
 
-    if (!status) {
+    keys.forEach(
+        function (button) {
+
+            if (
+                button.dataset.posBound ===
+                "true"
+            ) {
+
+                return;
+
+            }
+
+
+            button.dataset.posBound =
+                "true";
+
+
+            button.addEventListener(
+                "click",
+                function () {
+
+                    const key =
+                        button.dataset.key;
+
+
+                    if (
+                        key === undefined
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    const amountInput =
+                        posEl(
+                            "posAmountReceived"
+                        );
+
+
+                    if (
+                        !amountInput
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    if (
+                        key === "clear"
+                    ) {
+
+                        amountInput.value =
+                            "";
+
+                    }
+
+                    else if (
+                        key === "backspace"
+                    ) {
+
+                        amountInput.value =
+                            amountInput.value.slice(
+                                0,
+                                -1
+                            );
+
+                    }
+
+                    else {
+
+                        amountInput.value +=
+                            key;
+
+                    }
+
+
+                    updatePOSPayment();
+
+                }
+            );
+
+        }
+    );
+
+}
+
+
+/* ==========================================================
+   BIND SEARCH
+========================================================== */
+
+function bindPOSSearch() {
+
+    const search =
+        posEl(
+            "posProductSearch"
+        );
+
+
+    if (!search) {
 
         return;
 
     }
-
-
-    status.textContent =
-        message;
-
-
-    status.className =
-        "pos-status show";
 
 
     if (
-        type === "success"
+        search.dataset.posBound ===
+        "true"
     ) {
-
-        status.style.background =
-            "#008a4c";
-
-    }
-
-    else if (
-        type === "error"
-    ) {
-
-        status.style.background =
-            "#c8102e";
-
-    }
-
-    else {
-
-        status.style.background =
-            "#222";
-
-    }
-
-
-    clearTimeout(
-        window.posStatusTimer
-    );
-
-
-    window.posStatusTimer =
-        setTimeout(
-            () => {
-
-                status.classList.remove(
-                    "show"
-                );
-
-            },
-            2200
-        );
-
-}
-
-
-/* ==========================================================
-   FULLSCREEN
-========================================================== */
-
-async function togglePOSFullscreen() {
-
-    const application =
-        posElement(
-            "pappritoPOS"
-        );
-
-
-    if (!application) {
 
         return;
 
     }
 
 
-    try {
+    search.dataset.posBound =
+        "true";
 
-        if (
-            !document.fullscreenElement
-        ) {
 
-            await application.requestFullscreen();
+    search.addEventListener(
+        "input",
+        function () {
 
-        }
-
-        else {
-
-            await document.exitFullscreen();
+            renderPOSProducts();
 
         }
+    );
+
+}
+
+
+/* ==========================================================
+   BIND REFRESH
+========================================================== */
+
+function bindPOSRefresh() {
+
+    const button =
+        posEl(
+            "posRefreshProductsBtn"
+        );
+
+
+    if (!button) {
+
+        return;
 
     }
 
-    catch (error) {
 
-        console.error(
-            "Fullscreen Error:",
-            error
+    if (
+        button.dataset.posBound ===
+        "true"
+    ) {
+
+        return;
+
+    }
+
+
+    button.dataset.posBound =
+        "true";
+
+
+    button.addEventListener(
+        "click",
+        refreshPOS
+    );
+
+}
+
+
+/* ==========================================================
+   BIND CLEAR CART
+========================================================== */
+
+function bindPOSClear() {
+
+    const button =
+        posEl(
+            "posClearCartBtn"
+        );
+
+
+    if (!button) {
+
+        return;
+
+    }
+
+
+    if (
+        button.dataset.posBound ===
+        "true"
+    ) {
+
+        return;
+
+    }
+
+
+    button.dataset.posBound =
+        "true";
+
+
+    button.addEventListener(
+        "click",
+        function () {
+
+            clearPOSCart(
+                true
+            );
+
+        }
+    );
+
+}
+
+
+/* ==========================================================
+   BIND CUSTOMER
+========================================================== */
+
+function bindPOSCustomer() {
+
+    const input =
+        posEl(
+            "posCustomerName"
+        );
+
+
+    if (!input) {
+
+        return;
+
+    }
+
+
+    if (
+        input.dataset.posBound ===
+        "true"
+    ) {
+
+        return;
+
+    }
+
+
+    input.dataset.posBound =
+        "true";
+
+
+    input.addEventListener(
+        "input",
+        updatePOSCustomer
+    );
+
+}
+
+
+/* ==========================================================
+   BIND DISCOUNT
+========================================================== */
+
+function bindPOSDiscount() {
+
+    const input =
+        posEl(
+            "posDiscount"
+        );
+
+
+    if (!input) {
+
+        return;
+
+    }
+
+
+    if (
+        input.dataset.posBound ===
+        "true"
+    ) {
+
+        return;
+
+    }
+
+
+    input.dataset.posBound =
+        "true";
+
+
+    input.addEventListener(
+        "input",
+        function () {
+
+            PAPPRITO_POS.discount =
+                posNumber(
+                    input.value
+                );
+
+            updatePOSSummary();
+
+        }
+    );
+
+}
+
+
+/* ==========================================================
+   BIND PAYMENT AMOUNT
+========================================================== */
+
+function bindPOSPaymentInput() {
+
+    const input =
+        posEl(
+            "posAmountReceived"
+        );
+
+
+    if (!input) {
+
+        return;
+
+    }
+
+
+    if (
+        input.dataset.posBound ===
+        "true"
+    ) {
+
+        return;
+
+    }
+
+
+    input.dataset.posBound =
+        "true";
+
+
+    input.addEventListener(
+        "input",
+        updatePOSPayment
+    );
+
+}
+
+
+/* ==========================================================
+   BIND PAYMENT METHODS
+========================================================== */
+
+function bindPOSPaymentMethods() {
+
+    document
+        .querySelectorAll(
+            ".pos-payment-method-btn"
+        )
+        .forEach(
+            function (button) {
+
+                if (
+                    button.dataset.posBound ===
+                    "true"
+                ) {
+
+                    return;
+
+                }
+
+
+                button.dataset.posBound =
+                    "true";
+
+
+                button.addEventListener(
+                    "click",
+                    function () {
+
+                        setPOSPaymentMethod(
+
+                            button.dataset.paymentMethod ||
+                            button.dataset.method ||
+                            button.textContent.trim()
+
+                        );
+
+                    }
+                );
+
+            }
+        );
+
+}
+
+
+/* ==========================================================
+   BIND PAY
+========================================================== */
+
+function bindPOSPay() {
+
+    const button =
+        posEl(
+            "posPayBtn"
+        );
+
+
+    if (!button) {
+
+        return;
+
+    }
+
+
+    if (
+        button.dataset.posBound ===
+        "true"
+    ) {
+
+        return;
+
+    }
+
+
+    button.dataset.posBound =
+        "true";
+
+
+    button.addEventListener(
+        "click",
+        processPOSPayment
+    );
+
+}
+
+
+/* ==========================================================
+   BIND PRINT
+========================================================== */
+
+function bindPOSPrint() {
+
+    const button =
+        posEl(
+            "posPrintReceiptBtn"
+        );
+
+
+    if (!button) {
+
+        return;
+
+    }
+
+
+    if (
+        button.dataset.posBound ===
+        "true"
+    ) {
+
+        return;
+
+    }
+
+
+    button.dataset.posBound =
+        "true";
+
+
+    button.addEventListener(
+        "click",
+        function () {
+
+            printPOSReceipt(
+                PAPPRITO_POS.lastSale
+            );
+
+        }
+    );
+
+}
+
+
+/* ==========================================================
+   BIND MODAL PAYMENT
+========================================================== */
+
+function bindPOSModalPayment() {
+
+    const modalInput =
+        posEl(
+            "posModalAmountReceived"
+        );
+
+
+    const mainInput =
+        posEl(
+            "posAmountReceived"
+        );
+
+
+    if (
+        modalInput &&
+        modalInput.dataset.posBound !==
+        "true"
+    ) {
+
+        modalInput.dataset.posBound =
+            "true";
+
+
+        modalInput.addEventListener(
+            "input",
+            function () {
+
+                const total =
+                    getPOSGrandTotal();
+
+                const payment =
+                    posNumber(
+                        modalInput.value
+                    );
+
+                const change =
+                    Math.max(
+                        0,
+                        payment - total
+                    );
+
+
+                const changeElement =
+                    posEl(
+                        "posModalChange"
+                    );
+
+                if (changeElement) {
+
+                    changeElement.textContent =
+                        posMoney(
+                            change
+                        );
+
+                }
+
+            }
+        );
+
+    }
+
+
+    const confirmButton =
+        posEl(
+            "posConfirmPaymentBtn"
+        );
+
+
+    if (
+        confirmButton &&
+        confirmButton.dataset.posBound !==
+        "true"
+    ) {
+
+        confirmButton.dataset.posBound =
+            "true";
+
+
+        confirmButton.addEventListener(
+            "click",
+            function () {
+
+                if (
+                    modalInput &&
+                    mainInput
+                ) {
+
+                    mainInput.value =
+                        modalInput.value;
+
+                }
+
+
+                processPOSPayment();
+
+            }
         );
 
     }
@@ -3669,12 +3785,11 @@ async function togglePOSFullscreen() {
 function holdPOSOrder() {
 
     if (
-        posCart.length === 0
+        PAPPRITO_POS.cart.length === 0
     ) {
 
-        showPOSStatus(
-            "There is no order to hold.",
-            "error"
+        posStatus(
+            "There is no order to hold."
         );
 
         return;
@@ -3682,68 +3797,42 @@ function holdPOSOrder() {
     }
 
 
-    try {
+    const holdData = {
 
-        const heldOrders =
-            JSON.parse(
-                localStorage.getItem(
-                    "pappritoPOSHeldOrders"
-                ) ||
-                "[]"
-            );
+        orderNumber:
+            generatePOSOrderNumber(),
 
+        customer:
+            getPOSCustomer(),
 
-        heldOrders.push({
+        cart:
+            PAPPRITO_POS.cart,
 
-            orderNumber:
-                posCurrentOrderNumber,
+        discount:
+            getPOSDiscount(),
 
-            customerName:
-                getPOSCustomerName(),
+        savedAt:
+            new Date().toISOString()
 
-            items:
-                posCart,
-
-            discount:
-                getPOSDiscount(),
-
-            paymentMethod:
-                posPaymentMethod,
-
-            createdAt:
-                Date.now()
-
-        });
+    };
 
 
-        localStorage.setItem(
-            "pappritoPOSHeldOrders",
-            JSON.stringify(
-                heldOrders
-            )
-        );
+    localStorage.setItem(
+        "papprito_pos_held_order",
+        JSON.stringify(
+            holdData
+        )
+    );
 
 
-        clearPOSCart(
-            true
-        );
+    posStatus(
+        "Order placed on hold."
+    );
 
 
-        showPOSStatus(
-            "Order placed on hold.",
-            "success"
-        );
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Hold Order Error:",
-            error
-        );
-
-    }
+    clearPOSCart(
+        false
+    );
 
 }
 
@@ -3754,110 +3843,86 @@ function holdPOSOrder() {
 
 function recallPOSOrder() {
 
-    try {
-
-        const heldOrders =
-            JSON.parse(
-                localStorage.getItem(
-                    "pappritoPOSHeldOrders"
-                ) ||
-                "[]"
-            );
-
-
-        if (
-            heldOrders.length === 0
-        ) {
-
-            showPOSStatus(
-                "No held orders.",
-                "info"
-            );
-
-            return;
-
-        }
-
-
-        const order =
-            heldOrders.pop();
-
-
-        localStorage.setItem(
-            "pappritoPOSHeldOrders",
-            JSON.stringify(
-                heldOrders
-            )
+    const stored =
+        localStorage.getItem(
+            "papprito_pos_held_order"
         );
 
 
-        posCart =
-            Array.isArray(
-                order.items
-            )
-                ? order.items
-                : [];
+    if (!stored) {
+
+        posStatus(
+            "No held order found."
+        );
+
+        return;
+
+    }
 
 
-        posDiscount =
-            posNumber(
-                order.discount
+    try {
+
+        const holdData =
+            JSON.parse(
+                stored
             );
 
 
-        posPaymentMethod =
-            order.paymentMethod ||
-            "Cash";
+        PAPPRITO_POS.cart =
+            Array.isArray(
+                holdData.cart
+            )
+            ?
+            holdData.cart
+            :
+            [];
+
+
+        PAPPRITO_POS.discount =
+            posNumber(
+                holdData.discount
+            );
 
 
         const customerInput =
-            posFirstElement(
-                "posCustomerName",
-                "posCustomerInput"
+            posEl(
+                "posCustomerName"
             );
-
 
         if (customerInput) {
 
             customerInput.value =
-                order.customerName ||
+                holdData.customer ||
                 "";
 
         }
 
 
         const discountInput =
-            posFirstElement(
-                "posDiscountInput",
+            posEl(
                 "posDiscount"
             );
 
-
-        if (
-            discountInput &&
-            discountInput.tagName ===
-            "INPUT"
-        ) {
+        if (discountInput) {
 
             discountInput.value =
-                posDiscount ||
+                PAPPRITO_POS.discount ||
                 "";
 
         }
+
+
+        localStorage.removeItem(
+            "papprito_pos_held_order"
+        );
 
 
         renderPOSCart();
 
         updatePOSSummary();
 
-        setPOSPaymentMethod(
-            posPaymentMethod
-        );
-
-
-        showPOSStatus(
-            "Held order recalled.",
-            "success"
+        posStatus(
+            "Held order recalled."
         );
 
     }
@@ -3865,8 +3930,12 @@ function recallPOSOrder() {
     catch (error) {
 
         console.error(
-            "Recall Order Error:",
+            "Recall order error:",
             error
+        );
+
+        posStatus(
+            "Unable to recall held order."
         );
 
     }
@@ -3875,86 +3944,126 @@ function recallPOSOrder() {
 
 
 /* ==========================================================
-   QUICK KEYPAD
+   BIND HOLD / RECALL
 ========================================================== */
 
-function handlePOSKeypad(
-    key
-) {
+function bindPOSHoldRecall() {
 
-    const amountInput =
-        posFirstElement(
-            "posAmountReceived",
-            "posPaymentAmount"
+    const hold =
+        posEl(
+            "posHoldBtn"
         );
 
 
-    if (!amountInput) {
-
-        return;
-
-    }
-
-
     if (
-        key === "clear"
+        hold &&
+        hold.dataset.posBound !==
+        "true"
     ) {
 
-        amountInput.value =
-            "";
+        hold.dataset.posBound =
+            "true";
 
-        updatePOSPayment();
-
-        amountInput.focus();
-
-        return;
+        hold.addEventListener(
+            "click",
+            holdPOSOrder
+        );
 
     }
 
 
+    const recall =
+        posEl(
+            "posRecallBtn"
+        );
+
+
     if (
-        key === "backspace"
+        recall &&
+        recall.dataset.posBound !==
+        "true"
     ) {
 
-        amountInput.value =
-            amountInput.value.slice(
-                0,
-                -1
-            );
+        recall.dataset.posBound =
+            "true";
 
-        updatePOSPayment();
-
-        amountInput.focus();
-
-        return;
+        recall.addEventListener(
+            "click",
+            recallPOSOrder
+        );
 
     }
 
+}
+
+
+/* ==========================================================
+   FULLSCREEN
+========================================================== */
+
+function togglePOSFullscreen() {
 
     if (
-        key === "."
+        !document.fullscreenElement
     ) {
 
         if (
-            amountInput.value.includes(
-                "."
-            )
+            document.documentElement.requestFullscreen
         ) {
 
-            return;
+            document.documentElement
+                .requestFullscreen();
 
         }
 
     }
 
+    else {
 
-    amountInput.value +=
-        String(key);
+        if (
+            document.exitFullscreen
+        ) {
+
+            document.exitFullscreen();
+
+        }
+
+    }
+
+}
 
 
-    updatePOSPayment();
+/* ==========================================================
+   BIND FULLSCREEN
+========================================================== */
 
-    amountInput.focus();
+function bindPOSFullscreen() {
+
+    const button =
+        posEl(
+            "posFullscreenBtn"
+        );
+
+
+    if (
+        !button ||
+        button.dataset.posBound ===
+        "true"
+    ) {
+
+        return;
+
+    }
+
+
+    button.dataset.posBound =
+        "true";
+
+
+    button.addEventListener(
+        "click",
+        togglePOSFullscreen
+    );
 
 }
 
@@ -3966,7 +4075,7 @@ function handlePOSKeypad(
 function updatePOSDateTime() {
 
     const element =
-        posElement(
+        posEl(
             "posDateTime"
         );
 
@@ -4012,382 +4121,65 @@ function updatePOSDateTime() {
 
 
 /* ==========================================================
-   BIND EVENTS
+   START DATE / TIME
+========================================================== */
+
+function startPOSClock() {
+
+    updatePOSDateTime();
+
+
+    if (
+        window.pappritoPOSClock
+    ) {
+
+        clearInterval(
+            window.pappritoPOSClock
+        );
+
+    }
+
+
+    window.pappritoPOSClock =
+        setInterval(
+            updatePOSDateTime,
+            1000
+        );
+
+}
+
+
+/* ==========================================================
+   BIND ALL EVENTS
 ========================================================== */
 
 function bindPOSEvents() {
 
-    /* ------------------------------------------------------
-       SEARCH
-    ------------------------------------------------------ */
+    bindPOSSearch();
 
-    const search =
-        posFirstElement(
-            "posProductSearch",
-            "posSearch"
-        );
+    bindPOSRefresh();
 
+    bindPOSClear();
 
-    if (search) {
+    bindPOSCustomer();
 
-        search.addEventListener(
-            "input",
-            renderPOSProducts
-        );
+    bindPOSDiscount();
 
-    }
+    bindPOSPaymentInput();
 
+    bindPOSPaymentMethods();
 
-    /* ------------------------------------------------------
-       REFRESH
-    ------------------------------------------------------ */
+    bindPOSPay();
 
-    const refresh =
-        posFirstElement(
-            "posRefreshProductsBtn",
-            "posRefreshBtn"
-        );
+    bindPOSPrint();
 
+    bindPOSModalPayment();
 
-    if (refresh) {
+    bindPOSHoldRecall();
 
-        refresh.addEventListener(
-            "click",
-            refreshPOS
-        );
+    bindPOSFullscreen();
 
-    }
-
-
-    /* ------------------------------------------------------
-       CLEAR ORDER
-    ------------------------------------------------------ */
-
-    const clear =
-        posFirstElement(
-            "posClearCartBtn",
-            "posClearOrder"
-        );
-
-
-    if (clear) {
-
-        clear.addEventListener(
-            "click",
-            () =>
-                clearPOSCart()
-        );
-
-    }
-
-
-    /* ------------------------------------------------------
-       DISCOUNT
-    ------------------------------------------------------ */
-
-    const discountInput =
-        posFirstElement(
-            "posDiscountInput"
-        );
-
-
-    if (discountInput) {
-
-        discountInput.addEventListener(
-            "input",
-            updatePOSSummary
-        );
-
-    }
-
-
-    /* ------------------------------------------------------
-       AMOUNT RECEIVED
-    ------------------------------------------------------ */
-
-    const amountInput =
-        posFirstElement(
-            "posAmountReceived",
-            "posPaymentAmount"
-        );
-
-
-    if (amountInput) {
-
-        amountInput.addEventListener(
-            "input",
-            updatePOSPayment
-        );
-
-        amountInput.addEventListener(
-            "focus",
-            function () {
-
-                this.select();
-
-            }
-        );
-
-    }
-
-
-    /* ------------------------------------------------------
-       PAYMENT METHODS
-    ------------------------------------------------------ */
-
-    document
-        .querySelectorAll(
-            ".pos-payment-method-btn"
-        )
-        .forEach(
-            button => {
-
-                button.addEventListener(
-                    "click",
-                    () => {
-
-                        setPOSPaymentMethod(
-
-                            button.dataset
-                                .paymentMethod ||
-
-                            button.dataset
-                                .method ||
-
-                            "cash"
-
-                        );
-
-                    }
-                );
-
-            }
-        );
-
-
-    /* ------------------------------------------------------
-       PAY
-    ------------------------------------------------------ */
-
-    const pay =
-        posElement(
-            "posPayBtn"
-        );
-
-
-    if (pay) {
-
-        pay.addEventListener(
-            "click",
-            processPOSPayment
-        );
-
-    }
-
-
-    /* ------------------------------------------------------
-       HOLD
-    ------------------------------------------------------ */
-
-    const hold =
-        posElement(
-            "posHoldBtn"
-        );
-
-
-    if (hold) {
-
-        hold.addEventListener(
-            "click",
-            holdPOSOrder
-        );
-
-    }
-
-
-    /* ------------------------------------------------------
-       RECALL
-    ------------------------------------------------------ */
-
-    const recall =
-        posElement(
-            "posRecallBtn"
-        );
-
-
-    if (recall) {
-
-        recall.addEventListener(
-            "click",
-            recallPOSOrder
-        );
-
-    }
-
-
-    /* ------------------------------------------------------
-       FULLSCREEN
-    ------------------------------------------------------ */
-
-    const fullscreen =
-        posFirstElement(
-            "posFullscreenBtn",
-            "posFullscreen"
-        );
-
-
-    if (fullscreen) {
-
-        fullscreen.addEventListener(
-            "click",
-            togglePOSFullscreen
-        );
-
-    }
-
-
-    /* ------------------------------------------------------
-       PRINT RECEIPT
-    ------------------------------------------------------ */
-
-    const print =
-        posFirstElement(
-            "posPrintReceiptBtn",
-            "posPrintReceipt"
-        );
-
-
-    if (print) {
-
-        print.addEventListener(
-            "click",
-            () => {
-
-                printPOSReceipt(
-                    posCurrentReceipt
-                );
-
-            }
-        );
-
-    }
-
-
-    /* ------------------------------------------------------
-       QUICK KEYPAD
-    ------------------------------------------------------ */
-
-    document
-        .querySelectorAll(
-            ".pos-keypad button"
-        )
-        .forEach(
-            button => {
-
-                button.addEventListener(
-                    "click",
-                    () => {
-
-                        handlePOSKeypad(
-
-                            button.dataset.key ||
-
-                            ""
-
-                        );
-
-                    }
-                );
-
-            }
-        );
-
-
-    /* ------------------------------------------------------
-       KEYBOARD SHORTCUTS
-    ------------------------------------------------------ */
-
-    document.addEventListener(
-        "keydown",
-        event => {
-
-            /* ----------------------------------------------
-               ENTER = PAY
-            ---------------------------------------------- */
-
-            if (
-                event.key ===
-                "Enter"
-            ) {
-
-                const active =
-                    document.activeElement;
-
-
-                if (
-                    active &&
-                    (
-                        active.tagName ===
-                        "INPUT" ||
-                        active.tagName ===
-                        "TEXTAREA"
-                    )
-                ) {
-
-                    return;
-
-                }
-
-
-                const payButton =
-                    posElement(
-                        "posPayBtn"
-                    );
-
-
-                if (
-                    payButton &&
-                    !payButton.disabled
-                ) {
-
-                    event.preventDefault();
-
-                    processPOSPayment();
-
-                }
-
-            }
-
-
-            /* ----------------------------------------------
-               ESC = CLEAR SEARCH
-            ---------------------------------------------- */
-
-            if (
-                event.key ===
-                "Escape"
-            ) {
-
-                const search =
-                    posFirstElement(
-                        "posProductSearch",
-                        "posSearch"
-                    );
-
-
-                if (search) {
-
-                    search.value =
-                        "";
-
-                    renderPOSProducts();
-
-                }
-
-            }
-
-        }
-    );
+    initializePOSKeypad();
 
 }
 
@@ -4399,8 +4191,12 @@ function bindPOSEvents() {
 async function initializePOS() {
 
     if (
-        posInitialized
+        PAPPRITO_POS.initialized
     ) {
+
+        console.log(
+            "PAPPRITO POS already initialized."
+        );
 
         return;
 
@@ -4408,7 +4204,7 @@ async function initializePOS() {
 
 
     console.log(
-        "======================================"
+        "=========================================="
     );
 
     console.log(
@@ -4416,60 +4212,18 @@ async function initializePOS() {
     );
 
     console.log(
-        "======================================"
+        "=========================================="
     );
 
 
-    /* ------------------------------------------------------
-       EVENTS
-    ------------------------------------------------------ */
-
-    bindPOSEvents();
-
-
-    /* ------------------------------------------------------
-       DATE TIME
-    ------------------------------------------------------ */
-
-    updatePOSDateTime();
-
-
-    if (
-        !window.pappritoPOSDateTimer
-    ) {
-
-        window.pappritoPOSDateTimer =
-            setInterval(
-                updatePOSDateTime,
-                1000
-            );
-
-    }
-
-
-    /* ------------------------------------------------------
-       ORDER NUMBER
-    ------------------------------------------------------ */
-
-    resetPOSOrderNumber();
-
-
-    /* ------------------------------------------------------
-       FIREBASE
-    ------------------------------------------------------ */
-
-    if (
-        !posFirebaseReady()
-    ) {
+    if (!posFirebaseReady()) {
 
         console.error(
             "Firebase Database is not initialized."
         );
 
-
-        showPOSStatus(
-            "Firebase is not connected.",
-            "error"
+        posStatus(
+            "Firebase is not ready."
         );
 
         return;
@@ -4479,9 +4233,16 @@ async function initializePOS() {
 
     try {
 
-        /* --------------------------------------------------
-           LOAD BOTH AT SAME TIME
-        -------------------------------------------------- */
+        bindPOSEvents();
+
+        startPOSClock();
+
+        updatePOSOrderNumber();
+
+
+        /* ==================================================
+           LOAD DATA
+        ================================================== */
 
         await Promise.all([
 
@@ -4492,9 +4253,9 @@ async function initializePOS() {
         ]);
 
 
-        /* --------------------------------------------------
-           RENDER
-        -------------------------------------------------- */
+        /* ==================================================
+           INITIAL UI
+        ================================================== */
 
         renderPOSCategories();
 
@@ -4504,24 +4265,38 @@ async function initializePOS() {
 
         updatePOSSummary();
 
-
-        /* --------------------------------------------------
-           DEFAULT PAYMENT
-        -------------------------------------------------- */
-
-        setPOSPaymentMethod(
-            "cash"
-        );
+        updatePOSPayment();
 
 
-        posInitialized =
+        PAPPRITO_POS.initialized =
             true;
 
+
+        console.log(
+            "=========================================="
+        );
 
         console.log(
             "PAPPRITO POS V2 READY."
         );
 
+        console.log(
+            "Products:",
+            Object.keys(
+                PAPPRITO_POS.products
+            ).length
+        );
+
+        console.log(
+            "Categories:",
+            Object.keys(
+                PAPPRITO_POS.categories
+            ).length
+        );
+
+        console.log(
+            "=========================================="
+        );
 
     }
 
@@ -4533,40 +4308,9 @@ async function initializePOS() {
         );
 
 
-        showPOSStatus(
-            "Unable to load POS data.",
-            "error"
+        posStatus(
+            "Unable to initialize POS."
         );
-
-    }
-
-}
-
-
-/* ==========================================================
-   AUTO INITIALIZE
-========================================================== */
-
-function startPOSWhenReady() {
-
-    if (
-        document.readyState ===
-        "loading"
-    ) {
-
-        document.addEventListener(
-            "DOMContentLoaded",
-            initializePOS,
-            {
-                once: true
-            }
-        );
-
-    }
-
-    else {
-
-        initializePOS();
 
     }
 
@@ -4577,77 +4321,112 @@ function startPOSWhenReady() {
    GLOBAL EXPORTS
 ========================================================== */
 
+window.PAPPRITO_POS =
+    PAPPRITO_POS;
+
+
 window.initializePOS =
     initializePOS;
+
 
 window.loadPOSProducts =
     loadPOSProducts;
 
+
 window.loadPOSCategories =
     loadPOSCategories;
+
 
 window.renderPOSProducts =
     renderPOSProducts;
 
+
 window.renderPOSCategories =
     renderPOSCategories;
+
 
 window.filterPOSCategory =
     filterPOSCategory;
 
+
 window.addPOSToCart =
     addPOSToCart;
+
 
 window.increasePOSItem =
     increasePOSItem;
 
+
 window.decreasePOSItem =
     decreasePOSItem;
+
 
 window.removePOSItem =
     removePOSItem;
 
+
 window.clearPOSCart =
     clearPOSCart;
+
 
 window.setPOSPaymentMethod =
     setPOSPaymentMethod;
 
+
 window.processPOSPayment =
     processPOSPayment;
 
-window.updatePOSSummary =
-    updatePOSSummary;
-
-window.updatePOSPayment =
-    updatePOSPayment;
 
 window.refreshPOS =
     refreshPOS;
 
+
 window.printPOSReceipt =
     printPOSReceipt;
+
 
 window.showPOSReceipt =
     showPOSReceipt;
 
-window.togglePOSFullscreen =
-    togglePOSFullscreen;
 
 window.holdPOSOrder =
     holdPOSOrder;
+
 
 window.recallPOSOrder =
     recallPOSOrder;
 
 
+window.togglePOSFullscreen =
+    togglePOSFullscreen;
+
+
 /* ==========================================================
-   START
+   AUTO INITIALIZE
 ========================================================== */
 
-startPOSWhenReady();
+if (
+    document.readyState ===
+    "loading"
+) {
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        initializePOS,
+        {
+            once: true
+        }
+    );
+
+}
+
+else {
+
+    initializePOS();
+
+}
 
 
 console.log(
-    "PAPPRITO POS ENGINE V2 LOADED."
+    "PAPPRITO POS V2 ENGINE LOADED."
 );
