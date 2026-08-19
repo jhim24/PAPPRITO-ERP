@@ -48,7 +48,6 @@
 
     <!-- ==========================================================
          POS CSS ONLY
-         Sidebar / Navbar CSS intentionally removed
     ========================================================== -->
 
     <link
@@ -57,13 +56,13 @@
 
 
     <!-- ==========================================================
-         FULL SCREEN POS OVERRIDES
+         FULLSCREEN POS CSS
     ========================================================== -->
 
     <style>
 
         /* ======================================================
-           FULL SCREEN
+           RESET
         ====================================================== */
 
         html,
@@ -72,10 +71,10 @@
             width: 100%;
             height: 100%;
 
-            margin: 0;
-            padding: 0;
+            margin: 0 !important;
+            padding: 0 !important;
 
-            overflow: hidden;
+            overflow: hidden !important;
 
             background: #f4f5f7;
 
@@ -84,38 +83,59 @@
 
         body.papprito-pos-page {
 
-            width: 100%;
-            height: 100vh;
+            width: 100vw !important;
+            height: 100vh !important;
 
-            min-height: 100vh;
+            min-width: 100vw !important;
+            min-height: 100vh !important;
 
-            margin: 0;
-            padding: 0;
+            margin: 0 !important;
+            padding: 0 !important;
 
-            overflow: hidden;
+            overflow: hidden !important;
 
         }
 
 
         /* ======================================================
-           POS APPLICATION
+           POS ROOT
         ====================================================== */
 
         #pappritoPOS {
 
-            width: 100%;
-            height: 100vh;
+            position: relative;
 
-            min-height: 100vh;
+            width: 100vw !important;
+            height: 100vh !important;
 
-            margin: 0;
-            padding: 0;
+            min-width: 100vw !important;
+            min-height: 100vh !important;
+
+            margin: 0 !important;
+            padding: 0 !important;
 
             display: flex;
 
             flex-direction: column;
 
-            overflow: hidden;
+            overflow: hidden !important;
+
+            background: #f4f5f7;
+
+        }
+
+
+        /* ======================================================
+           REMOVE ALL SIDEBAR
+        ====================================================== */
+
+        #sidebar,
+        .sidebar,
+        .sidebar-overlay,
+        #sidebarOverlay,
+        .sidebar-backdrop {
+
+            display: none !important;
 
         }
 
@@ -128,27 +148,11 @@
 
             flex: 0 0 auto;
 
-            width: 100%;
+            width: 100% !important;
 
-            min-height: 64px;
-
-            margin: 0;
+            margin: 0 !important;
 
             border-radius: 0 !important;
-
-        }
-
-
-        /* ======================================================
-           REMOVE SIDEBAR RELATED ELEMENTS
-        ====================================================== */
-
-        #sidebar,
-        .sidebar,
-        .sidebar-overlay,
-        #sidebarOverlay {
-
-            display: none !important;
 
         }
 
@@ -161,12 +165,12 @@
 
             flex: 1 1 auto;
 
-            width: 100%;
+            width: 100% !important;
 
             min-width: 0;
             min-height: 0;
 
-            margin: 0;
+            margin: 0 !important;
 
             overflow: hidden;
 
@@ -181,9 +185,9 @@
 
             flex: 0 0 auto;
 
-            width: 100%;
+            width: 100% !important;
 
-            margin: 0;
+            margin: 0 !important;
 
             border-radius: 0 !important;
 
@@ -191,42 +195,85 @@
 
 
         /* ======================================================
-           NO SIDEBAR OPEN STATE
+           MENU BUTTON REMOVED
         ====================================================== */
 
-        body.sidebar-open {
+        .pos-menu-btn {
 
-            overflow: hidden !important;
-
-        }
-
-
-        body.sidebar-open #pappritoPOS {
-
-            margin-left: 0 !important;
-
-            width: 100% !important;
+            display: none !important;
 
         }
 
 
         /* ======================================================
-           DESKTOP
+           FULLSCREEN MODE
         ====================================================== */
 
-        @media (min-width: 993px) {
+        #pappritoPOS:fullscreen {
 
-            .pos-main {
+            width: 100vw !important;
+            height: 100vh !important;
 
-                height: auto;
+            min-width: 100vw !important;
+            min-height: 100vh !important;
 
-            }
+            margin: 0 !important;
+            padding: 0 !important;
+
+        }
+
+
+        #pappritoPOS:-webkit-full-screen {
+
+            width: 100vw !important;
+            height: 100vh !important;
+
+            min-width: 100vw !important;
+            min-height: 100vh !important;
 
         }
 
 
         /* ======================================================
-           TABLET / MOBILE
+           FULLSCREEN BUTTON
+        ====================================================== */
+
+        .pos-fullscreen-btn {
+
+            display: inline-flex;
+
+            align-items: center;
+            justify-content: center;
+
+            width: 42px;
+            height: 42px;
+
+            border: none;
+
+            border-radius: 8px;
+
+            background: rgba(255,255,255,.15);
+
+            color: #fff;
+
+            cursor: pointer;
+
+            font-size: 17px;
+
+            transition: .2s ease;
+
+        }
+
+
+        .pos-fullscreen-btn:hover {
+
+            background: rgba(255,255,255,.25);
+
+        }
+
+
+        /* ======================================================
+           MOBILE
         ====================================================== */
 
         @media (max-width: 992px) {
@@ -234,30 +281,43 @@
             html,
             body {
 
-                overflow-y: auto;
-                overflow-x: hidden;
+                width: 100vw !important;
+
+                height: auto !important;
+
+                min-height: 100vh !important;
+
+                overflow-x: hidden !important;
+
+                overflow-y: auto !important;
 
             }
 
 
             body.papprito-pos-page {
 
-                height: auto;
+                width: 100vw !important;
 
-                min-height: 100vh;
+                height: auto !important;
 
-                overflow-y: auto;
+                min-height: 100vh !important;
+
+                overflow-x: hidden !important;
+
+                overflow-y: auto !important;
 
             }
 
 
             #pappritoPOS {
 
-                height: auto;
+                width: 100vw !important;
 
-                min-height: 100vh;
+                height: auto !important;
 
-                overflow: visible;
+                min-height: 100vh !important;
+
+                overflow: visible !important;
 
             }
 
@@ -275,9 +335,11 @@
 
             .pos-main {
 
-                height: auto;
+                width: 100% !important;
 
-                overflow: visible;
+                height: auto !important;
+
+                overflow: visible !important;
 
             }
 
@@ -301,77 +363,26 @@
 
         @media (max-width: 600px) {
 
-            .pos-header {
-
-                min-height: 56px;
-
-            }
-
-
             .pos-header-center {
 
-                display: none;
-
-            }
-
-
-            .pos-header-right {
-
-                gap: 4px;
+                display: none !important;
 
             }
 
 
             .pos-header-action span {
 
-                display: none;
+                display: none !important;
 
             }
 
-        }
 
+            .pos-fullscreen-btn {
 
-        /* ======================================================
-           HIDE MENU BUTTON
-           Since there is NO sidebar
-        ====================================================== */
+                width: 38px;
+                height: 38px;
 
-        .pos-menu-btn {
-
-            display: none !important;
-
-        }
-
-
-        /* ======================================================
-           POS BRAND
-        ====================================================== */
-
-        .pos-brand-text {
-
-            display: flex;
-
-            flex-direction: column;
-
-            justify-content: center;
-
-        }
-
-
-        .pos-brand-name {
-
-            font-weight: 900;
-
-            line-height: 1.1;
-
-        }
-
-
-        .pos-brand-subtitle {
-
-            font-size: 11px;
-
-            opacity: .75;
+            }
 
         }
 
@@ -400,10 +411,6 @@
         <!-- LEFT -->
 
         <div class="pos-header-left">
-
-
-            <!-- Menu intentionally removed -->
-
 
             <div class="pos-brand-text">
 
@@ -486,6 +493,22 @@
             </button>
 
 
+            <!-- ==================================================
+                 FULLSCREEN
+            ================================================== -->
+
+            <button
+                type="button"
+                class="pos-fullscreen-btn"
+                id="posFullscreenBtn"
+                title="Fullscreen"
+                aria-label="Fullscreen">
+
+                <i class="fa-solid fa-expand"></i>
+
+            </button>
+
+
             <button
                 type="button"
                 class="pos-header-action"
@@ -553,7 +576,6 @@
             </div>
 
 
-
             <!-- CART -->
 
             <div
@@ -575,7 +597,6 @@
                 </div>
 
             </div>
-
 
 
             <!-- SUMMARY -->
@@ -677,7 +698,6 @@
             </div>
 
 
-
             <!-- QUICK ENTRY -->
 
             <div class="pos-keypad-section">
@@ -697,81 +717,63 @@
                     <button
                         type="button"
                         data-key="7">
-
                         7
-
                     </button>
 
 
                     <button
                         type="button"
                         data-key="8">
-
                         8
-
                     </button>
 
 
                     <button
                         type="button"
                         data-key="9">
-
                         9
-
                     </button>
 
 
                     <button
                         type="button"
                         data-key="4">
-
                         4
-
                     </button>
 
 
                     <button
                         type="button"
                         data-key="5">
-
                         5
-
                     </button>
 
 
                     <button
                         type="button"
                         data-key="6">
-
                         6
-
                     </button>
 
 
                     <button
                         type="button"
                         data-key="1">
-
                         1
-
                     </button>
 
 
                     <button
                         type="button"
                         data-key="2">
-
                         2
-
                     </button>
 
 
                     <button
                         type="button"
                         data-key="3">
-
                         3
-
                     </button>
 
 
@@ -779,18 +781,14 @@
                         type="button"
                         data-key="0"
                         class="key-zero">
-
                         0
-
                     </button>
 
 
                     <button
                         type="button"
                         data-key=".">
-
                         .
-
                     </button>
 
 
@@ -798,9 +796,7 @@
                         type="button"
                         data-key="clear"
                         class="key-clear">
-
                         C
-
                     </button>
 
                 </div>
@@ -847,7 +843,6 @@
                 </button>
 
             </div>
-
 
 
             <div
@@ -1046,7 +1041,6 @@
 
             <div class="modal-content pos-payment-modal">
 
-
                 <div class="modal-header">
 
                     <h5 class="modal-title">
@@ -1162,7 +1156,6 @@
         <div class="modal-dialog modal-dialog-centered">
 
             <div class="modal-content">
-
 
                 <div class="modal-header">
 
@@ -1341,55 +1334,133 @@
 
 
 <!-- ==========================================================
-     POS STARTUP
+     FULLSCREEN ENGINE
 ========================================================== -->
 
 <script>
 
 (function () {
 
-    function startPOS() {
+    "use strict";
 
-        if (
-            typeof initializePOS ===
-            "function"
-        ) {
 
-            initializePOS();
+    const fullscreenButton =
+        document.getElementById(
+            "posFullscreenBtn"
+        );
+
+
+    const pos =
+        document.getElementById(
+            "pappritoPOS"
+        );
+
+
+    if (!fullscreenButton || !pos) {
+
+        return;
+
+    }
+
+
+    /* ======================================================
+       ENTER / EXIT
+    ====================================================== */
+
+    fullscreenButton.addEventListener(
+        "click",
+        async function () {
+
+            try {
+
+                if (!document.fullscreenElement) {
+
+                    if (
+                        pos.requestFullscreen
+                    ) {
+
+                        await pos.requestFullscreen();
+
+                    }
+
+                }
+
+                else {
+
+                    if (
+                        document.exitFullscreen
+                    ) {
+
+                        await document.exitFullscreen();
+
+                    }
+
+                }
+
+            }
+
+            catch (error) {
+
+                console.warn(
+                    "POS fullscreen error:",
+                    error
+                );
+
+            }
+
+        }
+    );
+
+
+    /* ======================================================
+       UPDATE ICON
+    ====================================================== */
+
+    function updateFullscreenIcon() {
+
+        const icon =
+            fullscreenButton.querySelector(
+                "i"
+            );
+
+
+        if (!icon) {
+
+            return;
+
+        }
+
+
+        if (document.fullscreenElement) {
+
+            icon.className =
+                "fa-solid fa-compress";
+
+            fullscreenButton.title =
+                "Exit Fullscreen";
 
         }
 
         else {
 
-            console.error(
-                "PAPPRITO POS: initializePOS() not found."
-            );
+            icon.className =
+                "fa-solid fa-expand";
+
+            fullscreenButton.title =
+                "Fullscreen";
 
         }
 
     }
 
 
-    if (
-        document.readyState ===
-        "loading"
-    ) {
+    document.addEventListener(
+        "fullscreenchange",
+        updateFullscreenIcon
+    );
 
-        document.addEventListener(
-            "DOMContentLoaded",
-            startPOS,
-            {
-                once: true
-            }
-        );
 
-    }
-
-    else {
-
-        startPOS();
-
-    }
+    updateFullscreenIcon();
 
 })();
 
