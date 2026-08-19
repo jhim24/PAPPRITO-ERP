@@ -157,6 +157,15 @@
 
 
     <!-- ==========================================================
+         POS CSS
+    ========================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="./assets/css/pos.css">
+
+
+    <!-- ==========================================================
          GLOBAL RESPONSIVE CSS
     ========================================================== -->
 
@@ -305,12 +314,20 @@
 <!-- ==========================================================
      SUPPLIER MASTER ENGINE
      IMPORTANT:
-     Must load before app.js because
-     app.js calls initializeSuppliers().
+     Must load before app.js
 ========================================================== -->
 
 <script
     src="./assets/js/suppliers/suppliers.js">
+</script>
+
+
+<!-- ==========================================================
+     POS ENGINE
+========================================================== -->
+
+<script
+    src="./assets/js/pos/pos.js">
 </script>
 
 
@@ -367,7 +384,7 @@ if ("serviceWorker" in navigator) {
 
 
 <!-- ==========================================================
-     FIREBASE / STORAGE / CHART CHECK
+     SYSTEM CHECK
 ========================================================== -->
 
 <script>
@@ -458,6 +475,16 @@ window.addEventListener(
         console.log(
             "Supplier Engine:",
             typeof initializeSuppliers === "function"
+        );
+
+
+        /* ------------------------------------------
+           POS ENGINE
+        ------------------------------------------ */
+
+        console.log(
+            "POS Engine:",
+            typeof initializePOS === "function"
         );
 
 
