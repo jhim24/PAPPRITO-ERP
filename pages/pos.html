@@ -3,13 +3,71 @@
 
 <head>
 
+    <!-- ==========================================================
+         BASIC
+    ========================================================== -->
+
     <meta charset="UTF-8">
 
     <meta
         name="viewport"
-        content="width=device-width, initial-scale=1.0">
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+    <meta
+        name="theme-color"
+        content="#C8102E">
 
     <title>PAPPRITO POS</title>
+
+
+    <!-- ==========================================================
+         BOOTSTRAP
+    ========================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+
+
+    <!-- ==========================================================
+         FONT AWESOME
+    ========================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+
+    <!-- ==========================================================
+         PAPPRITO GLOBAL CSS
+         ../ works when opening pages/pos.html directly.
+         It also resolves correctly when loaded dynamically.
+    ========================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="../assets/css/style.css">
+
+    <link
+        rel="stylesheet"
+        href="../assets/css/sidebar.css">
+
+    <link
+        rel="stylesheet"
+        href="../assets/css/navbar.css">
+
+    <link
+        rel="stylesheet"
+        href="../assets/css/responsive.css">
+
+
+    <!-- ==========================================================
+         POS CSS
+    ========================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="../assets/css/pos.css">
 
 </head>
 
@@ -18,762 +76,577 @@
 
 
 <!-- ==========================================================
-     POS HEADER
+     POS APPLICATION
 ========================================================== -->
 
-<section class="pos-header">
-
-    <div class="pos-header-left">
-
-        <button
-            type="button"
-            class="pos-menu-btn"
-            onclick="toggleSidebar()"
-            aria-label="Menu">
-
-            <i class="fa-solid fa-bars"></i>
-
-        </button>
-
-
-        <div class="pos-brand">
-
-            <img
-                src="../assets/img/logo.png"
-                alt="PAPPRITO"
-                class="pos-logo">
-
-            <div>
-
-                <div class="pos-brand-name">
-                    PAPPRITO
-                </div>
-
-                <div class="pos-brand-subtitle">
-                    Restaurant POS
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <div class="pos-header-center">
-
-        <div class="pos-terminal-title">
-
-            <i class="fa-solid fa-cash-register"></i>
-
-            CASHIER
-
-        </div>
-
-        <div
-            id="posDateTime"
-            class="pos-date-time">
-        </div>
-
-    </div>
-
-
-    <div class="pos-header-right">
-
-        <button
-            type="button"
-            class="pos-header-action"
-            id="posHoldBtn">
-
-            <i class="fa-solid fa-pause"></i>
-
-            <span>Hold</span>
-
-        </button>
-
-
-        <button
-            type="button"
-            class="pos-header-action"
-            id="posRecallBtn">
-
-            <i class="fa-solid fa-clock-rotate-left"></i>
-
-            <span>Recall</span>
-
-        </button>
-
-
-        <button
-            type="button"
-            class="pos-header-action"
-            id="posLogoutBtn">
-
-            <i class="fa-solid fa-right-from-bracket"></i>
-
-        </button>
-
-    </div>
-
-</section>
-
-
-
-<!-- ==========================================================
-     POS MAIN
-========================================================== -->
-
-<main class="pos-main">
+<div id="pappritoPOS">
 
 
     <!-- ======================================================
-         LEFT / ORDER PANEL
+         POS HEADER
     ======================================================= -->
 
-    <section class="pos-order-panel">
+    <header class="pos-header">
 
+        <!-- LEFT -->
 
-        <div class="pos-panel-header">
-
-            <div>
-
-                <div class="pos-panel-title">
-
-                    <i class="fa-solid fa-receipt"></i>
-
-                    Current Order
-
-                </div>
-
-                <div
-                    id="posOrderNumber"
-                    class="pos-order-number">
-
-                    New Order
-
-                </div>
-
-            </div>
-
+        <div class="pos-header-left">
 
             <button
                 type="button"
-                class="pos-clear-order"
-                id="posClearCartBtn"
-                title="Clear Order">
-
-                <i class="fa-solid fa-trash-can"></i>
-
-            </button>
-
-        </div>
-
-
-        <!-- ORDER ITEMS -->
-
-        <div
-            id="posCart"
-            class="pos-cart">
-
-            <div class="pos-empty-cart">
-
-                <i class="fa-solid fa-cart-shopping"></i>
-
-                <strong>
-                    No Items
-                </strong>
-
-                <span>
-                    Select a product to start
-                </span>
-
-            </div>
-
-        </div>
-
-
-        <!-- ORDER SUMMARY -->
-
-        <div class="pos-order-summary">
-
-            <div class="pos-summary-row">
-
-                <span>
-                    Subtotal
-                </span>
-
-                <strong id="posSubtotal">
-                    ₱0.00
-                </strong>
-
-            </div>
-
-
-            <div class="pos-summary-row">
-
-                <span>
-                    Discount
-                </span>
-
-                <strong id="posDiscount">
-                    ₱0.00
-                </strong>
-
-            </div>
-
-
-            <div class="pos-summary-row">
-
-                <span>
-                    Tax
-                </span>
-
-                <strong id="posTax">
-                    ₱0.00
-                </strong>
-
-            </div>
-
-
-            <div class="pos-summary-total">
-
-                <span>
-                    TOTAL
-                </span>
-
-                <strong id="posTotal">
-                    ₱0.00
-                </strong>
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-
-    <!-- ======================================================
-         CENTER / CATEGORY PANEL
-    ======================================================= -->
-
-    <section class="pos-category-panel">
-
-
-        <div class="pos-panel-header">
-
-            <div class="pos-panel-title">
-
-                <i class="fa-solid fa-layer-group"></i>
-
-                Categories
-
-            </div>
-
-        </div>
-
-
-        <div
-            id="posCategories"
-            class="pos-categories">
-
-            <!-- Categories loaded by JS -->
-
-        </div>
-
-
-        <!-- NUMERIC KEYPAD -->
-
-        <div class="pos-keypad-section">
-
-            <div class="pos-keypad-title">
-
-                <i class="fa-solid fa-calculator"></i>
-
-                Quick Entry
-
-            </div>
-
-
-            <div class="pos-keypad">
-
-                <button
-                    type="button"
-                    data-key="7">
-                    7
-                </button>
-
-                <button
-                    type="button"
-                    data-key="8">
-                    8
-                </button>
-
-                <button
-                    type="button"
-                    data-key="9">
-                    9
-                </button>
-
-
-                <button
-                    type="button"
-                    data-key="4">
-                    4
-                </button>
-
-                <button
-                    type="button"
-                    data-key="5">
-                    5
-                </button>
-
-                <button
-                    type="button"
-                    data-key="6">
-                    6
-                </button>
-
-
-                <button
-                    type="button"
-                    data-key="1">
-                    1
-                </button>
-
-                <button
-                    type="button"
-                    data-key="2">
-                    2
-                </button>
-
-                <button
-                    type="button"
-                    data-key="3">
-                    3
-                </button>
-
-
-                <button
-                    type="button"
-                    data-key="0"
-                    class="key-zero">
-
-                    0
-
-                </button>
-
-
-                <button
-                    type="button"
-                    data-key=".">
-
-                    .
-
-                </button>
-
-
-                <button
-                    type="button"
-                    data-key="clear"
-                    class="key-clear">
-
-                    C
-
-                </button>
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-
-    <!-- ======================================================
-         RIGHT / PRODUCT PANEL
-    ======================================================= -->
-
-    <section class="pos-product-panel">
-
-
-        <!-- SEARCH -->
-
-        <div class="pos-product-toolbar">
-
-            <div class="pos-search-wrapper">
-
-                <i class="fa-solid fa-magnifying-glass"></i>
-
-                <input
-                    type="search"
-                    id="posProductSearch"
-                    class="pos-product-search"
-                    placeholder="Search products...">
-
-            </div>
-
-
-            <button
-                type="button"
-                class="pos-refresh-btn"
-                id="posRefreshProductsBtn"
-                title="Refresh Products">
-
-                <i class="fa-solid fa-rotate"></i>
-
-            </button>
-
-        </div>
-
-
-        <!-- PRODUCTS -->
-
-        <div
-            id="posProducts"
-            class="pos-products">
-
-            <div class="pos-products-loading">
-
-                <div class="spinner-border text-danger"></div>
-
-                <span>
-                    Loading products...
-                </span>
-
-            </div>
-
-        </div>
-
-    </section>
-
-</main>
-
-
-
-<!-- ==========================================================
-     PAYMENT BAR
-========================================================== -->
-
-<section class="pos-payment-bar">
-
-
-    <!-- CUSTOMER -->
-
-    <div class="pos-payment-customer">
-
-        <label>
-            <i class="fa-solid fa-user"></i>
-            Customer
-        </label>
-
-        <input
-            type="text"
-            id="posCustomerName"
-            placeholder="Walk-in Customer">
-
-    </div>
-
-
-    <!-- PAYMENT METHOD -->
-
-    <div class="pos-payment-method">
-
-        <label>
-            Payment Method
-        </label>
-
-
-        <div class="pos-payment-buttons">
-
-            <button
-                type="button"
-                class="pos-payment-method-btn active"
-                data-payment-method="cash">
-
-                <i class="fa-solid fa-money-bill-wave"></i>
-
-                Cash
+                class="pos-menu-btn"
+                id="posMenuBtn"
+                onclick="toggleSidebar()"
+                aria-label="Menu">
+
+                <i class="fa-solid fa-bars"></i>
 
             </button>
 
 
-            <button
-                type="button"
-                class="pos-payment-method-btn"
-                data-payment-method="card">
+            <div class="pos-brand">
 
-                <i class="fa-solid fa-credit-card"></i>
+                <img
+                    src="../assets/img/logo.png"
+                    alt="PAPPRITO"
+                    class="pos-logo">
 
-                Card
 
-            </button>
+                <div class="pos-brand-text">
 
+                    <div class="pos-brand-name">
+                        PAPPRITO
+                    </div>
 
-            <button
-                type="button"
-                class="pos-payment-method-btn"
-                data-payment-method="gcash">
-
-                <i class="fa-solid fa-mobile-screen-button"></i>
-
-                GCash
-
-            </button>
-
-
-            <button
-                type="button"
-                class="pos-payment-method-btn"
-                data-payment-method="other">
-
-                <i class="fa-solid fa-ellipsis"></i>
-
-                Other
-
-            </button>
-
-        </div>
-
-    </div>
-
-
-    <!-- AMOUNT RECEIVED -->
-
-    <div class="pos-payment-input">
-
-        <label>
-            Amount Received
-        </label>
-
-        <div class="pos-money-input">
-
-            <span>
-                ₱
-            </span>
-
-            <input
-                type="number"
-                id="posAmountReceived"
-                min="0"
-                step="0.01"
-                placeholder="0.00">
-
-        </div>
-
-    </div>
-
-
-    <!-- CHANGE -->
-
-    <div class="pos-change-box">
-
-        <span>
-            CHANGE
-        </span>
-
-        <strong id="posChange">
-            ₱0.00
-        </strong>
-
-    </div>
-
-
-    <!-- PAY -->
-
-    <button
-        type="button"
-        class="pos-pay-btn"
-        id="posPayBtn">
-
-        <i class="fa-solid fa-check"></i>
-
-        <span>
-            PAY
-        </span>
-
-    </button>
-
-</section>
-
-
-
-<!-- ==========================================================
-     PAYMENT MODAL
-========================================================== -->
-
-<div
-    class="modal fade"
-    id="posPaymentModal"
-    tabindex="-1"
-    aria-hidden="true">
-
-    <div class="modal-dialog modal-dialog-centered">
-
-        <div class="modal-content pos-payment-modal">
-
-
-            <div class="modal-header">
-
-                <h5 class="modal-title">
-
-                    <i class="fa-solid fa-money-bill-wave"></i>
-
-                    Complete Payment
-
-                </h5>
-
-                <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="modal">
-                </button>
-
-            </div>
-
-
-            <div class="modal-body">
-
-
-                <div class="pos-modal-total">
-
-                    <span>
-                        Total
-                    </span>
-
-                    <strong id="posModalTotal">
-                        ₱0.00
-                    </strong>
-
-                </div>
-
-
-                <label class="form-label">
-
-                    Amount Received
-
-                </label>
-
-                <input
-                    type="number"
-                    id="posModalAmountReceived"
-                    class="form-control form-control-lg"
-                    min="0"
-                    step="0.01"
-                    placeholder="0.00">
-
-
-                <div class="pos-modal-change">
-
-                    <span>
-                        Change
-                    </span>
-
-                    <strong id="posModalChange">
-                        ₱0.00
-                    </strong>
+                    <div class="pos-brand-subtitle">
+                        Restaurant POS
+                    </div>
 
                 </div>
 
             </div>
 
-
-            <div class="modal-footer">
-
-                <button
-                    type="button"
-                    class="btn btn-secondary"
-                    data-bs-dismiss="modal">
-
-                    Cancel
-
-                </button>
-
-
-                <button
-                    type="button"
-                    class="btn btn-danger"
-                    id="posConfirmPaymentBtn">
-
-                    <i class="fa-solid fa-check"></i>
-
-                    Confirm Payment
-
-                </button>
-
-            </div>
-
         </div>
 
-    </div>
 
-</div>
+        <!-- CENTER -->
 
+        <div class="pos-header-center">
 
+            <div class="pos-terminal-title">
 
-<!-- ==========================================================
-     RECEIPT MODAL
-========================================================== -->
+                <i class="fa-solid fa-cash-register"></i>
 
-<div
-    class="modal fade"
-    id="posReceiptModal"
-    tabindex="-1"
-    aria-hidden="true">
-
-    <div class="modal-dialog modal-dialog-centered">
-
-        <div class="modal-content">
-
-
-            <div class="modal-header">
-
-                <h5 class="modal-title">
-
-                    <i class="fa-solid fa-receipt"></i>
-
-                    Receipt
-
-                </h5>
-
-                <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="modal">
-                </button>
+                CASHIER
 
             </div>
 
 
             <div
-                id="posReceiptContent"
-                class="modal-body">
+                id="posDateTime"
+                class="pos-date-time">
 
-                <!-- Receipt rendered by JS -->
+                --
+
+            </div>
+
+        </div>
+
+
+        <!-- RIGHT -->
+
+        <div class="pos-header-right">
+
+            <button
+                type="button"
+                class="pos-header-action"
+                id="posHoldBtn"
+                title="Hold Order">
+
+                <i class="fa-solid fa-pause"></i>
+
+                <span>
+                    Hold
+                </span>
+
+            </button>
+
+
+            <button
+                type="button"
+                class="pos-header-action"
+                id="posRecallBtn"
+                title="Recall Order">
+
+                <i class="fa-solid fa-clock-rotate-left"></i>
+
+                <span>
+                    Recall
+                </span>
+
+            </button>
+
+
+            <button
+                type="button"
+                class="pos-header-action"
+                id="posLogoutBtn"
+                title="Logout">
+
+                <i class="fa-solid fa-right-from-bracket"></i>
+
+            </button>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- ======================================================
+         POS MAIN
+    ======================================================= -->
+
+    <main class="pos-main">
+
+
+        <!-- ==================================================
+             LEFT
+             CURRENT ORDER
+        ================================================== -->
+
+        <section class="pos-order-panel">
+
+
+            <div class="pos-panel-header">
+
+                <div>
+
+                    <div class="pos-panel-title">
+
+                        <i class="fa-solid fa-receipt"></i>
+
+                        Current Order
+
+                    </div>
+
+
+                    <div
+                        id="posOrderNumber"
+                        class="pos-order-number">
+
+                        New Order
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="pos-clear-order"
+                    id="posClearCartBtn"
+                    title="Clear Order">
+
+                    <i class="fa-solid fa-trash-can"></i>
+
+                </button>
 
             </div>
 
 
-            <div class="modal-footer">
+            <!-- CART -->
+
+            <div
+                id="posCart"
+                class="pos-cart">
+
+                <div class="pos-empty-cart">
+
+                    <i class="fa-solid fa-cart-shopping"></i>
+
+                    <strong>
+                        No Items
+                    </strong>
+
+                    <span>
+                        Select a product to start
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- SUMMARY -->
+
+            <div class="pos-order-summary">
+
+                <div class="pos-summary-row">
+
+                    <span>
+                        Subtotal
+                    </span>
+
+                    <strong id="posSubtotal">
+                        ₱0.00
+                    </strong>
+
+                </div>
+
+
+                <div class="pos-summary-row">
+
+                    <span>
+                        Discount
+                    </span>
+
+                    <strong id="posDiscount">
+                        ₱0.00
+                    </strong>
+
+                </div>
+
+
+                <div class="pos-summary-row">
+
+                    <span>
+                        Tax
+                    </span>
+
+                    <strong id="posTax">
+                        ₱0.00
+                    </strong>
+
+                </div>
+
+
+                <div class="pos-summary-total">
+
+                    <span>
+                        TOTAL
+                    </span>
+
+                    <strong id="posTotal">
+                        ₱0.00
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ==================================================
+             CENTER
+             CATEGORIES
+        ================================================== -->
+
+        <section class="pos-category-panel">
+
+
+            <div class="pos-panel-header">
+
+                <div class="pos-panel-title">
+
+                    <i class="fa-solid fa-layer-group"></i>
+
+                    Categories
+
+                </div>
+
+            </div>
+
+
+            <!-- CATEGORY BUTTONS -->
+
+            <div
+                id="posCategories"
+                class="pos-categories">
+
+                <div class="pos-products-loading">
+
+                    <div class="spinner-border text-danger"></div>
+
+                    <span>
+                        Loading categories...
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- ==================================================
+                 QUICK ENTRY
+            ================================================== -->
+
+            <div class="pos-keypad-section">
+
+                <div class="pos-keypad-title">
+
+                    <i class="fa-solid fa-calculator"></i>
+
+                    Quick Entry
+
+                </div>
+
+
+                <div class="pos-keypad">
+
+
+                    <button
+                        type="button"
+                        data-key="7">
+                        7
+                    </button>
+
+
+                    <button
+                        type="button"
+                        data-key="8">
+                        8
+                    </button>
+
+
+                    <button
+                        type="button"
+                        data-key="9">
+                        9
+                    </button>
+
+
+                    <button
+                        type="button"
+                        data-key="4">
+                        4
+                    </button>
+
+
+                    <button
+                        type="button"
+                        data-key="5">
+                        5
+                    </button>
+
+
+                    <button
+                        type="button"
+                        data-key="6">
+                        6
+                    </button>
+
+
+                    <button
+                        type="button"
+                        data-key="1">
+                        1
+                    </button>
+
+
+                    <button
+                        type="button"
+                        data-key="2">
+                        2
+                    </button>
+
+
+                    <button
+                        type="button"
+                        data-key="3">
+                        3
+                    </button>
+
+
+                    <button
+                        type="button"
+                        data-key="0"
+                        class="key-zero">
+
+                        0
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        data-key=".">
+
+                        .
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        data-key="clear"
+                        class="key-clear">
+
+                        C
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ==================================================
+             RIGHT
+             PRODUCTS
+        ================================================== -->
+
+        <section class="pos-product-panel">
+
+
+            <!-- PRODUCT TOOLBAR -->
+
+            <div class="pos-product-toolbar">
+
+
+                <div class="pos-search-wrapper">
+
+                    <i class="fa-solid fa-magnifying-glass"></i>
+
+
+                    <input
+                        type="search"
+                        id="posProductSearch"
+                        class="pos-product-search"
+                        placeholder="Search products..."
+                        autocomplete="off">
+
+                </div>
+
 
                 <button
                     type="button"
-                    class="btn btn-secondary"
-                    data-bs-dismiss="modal">
+                    class="pos-refresh-btn"
+                    id="posRefreshProductsBtn"
+                    title="Refresh Products">
 
-                    Close
+                    <i class="fa-solid fa-rotate"></i>
+
+                </button>
+
+            </div>
+
+
+            <!-- PRODUCTS -->
+
+            <div
+                id="posProducts"
+                class="pos-products">
+
+                <div class="pos-products-loading">
+
+                    <div class="spinner-border text-danger"></div>
+
+                    <span>
+                        Loading products...
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+
+    <!-- ======================================================
+         PAYMENT BAR
+    ======================================================= -->
+
+    <section class="pos-payment-bar">
+
+
+        <!-- CUSTOMER -->
+
+        <div class="pos-payment-customer">
+
+            <label>
+
+                <i class="fa-solid fa-user"></i>
+
+                Customer
+
+            </label>
+
+
+            <input
+                type="text"
+                id="posCustomerName"
+                placeholder="Walk-in Customer"
+                autocomplete="off">
+
+        </div>
+
+
+
+        <!-- PAYMENT METHOD -->
+
+        <div class="pos-payment-method">
+
+            <label>
+                Payment Method
+            </label>
+
+
+            <div class="pos-payment-buttons">
+
+
+                <button
+                    type="button"
+                    class="pos-payment-method-btn active"
+                    data-payment-method="cash">
+
+                    <i class="fa-solid fa-money-bill-wave"></i>
+
+                    Cash
 
                 </button>
 
 
                 <button
                     type="button"
-                    class="btn btn-danger"
-                    id="posPrintReceiptBtn">
+                    class="pos-payment-method-btn"
+                    data-payment-method="card">
 
-                    <i class="fa-solid fa-print"></i>
+                    <i class="fa-solid fa-credit-card"></i>
 
-                    Print Receipt
+                    Card
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="pos-payment-method-btn"
+                    data-payment-method="gcash">
+
+                    <i class="fa-solid fa-mobile-screen-button"></i>
+
+                    GCash
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="pos-payment-method-btn"
+                    data-payment-method="other">
+
+                    <i class="fa-solid fa-ellipsis"></i>
+
+                    Other
 
                 </button>
 
@@ -781,6 +654,273 @@
 
         </div>
 
+
+
+        <!-- AMOUNT RECEIVED -->
+
+        <div class="pos-payment-input">
+
+            <label>
+                Amount Received
+            </label>
+
+
+            <div class="pos-money-input">
+
+                <span>
+                    ₱
+                </span>
+
+
+                <input
+                    type="number"
+                    id="posAmountReceived"
+                    min="0"
+                    step="0.01"
+                    placeholder="0.00">
+
+            </div>
+
+        </div>
+
+
+
+        <!-- CHANGE -->
+
+        <div class="pos-change-box">
+
+            <span>
+                CHANGE
+            </span>
+
+
+            <strong id="posChange">
+                ₱0.00
+            </strong>
+
+        </div>
+
+
+
+        <!-- PAY -->
+
+        <button
+            type="button"
+            class="pos-pay-btn"
+            id="posPayBtn">
+
+            <i class="fa-solid fa-check"></i>
+
+            <span>
+                PAY
+            </span>
+
+        </button>
+
+    </section>
+
+
+
+    <!-- ======================================================
+         PAYMENT MODAL
+    ======================================================= -->
+
+    <div
+        class="modal fade"
+        id="posPaymentModal"
+        tabindex="-1"
+        aria-hidden="true">
+
+        <div class="modal-dialog modal-dialog-centered">
+
+            <div class="modal-content pos-payment-modal">
+
+
+                <div class="modal-header">
+
+                    <h5 class="modal-title">
+
+                        <i class="fa-solid fa-money-bill-wave"></i>
+
+                        Complete Payment
+
+                    </h5>
+
+
+                    <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                    </button>
+
+                </div>
+
+
+                <div class="modal-body">
+
+
+                    <div class="pos-modal-total">
+
+                        <span>
+                            Total
+                        </span>
+
+
+                        <strong id="posModalTotal">
+                            ₱0.00
+                        </strong>
+
+                    </div>
+
+
+                    <label class="form-label">
+
+                        Amount Received
+
+                    </label>
+
+
+                    <input
+                        type="number"
+                        id="posModalAmountReceived"
+                        class="form-control form-control-lg"
+                        min="0"
+                        step="0.01"
+                        placeholder="0.00">
+
+
+                    <div class="pos-modal-change">
+
+                        <span>
+                            Change
+                        </span>
+
+
+                        <strong id="posModalChange">
+                            ₱0.00
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="modal-footer">
+
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+
+                        Cancel
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="btn btn-danger"
+                        id="posConfirmPaymentBtn">
+
+                        <i class="fa-solid fa-check"></i>
+
+                        Confirm Payment
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ======================================================
+         RECEIPT MODAL
+    ======================================================= -->
+
+    <div
+        class="modal fade"
+        id="posReceiptModal"
+        tabindex="-1"
+        aria-hidden="true">
+
+        <div class="modal-dialog modal-dialog-centered">
+
+            <div class="modal-content">
+
+
+                <div class="modal-header">
+
+                    <h5 class="modal-title">
+
+                        <i class="fa-solid fa-receipt"></i>
+
+                        Receipt
+
+                    </h5>
+
+
+                    <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                    </button>
+
+                </div>
+
+
+                <div
+                    id="posReceiptContent"
+                    class="modal-body">
+
+                </div>
+
+
+                <div class="modal-footer">
+
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+
+                        Close
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="btn btn-danger"
+                        id="posPrintReceiptBtn">
+
+                        <i class="fa-solid fa-print"></i>
+
+                        Print Receipt
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ======================================================
+         POS STATUS
+    ======================================================= -->
+
+    <div
+        id="posStatus"
+        class="pos-status"
+        aria-live="polite">
     </div>
 
 </div>
@@ -788,19 +928,17 @@
 
 
 <!-- ==========================================================
-     POS STATUS
+     BOOTSTRAP JS
 ========================================================== -->
 
-<div
-    id="posStatus"
-    class="pos-status"
-    aria-live="polite">
-</div>
+<script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+</script>
 
 
 
 <!-- ==========================================================
-     POS DATE / TIME
+     POS DATE/TIME
 ========================================================== -->
 
 <script>
@@ -845,14 +983,29 @@
     updatePOSDateTime();
 
 
-    setInterval(
-        updatePOSDateTime,
-        1000
-    );
+    window.pappritoPOSDateTimer =
+        setInterval(
+            updatePOSDateTime,
+            1000
+        );
 
 })();
 
 </script>
+
+
+
+<!-- ==========================================================
+     DIRECT POS JS
+     
+     app.js will prevent duplicate loading using
+     data-papprito-script.
+========================================================== -->
+
+<script
+    src="../assets/js/pos/pos.js">
+</script>
+
 
 </body>
 
