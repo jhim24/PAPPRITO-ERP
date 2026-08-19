@@ -4,8 +4,7 @@
 <head>
 
     <!-- ==========================================================
-         PAPPRITO POS
-         FULLSCREEN STANDALONE POS
+         PAPPRITO POS — FULL SCREEN
     ========================================================== -->
 
     <meta charset="UTF-8">
@@ -16,7 +15,11 @@
 
     <meta
         name="theme-color"
-        content="#c8102e">
+        content="#C8102E">
+
+    <meta
+        name="mobile-web-app-capable"
+        content="yes">
 
     <meta
         name="apple-mobile-web-app-capable"
@@ -26,21 +29,7 @@
         name="apple-mobile-web-app-status-bar-style"
         content="black">
 
-    <meta
-        name="apple-mobile-web-app-title"
-        content="PAPPRITO POS">
-
     <title>PAPPRITO POS</title>
-
-
-    <!-- ==========================================================
-         FAVICON
-    ========================================================== -->
-
-    <link
-        rel="icon"
-        type="image/png"
-        href="../assets/img/logo.png">
 
 
     <!-- ==========================================================
@@ -62,15 +51,7 @@
 
 
     <!-- ==========================================================
-         POS CSS ONLY
-         
-         IMPORTANT:
-         No sidebar.css
-         No navbar.css
-         No dashboard.css
-         No responsive.css
-         
-         POS is completely standalone.
+         POS ONLY CSS
     ========================================================== -->
 
     <link
@@ -84,7 +65,12 @@
 
 
 <!-- ==========================================================
-     POS APPLICATION
+     FULL SCREEN POS APPLICATION
+
+     IMPORTANT:
+     NO SIDEBAR
+     NO MAIN ERP NAVBAR
+     NO DASHBOARD WRAPPER
 ========================================================== -->
 
 <div
@@ -99,15 +85,16 @@
     <header class="pos-header">
 
 
-        <!-- ==================================================
-             BRAND
-        ================================================== -->
+        <!-- BRAND -->
 
-        <div class="pos-header-brand">
+        <div class="pos-brand">
 
-            <div class="pos-brand-icon">
 
-                <i class="fa-solid fa-utensils"></i>
+            <div class="pos-brand-logo">
+
+                <img
+                    src="../assets/img/logo.png"
+                    alt="PAPPRITO">
 
             </div>
 
@@ -128,11 +115,9 @@
 
 
 
-        <!-- ==================================================
-             CASHIER CENTER
-        ================================================== -->
+        <!-- CASHIER -->
 
-        <div class="pos-header-center">
+        <div class="pos-cashier-info">
 
             <div class="pos-cashier-title">
 
@@ -155,14 +140,40 @@
 
 
 
-        <!-- ==================================================
-             HEADER ACTIONS
-        ================================================== -->
+        <!-- HEADER ACTIONS -->
 
         <div class="pos-header-actions">
 
 
-            <!-- FULLSCREEN -->
+            <button
+                type="button"
+                class="pos-header-btn"
+                id="posHoldBtn"
+                title="Hold Order">
+
+                <i class="fa-solid fa-bookmark"></i>
+
+                <span>
+                    Hold Order
+                </span>
+
+            </button>
+
+
+            <button
+                type="button"
+                class="pos-header-btn"
+                id="posRecallBtn"
+                title="Recall Order">
+
+                <i class="fa-solid fa-rotate-left"></i>
+
+                <span>
+                    Recall Order
+                </span>
+
+            </button>
+
 
             <button
                 type="button"
@@ -178,42 +189,6 @@
 
             </button>
 
-
-            <!-- HOLD -->
-
-            <button
-                type="button"
-                class="pos-header-btn"
-                id="posHoldBtn"
-                title="Hold Order">
-
-                <i class="fa-solid fa-pause"></i>
-
-                <span>
-                    Hold
-                </span>
-
-            </button>
-
-
-            <!-- RECALL -->
-
-            <button
-                type="button"
-                class="pos-header-btn"
-                id="posRecallBtn"
-                title="Recall Order">
-
-                <i class="fa-solid fa-clock-rotate-left"></i>
-
-                <span>
-                    Recall
-                </span>
-
-            </button>
-
-
-            <!-- LOGOUT -->
 
             <button
                 type="button"
@@ -232,10 +207,10 @@
 
 
     <!-- ======================================================
-         POS WORKSPACE
+         POS MAIN
     ======================================================= -->
 
-    <main class="pos-workspace">
+    <main class="pos-main">
 
 
         <!-- ==================================================
@@ -247,30 +222,33 @@
 
             <!-- ORDER HEADER -->
 
-            <div class="pos-section-header">
+            <div class="pos-order-header">
 
 
-                <div class="pos-section-title">
+                <div class="pos-order-heading">
 
-                    <div class="pos-title-icon">
 
-                        <i class="fa-solid fa-list"></i>
+                    <div class="pos-order-icon">
+
+                        <i class="fa-solid fa-list-check"></i>
 
                     </div>
 
 
                     <div>
 
-                        <strong>
+                        <div class="pos-order-title">
                             CURRENT ORDER
-                        </strong>
+                        </div>
 
-                        <small
-                            id="posOrderNumber">
+
+                        <div
+                            id="posOrderNumber"
+                            class="pos-order-number">
 
                             New Order
 
-                        </small>
+                        </div>
 
                     </div>
 
@@ -279,8 +257,8 @@
 
                 <button
                     type="button"
-                    class="pos-delete-order"
-                    id="posClearOrder"
+                    class="pos-clear-order"
+                    id="posClearCartBtn"
                     title="Clear Order">
 
                     <i class="fa-solid fa-trash-can"></i>
@@ -293,18 +271,20 @@
 
             <!-- CUSTOMER -->
 
-            <div class="pos-customer-box">
+            <div class="pos-customer-section">
 
-                <label>
+
+                <div class="pos-section-label">
 
                     <i class="fa-solid fa-user"></i>
 
-                    Customer
+                    CUSTOMER
 
-                </label>
+                </div>
 
 
-                <div class="pos-customer-input">
+                <div class="pos-customer-box">
+
 
                     <i class="fa-solid fa-user"></i>
 
@@ -313,13 +293,13 @@
                         type="text"
                         id="posCustomerName"
                         value="Walk-in Customer"
-                        placeholder="Customer name"
+                        placeholder="Walk-in Customer"
                         autocomplete="off">
 
 
                     <button
                         type="button"
-                        id="posClearCustomer"
+                        id="posClearCustomerBtn"
                         title="Clear Customer">
 
                         <i class="fa-solid fa-xmark"></i>
@@ -338,13 +318,17 @@
                 id="posCart"
                 class="pos-cart">
 
+
                 <div class="pos-empty-cart">
 
+
                     <i class="fa-solid fa-cart-shopping"></i>
+
 
                     <strong>
                         Cart is empty
                     </strong>
+
 
                     <span>
                         Select a product to start an order.
@@ -374,9 +358,8 @@
                 </div>
 
 
-                <!-- DISCOUNT -->
+                <div class="pos-summary-row">
 
-                <div class="pos-summary-row pos-discount-row">
 
                     <span>
                         Discount
@@ -384,6 +367,7 @@
 
 
                     <div class="pos-discount-input">
+
 
                         <span>
                             ₱
@@ -393,16 +377,14 @@
                         <input
                             type="number"
                             id="posDiscount"
-                            value="0"
                             min="0"
-                            step="0.01">
+                            step="0.01"
+                            value="0">
 
                     </div>
 
                 </div>
 
-
-                <!-- TAX -->
 
                 <div class="pos-summary-row">
 
@@ -417,15 +399,14 @@
                 </div>
 
 
-                <!-- TOTAL -->
-
                 <div class="pos-summary-total">
 
                     <span>
                         TOTAL
                     </span>
 
-                    <strong id="posGrandTotal">
+
+                    <strong id="posTotal">
                         ₱0.00
                     </strong>
 
@@ -438,30 +419,39 @@
 
 
         <!-- ==================================================
-             CATEGORY PANEL
+             CATEGORY / KEYPAD
         ================================================== -->
 
         <section class="pos-category-panel">
 
 
+            <!-- TITLE -->
+
             <div class="pos-panel-title">
+
 
                 <i class="fa-solid fa-layer-group"></i>
 
-                CATEGORIES
+
+                <span>
+                    CATEGORIES
+                </span>
 
             </div>
 
 
-            <!-- CATEGORY BUTTONS -->
+
+            <!-- CATEGORIES -->
 
             <div
                 id="posCategories"
                 class="pos-categories">
 
+
                 <div class="pos-loading">
 
                     <div class="spinner-border text-danger"></div>
+
 
                     <span>
                         Loading categories...
@@ -473,14 +463,12 @@
 
 
 
-            <!-- ==================================================
-                 QUICK ENTRY
-            ================================================== -->
+            <!-- QUICK ENTRY -->
 
-            <div class="pos-quick-entry">
+            <div class="pos-keypad-section">
 
 
-                <div class="pos-quick-title">
+                <div class="pos-keypad-title">
 
                     QUICK ENTRY
 
@@ -490,92 +478,67 @@
                 <div class="pos-keypad">
 
 
-                    <button
-                        type="button"
-                        data-key="7">
+                    <button data-key="7">
                         7
                     </button>
 
 
-                    <button
-                        type="button"
-                        data-key="8">
+                    <button data-key="8">
                         8
                     </button>
 
 
-                    <button
-                        type="button"
-                        data-key="9">
+                    <button data-key="9">
                         9
                     </button>
 
 
-                    <button
-                        type="button"
-                        data-key="4">
+                    <button data-key="4">
                         4
                     </button>
 
 
-                    <button
-                        type="button"
-                        data-key="5">
+                    <button data-key="5">
                         5
                     </button>
 
 
-                    <button
-                        type="button"
-                        data-key="6">
+                    <button data-key="6">
                         6
                     </button>
 
 
-                    <button
-                        type="button"
-                        data-key="1">
+                    <button data-key="1">
                         1
                     </button>
 
 
-                    <button
-                        type="button"
-                        data-key="2">
+                    <button data-key="2">
                         2
                     </button>
 
 
-                    <button
-                        type="button"
-                        data-key="3">
+                    <button data-key="3">
                         3
                     </button>
 
 
-                    <button
-                        type="button"
-                        data-key="0">
+                    <button data-key="0">
                         0
                     </button>
 
 
-                    <button
-                        type="button"
-                        data-key="00">
+                    <button data-key="00">
                         00
                     </button>
 
 
-                    <button
-                        type="button"
-                        data-key=".">
+                    <button data-key=".">
                         .
                     </button>
 
 
                     <button
-                        type="button"
                         data-key="clear"
                         class="key-clear">
 
@@ -585,7 +548,6 @@
 
 
                     <button
-                        type="button"
                         data-key="backspace"
                         class="key-backspace">
 
@@ -595,7 +557,6 @@
 
 
                     <button
-                        type="button"
                         data-key="enter"
                         class="key-enter">
 
@@ -612,7 +573,7 @@
 
 
         <!-- ==================================================
-             PRODUCT PANEL
+             PRODUCTS
         ================================================== -->
 
         <section class="pos-product-panel">
@@ -625,40 +586,41 @@
 
                 <div class="pos-panel-title">
 
+
                     <i class="fa-solid fa-box-open"></i>
 
-                    PRODUCTS
+
+                    <span>
+                        PRODUCTS
+                    </span>
 
                 </div>
+
 
 
                 <div class="pos-product-actions">
 
 
-                    <!-- SEARCH -->
+                    <div class="pos-search-wrapper">
 
-                    <div class="pos-search">
 
-                        <i
-                            class="fa-solid fa-magnifying-glass">
-                        </i>
+                        <i class="fa-solid fa-magnifying-glass"></i>
 
 
                         <input
                             type="search"
                             id="posProductSearch"
+                            class="pos-product-search"
                             placeholder="Search products..."
                             autocomplete="off">
 
                     </div>
 
 
-                    <!-- REFRESH -->
-
                     <button
                         type="button"
                         class="pos-refresh-btn"
-                        id="posRefreshBtn"
+                        id="posRefreshProductsBtn"
                         title="Refresh Products">
 
                         <i class="fa-solid fa-rotate"></i>
@@ -671,15 +633,18 @@
 
 
 
-            <!-- PRODUCTS GRID -->
+            <!-- PRODUCT GRID -->
 
             <div
                 id="posProducts"
                 class="pos-products">
 
+
                 <div class="pos-loading">
 
+
                     <div class="spinner-border text-danger"></div>
+
 
                     <span>
                         Loading products...
@@ -696,10 +661,10 @@
 
 
     <!-- ======================================================
-         PAYMENT AREA
+         PAYMENT BAR
     ======================================================= -->
 
-    <section class="pos-payment-area">
+    <section class="pos-payment-bar">
 
 
         <!-- PAYMENT METHOD -->
@@ -707,7 +672,7 @@
         <div class="pos-payment-method">
 
 
-            <div class="pos-payment-title">
+            <div class="pos-payment-label">
 
                 <i class="fa-solid fa-credit-card"></i>
 
@@ -719,12 +684,10 @@
             <div class="pos-payment-buttons">
 
 
-                <!-- CASH -->
-
                 <button
                     type="button"
                     class="pos-payment-method-btn active"
-                    data-method="Cash">
+                    data-payment-method="Cash">
 
                     <i class="fa-solid fa-money-bill-wave"></i>
 
@@ -735,12 +698,10 @@
                 </button>
 
 
-                <!-- CARD -->
-
                 <button
                     type="button"
                     class="pos-payment-method-btn"
-                    data-method="Card">
+                    data-payment-method="Card">
 
                     <i class="fa-solid fa-credit-card"></i>
 
@@ -751,12 +712,10 @@
                 </button>
 
 
-                <!-- GCASH -->
-
                 <button
                     type="button"
                     class="pos-payment-method-btn"
-                    data-method="GCash">
+                    data-payment-method="GCash">
 
                     <i class="fa-solid fa-mobile-screen-button"></i>
 
@@ -767,12 +726,10 @@
                 </button>
 
 
-                <!-- OTHER -->
-
                 <button
                     type="button"
                     class="pos-payment-method-btn"
-                    data-method="Other">
+                    data-payment-method="Other">
 
                     <i class="fa-solid fa-ellipsis"></i>
 
@@ -788,19 +745,20 @@
 
 
 
-        <!-- AMOUNT RECEIVED -->
+        <!-- AMOUNT -->
 
-        <div class="pos-amount-panel">
+        <div class="pos-payment-amount">
 
 
-            <div class="pos-payment-title">
+            <div class="pos-payment-label">
 
                 AMOUNT RECEIVED
 
             </div>
 
 
-            <div class="pos-amount-input">
+            <div class="pos-money-input">
+
 
                 <span>
                     ₱
@@ -813,7 +771,7 @@
                     min="0"
                     step="0.01"
                     placeholder="0.00"
-                    inputmode="decimal">
+                    autocomplete="off">
 
             </div>
 
@@ -823,13 +781,11 @@
 
         <!-- CHANGE -->
 
-        <div class="pos-change-panel">
+        <div class="pos-change-box">
 
 
-            <div class="pos-payment-title">
-
+            <div>
                 CHANGE
-
             </div>
 
 
@@ -843,13 +799,11 @@
 
         <!-- TOTAL -->
 
-        <div class="pos-payment-total-panel">
+        <div class="pos-payment-total">
 
 
-            <div class="pos-payment-title">
-
+            <div>
                 TOTAL
-
             </div>
 
 
@@ -866,10 +820,11 @@
         <button
             type="button"
             class="pos-pay-btn"
-            id="posPayBtn"
-            disabled>
+            id="posPayBtn">
+
 
             <i class="fa-solid fa-circle-check"></i>
+
 
             <span>
                 PAY
@@ -882,13 +837,124 @@
 
 
     <!-- ======================================================
-         STATUS
+         PAYMENT MODAL
     ======================================================= -->
 
     <div
-        id="posStatus"
-        class="pos-status"
-        aria-live="polite">
+        class="modal fade"
+        id="posPaymentModal"
+        tabindex="-1"
+        aria-hidden="true">
+
+
+        <div class="modal-dialog modal-dialog-centered">
+
+
+            <div class="modal-content">
+
+
+                <div class="modal-header">
+
+
+                    <h5 class="modal-title">
+
+                        <i class="fa-solid fa-money-bill-wave"></i>
+
+                        Complete Payment
+
+                    </h5>
+
+
+                    <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                    </button>
+
+                </div>
+
+
+                <div class="modal-body">
+
+
+                    <div class="pos-modal-total">
+
+
+                        <span>
+                            TOTAL
+                        </span>
+
+
+                        <strong id="posModalTotal">
+                            ₱0.00
+                        </strong>
+
+                    </div>
+
+
+                    <label class="form-label">
+
+                        Amount Received
+
+                    </label>
+
+
+                    <input
+                        type="number"
+                        id="posModalAmountReceived"
+                        class="form-control form-control-lg"
+                        min="0"
+                        step="0.01"
+                        placeholder="0.00">
+
+
+                    <div class="pos-modal-change">
+
+
+                        <span>
+                            CHANGE
+                        </span>
+
+
+                        <strong id="posModalChange">
+                            ₱0.00
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="modal-footer">
+
+
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+
+                        Cancel
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="btn btn-danger"
+                        id="posConfirmPaymentBtn">
+
+                        <i class="fa-solid fa-check"></i>
+
+                        Confirm Payment
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
 
 
@@ -932,7 +998,7 @@
 
 
                 <div
-                    id="posReceipt"
+                    id="posReceiptContent"
                     class="modal-body">
 
                 </div>
@@ -954,7 +1020,7 @@
                     <button
                         type="button"
                         class="btn btn-danger"
-                        id="posPrintReceipt">
+                        id="posPrintReceiptBtn">
 
                         <i class="fa-solid fa-print"></i>
 
@@ -970,36 +1036,19 @@
 
     </div>
 
+
+
+    <!-- ======================================================
+         STATUS
+    ======================================================= -->
+
+    <div
+        id="posStatus"
+        class="pos-status"
+        aria-live="polite">
+    </div>
+
 </div>
-
-
-
-<!-- ==========================================================
-     FIREBASE
-========================================================== -->
-
-<script
-    src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js">
-</script>
-
-
-<script
-    src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js">
-</script>
-
-
-<script
-    src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js">
-</script>
-
-
-<!-- ==========================================================
-     FIREBASE CONFIG
-========================================================== -->
-
-<script
-    src="../firebase/firebase-config.js">
-</script>
 
 
 
@@ -1014,11 +1063,60 @@
 
 
 <!-- ==========================================================
-     POS ENGINE
+     FULLSCREEN
 ========================================================== -->
 
-<script
-    src="../assets/js/pos/pos.js">
+<script>
+
+(function () {
+
+    const button =
+        document.getElementById(
+            "posFullscreenBtn"
+        );
+
+
+    if (!button) {
+
+        return;
+
+    }
+
+
+    button.addEventListener(
+        "click",
+        async function () {
+
+            try {
+
+                if (!document.fullscreenElement) {
+
+                    await document.documentElement.requestFullscreen();
+
+                }
+
+                else {
+
+                    await document.exitFullscreen();
+
+                }
+
+            }
+
+            catch (error) {
+
+                console.warn(
+                    "Fullscreen unavailable:",
+                    error
+                );
+
+            }
+
+        }
+    );
+
+})();
+
 </script>
 
 
@@ -1082,335 +1180,11 @@
 
 
 <!-- ==========================================================
-     POS FULLSCREEN
+     POS ENGINE
 ========================================================== -->
 
-<script>
-
-(function () {
-
-    const button =
-        document.getElementById(
-            "posFullscreenBtn"
-        );
-
-
-    if (!button) {
-
-        return;
-
-    }
-
-
-    button.addEventListener(
-        "click",
-        async function () {
-
-            try {
-
-                if (
-                    !document.fullscreenElement
-                ) {
-
-                    await document.documentElement
-                        .requestFullscreen();
-
-                }
-
-                else {
-
-                    await document.exitFullscreen();
-
-                }
-
-            }
-
-            catch (error) {
-
-                console.warn(
-                    "Fullscreen error:",
-                    error
-                );
-
-            }
-
-        }
-    );
-
-
-    document.addEventListener(
-        "fullscreenchange",
-        function () {
-
-            const icon =
-                button.querySelector(
-                    "i"
-                );
-
-            const text =
-                button.querySelector(
-                    "span"
-                );
-
-
-            if (
-                document.fullscreenElement
-            ) {
-
-                if (icon) {
-
-                    icon.className =
-                        "fa-solid fa-compress";
-
-                }
-
-                if (text) {
-
-                    text.textContent =
-                        "Exit Fullscreen";
-
-                }
-
-            }
-
-            else {
-
-                if (icon) {
-
-                    icon.className =
-                        "fa-solid fa-expand";
-
-                }
-
-                if (text) {
-
-                    text.textContent =
-                        "Fullscreen";
-
-                }
-
-            }
-
-        }
-    );
-
-})();
-
-</script>
-
-
-
-<!-- ==========================================================
-     CLEAR CUSTOMER
-========================================================== -->
-
-<script>
-
-(function () {
-
-    const button =
-        document.getElementById(
-            "posClearCustomer"
-        );
-
-
-    const input =
-        document.getElementById(
-            "posCustomerName"
-        );
-
-
-    if (
-        button &&
-        input
-    ) {
-
-        button.addEventListener(
-            "click",
-            function () {
-
-                input.value =
-                    "";
-
-                input.focus();
-
-            }
-        );
-
-    }
-
-})();
-
-</script>
-
-
-
-<!-- ==========================================================
-     QUICK KEYPAD
-========================================================== -->
-
-<script>
-
-(function () {
-
-    let keypadValue =
-        "";
-
-
-    const paymentInput =
-        document.getElementById(
-            "posPaymentAmount"
-        );
-
-
-    if (!paymentInput) {
-
-        return;
-
-    }
-
-
-    document
-        .querySelectorAll(
-            ".pos-keypad button"
-        )
-        .forEach(
-            function (button) {
-
-                button.addEventListener(
-                    "click",
-                    function () {
-
-                        const key =
-                            button.dataset.key;
-
-
-                        if (
-                            key ===
-                            "clear"
-                        ) {
-
-                            keypadValue =
-                                "";
-
-                        }
-
-                        else if (
-                            key ===
-                            "backspace"
-                        ) {
-
-                            keypadValue =
-                                keypadValue.slice(
-                                    0,
-                                    -1
-                                );
-
-                        }
-
-                        else if (
-                            key ===
-                            "enter"
-                        ) {
-
-                            paymentInput.dispatchEvent(
-                                new Event(
-                                    "input",
-                                    {
-                                        bubbles: true
-                                    }
-                                )
-                            );
-
-                            return;
-
-                        }
-
-                        else {
-
-                            if (
-                                key ===
-                                "." &&
-                                keypadValue.includes(".")
-                            ) {
-
-                                return;
-
-                            }
-
-
-                            keypadValue +=
-                                key;
-
-                        }
-
-
-                        paymentInput.value =
-                            keypadValue;
-
-
-                        paymentInput.dispatchEvent(
-                            new Event(
-                                "input",
-                                {
-                                    bubbles: true
-                                }
-                            )
-                        );
-
-                    }
-                );
-
-            }
-        );
-
-
-    paymentInput.addEventListener(
-        "input",
-        function () {
-
-            keypadValue =
-                paymentInput.value;
-
-        }
-    );
-
-})();
-
-</script>
-
-
-
-<!-- ==========================================================
-     POS INITIALIZATION
-========================================================== -->
-
-<script>
-
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
-
-        if (
-            typeof initializePOS ===
-            "function"
-        ) {
-
-            initializePOS();
-
-        }
-
-        else {
-
-            console.error(
-                "initializePOS() not found."
-            );
-
-        }
-
-    }
-);
-
+<script
+    src="../assets/js/pos/pos.js">
 </script>
 
 
