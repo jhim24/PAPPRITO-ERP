@@ -40,8 +40,6 @@
 
     <!-- ==========================================================
          PAPPRITO GLOBAL CSS
-         ../ works when opening pages/pos.html directly.
-         It also resolves correctly when loaded dynamically.
     ========================================================== -->
 
     <link
@@ -88,7 +86,10 @@
 
     <header class="pos-header">
 
-        <!-- LEFT -->
+
+        <!-- ==================================================
+             LEFT
+        ================================================== -->
 
         <div class="pos-header-left">
 
@@ -104,18 +105,17 @@
             </button>
 
 
+            <!-- ==================================================
+                 BRAND
+                 LOGO REMOVED
+            ================================================== -->
+
             <div class="pos-brand">
-
-                <img
-                    src="../assets/img/logo.png"
-                    alt="PAPPRITO"
-                    class="pos-logo">
-
 
                 <div class="pos-brand-text">
 
                     <div class="pos-brand-name">
-                        PAPPRITO
+                        PAPPRITO POS
                     </div>
 
                     <div class="pos-brand-subtitle">
@@ -129,7 +129,10 @@
         </div>
 
 
-        <!-- CENTER -->
+
+        <!-- ==================================================
+             CENTER
+        ================================================== -->
 
         <div class="pos-header-center">
 
@@ -153,7 +156,10 @@
         </div>
 
 
-        <!-- RIGHT -->
+
+        <!-- ==================================================
+             RIGHT
+        ================================================== -->
 
         <div class="pos-header-right">
 
@@ -255,7 +261,9 @@
             </div>
 
 
-            <!-- CART -->
+            <!-- ==================================================
+                 CART
+            ================================================== -->
 
             <div
                 id="posCart"
@@ -278,7 +286,9 @@
             </div>
 
 
-            <!-- SUMMARY -->
+            <!-- ==================================================
+                 SUMMARY
+            ================================================== -->
 
             <div class="pos-order-summary">
 
@@ -396,13 +406,11 @@
 
                 <div class="pos-keypad">
 
-
                     <button
                         type="button"
                         data-key="7">
                         7
                     </button>
-
 
                     <button
                         type="button"
@@ -410,13 +418,11 @@
                         8
                     </button>
 
-
                     <button
                         type="button"
                         data-key="9">
                         9
                     </button>
-
 
                     <button
                         type="button"
@@ -424,13 +430,11 @@
                         4
                     </button>
 
-
                     <button
                         type="button"
                         data-key="5">
                         5
                     </button>
-
 
                     <button
                         type="button"
@@ -438,13 +442,11 @@
                         6
                     </button>
 
-
                     <button
                         type="button"
                         data-key="1">
                         1
                     </button>
-
 
                     <button
                         type="button"
@@ -452,40 +454,30 @@
                         2
                     </button>
 
-
                     <button
                         type="button"
                         data-key="3">
                         3
                     </button>
 
-
                     <button
                         type="button"
                         data-key="0"
                         class="key-zero">
-
                         0
-
                     </button>
-
 
                     <button
                         type="button"
                         data-key=".">
-
                         .
-
                     </button>
-
 
                     <button
                         type="button"
                         data-key="clear"
                         class="key-clear">
-
                         C
-
                     </button>
 
                 </div>
@@ -508,11 +500,9 @@
 
             <div class="pos-product-toolbar">
 
-
                 <div class="pos-search-wrapper">
 
                     <i class="fa-solid fa-magnifying-glass"></i>
-
 
                     <input
                         type="search"
@@ -601,7 +591,6 @@
 
 
             <div class="pos-payment-buttons">
-
 
                 <button
                     type="button"
@@ -735,7 +724,6 @@
 
             <div class="modal-content pos-payment-modal">
 
-
                 <div class="modal-header">
 
                     <h5 class="modal-title">
@@ -758,13 +746,11 @@
 
                 <div class="modal-body">
 
-
                     <div class="pos-modal-total">
 
                         <span>
                             Total
                         </span>
-
 
                         <strong id="posModalTotal">
                             ₱0.00
@@ -774,9 +760,7 @@
 
 
                     <label class="form-label">
-
                         Amount Received
-
                     </label>
 
 
@@ -794,7 +778,6 @@
                         <span>
                             Change
                         </span>
-
 
                         <strong id="posModalChange">
                             ₱0.00
@@ -852,7 +835,6 @@
 
             <div class="modal-content">
 
-
                 <div class="modal-header">
 
                     <h5 class="modal-title">
@@ -876,7 +858,6 @@
                 <div
                     id="posReceiptContent"
                     class="modal-body">
-
                 </div>
 
 
@@ -954,9 +935,7 @@
 
 
         if (!element) {
-
             return;
-
         }
 
 
@@ -996,10 +975,7 @@
 
 
 <!-- ==========================================================
-     DIRECT POS JS
-     
-     app.js will prevent duplicate loading using
-     data-papprito-script.
+     POS JS
 ========================================================== -->
 
 <script
