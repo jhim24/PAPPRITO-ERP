@@ -1,0 +1,1104 @@
+/* ==========================================================
+   PAPPRITO ERP
+   POS SYSTEM
+   File: assets/css/pos.css
+========================================================== */
+
+* {
+    box-sizing: border-box;
+}
+
+.papprito-pos-page {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    background: #e9edf3;
+    color: #1f2937;
+    font-family: "Segoe UI", Arial, sans-serif;
+    overflow: hidden;
+}
+
+
+/* ==========================================================
+   POS HEADER
+========================================================== */
+
+.pos-header {
+    height: 70px;
+    width: 100%;
+    background: #ffffff;
+    border-bottom: 1px solid #d7dce3;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 14px;
+
+    gap: 15px;
+}
+
+.pos-header-left,
+.pos-header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.pos-header-center {
+    text-align: center;
+    flex: 1;
+}
+
+.pos-menu-btn {
+    width: 48px;
+    height: 48px;
+
+    border: none;
+    border-radius: 8px;
+
+    background: #d7193f;
+    color: #ffffff;
+
+    font-size: 22px;
+
+    cursor: pointer;
+}
+
+.pos-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.pos-logo {
+    width: 45px;
+    height: 45px;
+
+    object-fit: contain;
+
+    border-radius: 50%;
+}
+
+.pos-brand-name {
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.pos-brand-subtitle {
+    font-size: 11px;
+    color: #6b7280;
+}
+
+.pos-terminal-title {
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.pos-date-time {
+    margin-top: 2px;
+    font-size: 11px;
+    color: #6b7280;
+}
+
+.pos-header-action {
+    min-width: 45px;
+    height: 42px;
+
+    border: 1px solid #d7dce3;
+    border-radius: 7px;
+
+    background: #ffffff;
+    color: #374151;
+
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+.pos-header-action:hover {
+    background: #f3f4f6;
+}
+
+
+/* ==========================================================
+   POS MAIN
+========================================================== */
+
+.pos-main {
+    height: calc(100vh - 145px);
+
+    display: grid;
+
+    grid-template-columns:
+        minmax(260px, 25%)
+        minmax(220px, 22%)
+        minmax(420px, 53%);
+
+    gap: 8px;
+
+    padding: 8px;
+}
+
+
+/* ==========================================================
+   PANELS
+========================================================== */
+
+.pos-order-panel,
+.pos-category-panel,
+.pos-product-panel {
+    background: #ffffff;
+
+    border: 1px solid #d7dce3;
+    border-radius: 6px;
+
+    min-width: 0;
+
+    overflow: hidden;
+
+    display: flex;
+    flex-direction: column;
+}
+
+
+/* ==========================================================
+   PANEL HEADER
+========================================================== */
+
+.pos-panel-header {
+    min-height: 58px;
+
+    padding: 10px 12px;
+
+    border-bottom: 1px solid #e0e4e8;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.pos-panel-title {
+    font-size: 17px;
+    font-weight: 800;
+}
+
+.pos-panel-title i {
+    margin-right: 6px;
+    color: #d7193f;
+}
+
+.pos-order-number {
+    margin-top: 2px;
+    font-size: 11px;
+    color: #6b7280;
+}
+
+.pos-clear-order {
+    width: 38px;
+    height: 38px;
+
+    border: none;
+    border-radius: 6px;
+
+    background: #fef2f2;
+    color: #dc2626;
+
+    cursor: pointer;
+}
+
+
+/* ==========================================================
+   CART
+========================================================== */
+
+.pos-cart {
+    flex: 1;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    padding: 8px;
+}
+
+.pos-empty-cart {
+    min-height: 220px;
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+
+    color: #6b7280;
+
+    gap: 6px;
+}
+
+.pos-empty-cart i {
+    font-size: 40px;
+    margin-bottom: 5px;
+    color: #c7cdd5;
+}
+
+
+/* ==========================================================
+   ORDER SUMMARY
+========================================================== */
+
+.pos-order-summary {
+    border-top: 1px solid #d7dce3;
+    padding: 10px 12px;
+}
+
+.pos-summary-row {
+    display: flex;
+    justify-content: space-between;
+
+    padding: 5px 0;
+
+    font-size: 13px;
+}
+
+.pos-summary-row strong {
+    font-weight: 800;
+}
+
+.pos-summary-total {
+    margin-top: 6px;
+
+    padding-top: 10px;
+
+    border-top: 2px solid #1f2937;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    font-size: 20px;
+    font-weight: 900;
+}
+
+.pos-summary-total strong {
+    color: #d7193f;
+}
+
+
+/* ==========================================================
+   CATEGORY PANEL
+========================================================== */
+
+.pos-categories {
+    padding: 10px;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 7px;
+
+    overflow-y: auto;
+
+    max-height: 48%;
+}
+
+.pos-category-btn {
+    min-height: 55px;
+
+    border: 1px solid #cfd5dc;
+    border-radius: 5px;
+
+    background: #f7f8fa;
+
+    color: #374151;
+
+    font-weight: 800;
+    font-size: 13px;
+
+    cursor: pointer;
+
+    padding: 8px;
+}
+
+.pos-category-btn:hover,
+.pos-category-btn.active {
+    background: #d7193f;
+    color: #ffffff;
+    border-color: #d7193f;
+}
+
+
+/* ==========================================================
+   KEYPAD
+========================================================== */
+
+.pos-keypad-section {
+    margin-top: auto;
+
+    border-top: 1px solid #d7dce3;
+
+    padding: 10px;
+}
+
+.pos-keypad-title {
+    font-size: 13px;
+    font-weight: 800;
+
+    margin-bottom: 7px;
+}
+
+.pos-keypad {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 5px;
+}
+
+.pos-keypad button {
+    height: 43px;
+
+    border: 1px solid #cbd1d8;
+    border-radius: 4px;
+
+    background: #f8f9fa;
+
+    font-size: 17px;
+    font-weight: 800;
+
+    cursor: pointer;
+}
+
+.pos-keypad button:hover {
+    background: #e5e7eb;
+}
+
+.pos-keypad .key-clear {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+
+/* ==========================================================
+   PRODUCT PANEL
+========================================================== */
+
+.pos-product-toolbar {
+    min-height: 58px;
+
+    padding: 9px;
+
+    display: flex;
+    gap: 7px;
+
+    border-bottom: 1px solid #d7dce3;
+}
+
+.pos-search-wrapper {
+    flex: 1;
+
+    position: relative;
+}
+
+.pos-search-wrapper i {
+    position: absolute;
+
+    left: 12px;
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    color: #7b8490;
+}
+
+.pos-product-search {
+    width: 100%;
+    height: 40px;
+
+    border: 1px solid #cbd1d8;
+    border-radius: 5px;
+
+    padding:
+        0 12px 0 36px;
+
+    outline: none;
+
+    font-size: 14px;
+}
+
+.pos-product-search:focus {
+    border-color: #d7193f;
+}
+
+.pos-refresh-btn {
+    width: 42px;
+    height: 40px;
+
+    border: 1px solid #cbd1d8;
+    border-radius: 5px;
+
+    background: #ffffff;
+
+    cursor: pointer;
+}
+
+.pos-refresh-btn:hover {
+    background: #f3f4f6;
+}
+
+
+/* ==========================================================
+   PRODUCTS GRID
+========================================================== */
+
+.pos-products {
+    flex: 1;
+
+    overflow-y: auto;
+
+    padding: 10px;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fill,
+            minmax(145px, 1fr)
+        );
+
+    align-content: start;
+
+    gap: 8px;
+}
+
+.pos-product-card {
+    min-height: 150px;
+
+    border: 1px solid #cfd5dc;
+    border-radius: 5px;
+
+    background: #ffffff;
+
+    overflow: hidden;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.12s ease,
+        box-shadow 0.12s ease,
+        border-color 0.12s ease;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.pos-product-card:hover {
+    transform: translateY(-2px);
+
+    border-color: #d7193f;
+
+    box-shadow:
+        0 4px 12px rgba(
+            0,
+            0,
+            0,
+            0.12
+        );
+}
+
+.pos-product-image {
+    width: 100%;
+    height: 92px;
+
+    object-fit: cover;
+
+    background: #eef1f4;
+}
+
+.pos-product-info {
+    padding: 7px;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 3px;
+}
+
+.pos-product-name {
+    font-size: 13px;
+    font-weight: 800;
+
+    line-height: 1.2;
+
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+
+    overflow: hidden;
+}
+
+.pos-product-price {
+    font-size: 14px;
+    font-weight: 900;
+
+    color: #d7193f;
+}
+
+.pos-product-stock {
+    font-size: 10px;
+    color: #6b7280;
+}
+
+
+/* ==========================================================
+   LOADING
+========================================================== */
+
+.pos-products-loading {
+    grid-column: 1 / -1;
+
+    min-height: 220px;
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 10px;
+
+    color: #6b7280;
+}
+
+
+/* ==========================================================
+   PAYMENT BAR
+========================================================== */
+
+.pos-payment-bar {
+    height: 67px;
+
+    background: #ffffff;
+
+    border-top: 1px solid #d7dce3;
+
+    padding: 8px;
+
+    display: grid;
+
+    grid-template-columns:
+        1.1fr
+        2fr
+        1fr
+        1fr
+        150px;
+
+    gap: 8px;
+
+    align-items: center;
+}
+
+
+/* ==========================================================
+   PAYMENT LABELS
+========================================================== */
+
+.pos-payment-bar label {
+    display: block;
+
+    margin-bottom: 3px;
+
+    font-size: 10px;
+    font-weight: 800;
+
+    color: #555f6d;
+}
+
+.pos-payment-customer input,
+.pos-money-input input {
+    width: 100%;
+    height: 34px;
+
+    border: 1px solid #cbd1d8;
+    border-radius: 4px;
+
+    padding: 0 8px;
+
+    outline: none;
+}
+
+.pos-money-input {
+    position: relative;
+}
+
+.pos-money-input span {
+    position: absolute;
+
+    left: 8px;
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    font-weight: 800;
+}
+
+.pos-money-input input {
+    padding-left: 24px;
+}
+
+
+/* ==========================================================
+   PAYMENT METHODS
+========================================================== */
+
+.pos-payment-buttons {
+    display: flex;
+    gap: 4px;
+}
+
+.pos-payment-method-btn {
+    height: 34px;
+
+    flex: 1;
+
+    border: 1px solid #cbd1d8;
+    border-radius: 4px;
+
+    background: #ffffff;
+
+    font-size: 11px;
+    font-weight: 800;
+
+    cursor: pointer;
+
+    white-space: nowrap;
+}
+
+.pos-payment-method-btn.active {
+    background: #d7193f;
+    border-color: #d7193f;
+
+    color: #ffffff;
+}
+
+
+/* ==========================================================
+   CHANGE
+========================================================== */
+
+.pos-change-box {
+    height: 52px;
+
+    padding: 5px 10px;
+
+    border-radius: 5px;
+
+    background: #f3f4f6;
+
+    display: flex;
+    flex-direction: column;
+
+    justify-content: center;
+}
+
+.pos-change-box span {
+    font-size: 9px;
+    font-weight: 800;
+}
+
+.pos-change-box strong {
+    font-size: 18px;
+    font-weight: 900;
+
+    color: #15803d;
+}
+
+
+/* ==========================================================
+   PAY BUTTON
+========================================================== */
+
+.pos-pay-btn {
+    height: 52px;
+
+    border: none;
+    border-radius: 5px;
+
+    background: #d7193f;
+    color: #ffffff;
+
+    font-size: 16px;
+    font-weight: 900;
+
+    cursor: pointer;
+}
+
+.pos-pay-btn:hover {
+    background: #b91436;
+}
+
+.pos-pay-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+
+/* ==========================================================
+   STATUS
+========================================================== */
+
+.pos-status {
+    position: fixed;
+
+    left: 50%;
+    bottom: 80px;
+
+    transform: translateX(-50%);
+
+    z-index: 5000;
+
+    display: none;
+
+    padding: 10px 18px;
+
+    border-radius: 5px;
+
+    background: #111827;
+    color: #ffffff;
+
+    font-size: 13px;
+    font-weight: 700;
+}
+
+
+/* ==========================================================
+   CART ITEM
+========================================================== */
+
+.pos-cart-item {
+    display: grid;
+
+    grid-template-columns:
+        1fr
+        auto;
+
+    gap: 5px;
+
+    padding: 9px;
+
+    margin-bottom: 6px;
+
+    border: 1px solid #e0e4e8;
+    border-radius: 5px;
+
+    background: #ffffff;
+}
+
+.pos-cart-item-name {
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.pos-cart-item-price {
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.pos-cart-item-total {
+    font-size: 14px;
+    font-weight: 900;
+
+    color: #d7193f;
+}
+
+.pos-cart-controls {
+    display: flex;
+    align-items: center;
+
+    gap: 4px;
+}
+
+.pos-cart-controls button {
+    width: 27px;
+    height: 27px;
+
+    border: 1px solid #cbd1d8;
+    border-radius: 4px;
+
+    background: #ffffff;
+
+    cursor: pointer;
+}
+
+.pos-cart-qty {
+    min-width: 24px;
+
+    text-align: center;
+
+    font-weight: 900;
+}
+
+
+/* ==========================================================
+   MODALS
+========================================================== */
+
+.pos-payment-modal {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.pos-modal-total {
+    padding: 15px;
+
+    margin-bottom: 15px;
+
+    border-radius: 7px;
+
+    background: #f3f4f6;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.pos-modal-total strong {
+    font-size: 26px;
+    color: #d7193f;
+}
+
+.pos-modal-change {
+    margin-top: 15px;
+
+    padding: 12px;
+
+    border-radius: 6px;
+
+    background: #ecfdf5;
+
+    display: flex;
+    justify-content: space-between;
+}
+
+.pos-modal-change strong {
+    color: #15803d;
+}
+
+
+/* ==========================================================
+   MOBILE
+========================================================== */
+
+@media (max-width: 992px) {
+
+    .papprito-pos-page {
+        overflow: auto;
+    }
+
+    .pos-header {
+        height: 62px;
+        padding: 0 8px;
+    }
+
+    .pos-header-center {
+        display: none;
+    }
+
+    .pos-header-action span {
+        display: none;
+    }
+
+    .pos-brand-name {
+        font-size: 15px;
+    }
+
+    .pos-brand-subtitle {
+        display: none;
+    }
+
+    .pos-main {
+        height: auto;
+
+        display: flex;
+        flex-direction: column;
+
+        padding: 6px;
+
+        gap: 6px;
+    }
+
+    .pos-order-panel {
+        order: 1;
+        min-height: 260px;
+        max-height: 350px;
+    }
+
+    .pos-category-panel {
+        order: 2;
+        min-height: 210px;
+    }
+
+    .pos-product-panel {
+        order: 3;
+        min-height: 480px;
+    }
+
+    .pos-categories {
+        max-height: none;
+
+        grid-template-columns:
+            repeat(3, 1fr);
+    }
+
+    .pos-products {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+    .pos-payment-bar {
+        height: auto;
+
+        display: grid;
+
+        grid-template-columns:
+            1fr 1fr;
+
+        padding: 8px;
+
+        position: sticky;
+        bottom: 0;
+
+        z-index: 100;
+    }
+
+    .pos-payment-customer {
+        grid-column: 1 / -1;
+    }
+
+    .pos-payment-method {
+        grid-column: 1 / -1;
+    }
+
+    .pos-change-box {
+        height: 48px;
+    }
+
+    .pos-pay-btn {
+        height: 48px;
+    }
+
+}
+
+
+/* ==========================================================
+   SMALL MOBILE
+========================================================== */
+
+@media (max-width: 576px) {
+
+    .pos-logo {
+        width: 38px;
+        height: 38px;
+    }
+
+    .pos-menu-btn {
+        width: 42px;
+        height: 42px;
+    }
+
+    .pos-header-right {
+        gap: 4px;
+    }
+
+    .pos-header-action {
+        min-width: 38px;
+        height: 38px;
+    }
+
+    .pos-panel-title {
+        font-size: 15px;
+    }
+
+    .pos-products {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        padding: 7px;
+
+        gap: 6px;
+    }
+
+    .pos-product-card {
+        min-height: 135px;
+    }
+
+    .pos-product-image {
+        height: 78px;
+    }
+
+    .pos-product-name {
+        font-size: 12px;
+    }
+
+    .pos-product-price {
+        font-size: 13px;
+    }
+
+    .pos-categories {
+        grid-template-columns:
+            repeat(2, 1fr);
+
+        padding: 7px;
+    }
+
+    .pos-category-btn {
+        min-height: 48px;
+        font-size: 12px;
+    }
+
+    .pos-payment-buttons {
+        display: grid;
+
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+    .pos-payment-method-btn {
+        height: 38px;
+    }
+
+}
+
+
+/* ==========================================================
+   VERY SMALL PHONES
+========================================================== */
+
+@media (max-width: 380px) {
+
+    .pos-brand-name {
+        font-size: 13px;
+    }
+
+    .pos-products {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+    .pos-product-image {
+        height: 68px;
+    }
+
+    .pos-product-name {
+        font-size: 11px;
+    }
+
+    .pos-product-price {
+        font-size: 12px;
+    }
+
+}
