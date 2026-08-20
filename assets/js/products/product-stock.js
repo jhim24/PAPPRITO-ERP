@@ -3,17 +3,11 @@
 // PRODUCT STOCK ADJUSTMENT ENGINE V1
 // File: assets/js/products/product-stock.js
 //
-// PURPOSE:
+// FEATURES:
 // - Stock In
 // - Stock Out
-// - Stock Adjustment
+// - Set Exact Stock
 // - Stock History
-// - Updates products/{productId}/currentStock
-//
-// IMPORTANT:
-// - Does NOT modify Product Save Engine
-// - Does NOT modify Product Edit Engine
-// - Uses Firebase Realtime Database
 // ==========================================================
 
 "use strict";
@@ -27,16 +21,20 @@ let stockAdjustmentProductId = null;
 
 
 // ==========================================================
-// OPEN STOCK ADJUSTMENT
+// OPEN STOCK MODAL
 // ==========================================================
 
-async function openStockAdjustment(productId) {
+async function openStockAdjustment(
+    productId
+) {
 
     try {
 
         if (!productId) {
 
-            alert("Invalid Product ID.");
+            alert(
+                "Invalid Product ID."
+            );
 
             return;
 
@@ -61,10 +59,14 @@ async function openStockAdjustment(productId) {
                     "products/" +
                     productId
                 )
-                .once("value");
+                .once(
+                    "value"
+                );
 
 
-        if (!snapshot.exists()) {
+        if (
+            !snapshot.exists()
+        ) {
 
             alert(
                 "Product not found."
@@ -84,38 +86,46 @@ async function openStockAdjustment(productId) {
 
 
         // ==================================================
-        // PRODUCT INFORMATION
+        // PRODUCT NAME
         // ==================================================
 
-        const productName =
+        const nameElement =
             document.getElementById(
                 "stockProductName"
             );
 
 
-        if (productName) {
+        if (nameElement) {
 
-            productName.textContent =
+            nameElement.textContent =
                 product.name ||
                 "Product";
 
         }
 
 
-        const productCode =
+        // ==================================================
+        // PRODUCT CODE
+        // ==================================================
+
+        const codeElement =
             document.getElementById(
                 "stockProductCode"
             );
 
 
-        if (productCode) {
+        if (codeElement) {
 
-            productCode.textContent =
+            codeElement.textContent =
                 product.code ||
                 "";
 
         }
 
+
+        // ==================================================
+        // CURRENT STOCK
+        // ==================================================
 
         const currentStock =
             Number(
@@ -123,16 +133,16 @@ async function openStockAdjustment(productId) {
             );
 
 
-        const currentStockElement =
+        const currentElement =
             document.getElementById(
                 "stockCurrentStock"
             );
 
 
-        if (currentStockElement) {
+        if (currentElement) {
 
-            currentStockElement.textContent =
-                formatStockNumber(
+            currentElement.textContent =
+                formatStock(
                     currentStock
                 );
 
@@ -140,52 +150,52 @@ async function openStockAdjustment(productId) {
 
 
         // ==================================================
-        // RESET FORM
+        // RESET
         // ==================================================
 
-        const type =
+        const typeElement =
             document.getElementById(
                 "stockAdjustmentType"
             );
 
 
-        if (type) {
+        if (typeElement) {
 
-            type.value =
+            typeElement.value =
                 "in";
 
         }
 
 
-        const quantity =
+        const quantityElement =
             document.getElementById(
                 "stockAdjustmentQuantity"
             );
 
 
-        if (quantity) {
+        if (quantityElement) {
 
-            quantity.value =
+            quantityElement.value =
                 "";
 
         }
 
 
-        const reason =
+        const reasonElement =
             document.getElementById(
                 "stockAdjustmentReason"
             );
 
 
-        if (reason) {
+        if (reasonElement) {
 
-            reason.value =
+            reasonElement.value =
                 "";
 
         }
 
 
-        updateStockAdjustmentPreview();
+        updateStockPreview();
 
 
         // ==================================================
@@ -213,7 +223,7 @@ async function openStockAdjustment(productId) {
         ) {
 
             throw new Error(
-                "Bootstrap JavaScript is not loaded."
+                "Bootstrap is not loaded."
             );
 
         }
@@ -249,35 +259,18 @@ async function openStockAdjustment(productId) {
 
 
 // ==========================================================
-// UPDATE PREVIEW
+// PREVIEW
 // ==========================================================
 
-async function updateStockAdjustmentPreview() {
+async function updateStockPreview() {
 
-    const productId =
-        stockAdjustmentProductId;
-
-
-    if (!productId) {
+    if (
+        !stockAdjustmentProductId
+    ) {
 
         return;
 
     }
-
-
-    const type =
-        document.getElementById(
-            "stockAdjustmentType"
-        )?.value ||
-        "in";
-
-
-    const quantity =
-        Number(
-            document.getElementById(
-                "stockAdjustmentQuantity"
-            )?.value || 0
-        );
 
 
     try {
@@ -286,9 +279,11 @@ async function updateStockAdjustmentPreview() {
             await db
                 .ref(
                     "products/" +
-                    productId
+                    stockAdjustmentProductId
                 )
-                .once("value");
+                .once(
+                    "value"
+                );
 
 
         const product =
@@ -298,6 +293,21 @@ async function updateStockAdjustmentPreview() {
         const currentStock =
             Number(
                 product.currentStock || 0
+            );
+
+
+        const type =
+            document.getElementById(
+                "stockAdjustmentType"
+            )?.value ||
+            "in";
+
+
+        const quantity =
+            Number(
+                document.getElementById(
+                    "stockAdjustmentQuantity"
+                )?.value || 0
             );
 
 
@@ -315,6 +325,7 @@ async function updateStockAdjustmentPreview() {
 
         }
 
+
         else if (
             type === "out"
         ) {
@@ -324,6 +335,7 @@ async function updateStockAdjustmentPreview() {
                 quantity;
 
         }
+
 
         else if (
             type === "adjust"
@@ -339,22 +351,21 @@ async function updateStockAdjustmentPreview() {
             newStock < 0
         ) {
 
-            newStock =
-                0;
+            newStock = 0;
 
         }
 
 
-        const preview =
+        const newStockElement =
             document.getElementById(
                 "stockNewStock"
             );
 
 
-        if (preview) {
+        if (newStockElement) {
 
-            preview.textContent =
-                formatStockNumber(
+            newStockElement.textContent =
+                formatStock(
                     newStock
                 );
 
@@ -375,32 +386,22 @@ async function updateStockAdjustmentPreview() {
 
 
 // ==========================================================
-// SAVE STOCK ADJUSTMENT
+// SAVE
 // ==========================================================
 
 async function saveStockAdjustment() {
 
     try {
 
-        if (!stockAdjustmentProductId) {
+        if (
+            !stockAdjustmentProductId
+        ) {
 
             alert(
                 "Please select a product."
             );
 
             return;
-
-        }
-
-
-        if (
-            typeof db === "undefined" ||
-            !db
-        ) {
-
-            throw new Error(
-                "Firebase Database is not initialized."
-            );
 
         }
 
@@ -424,12 +425,12 @@ async function saveStockAdjustment() {
             document.getElementById(
                 "stockAdjustmentReason"
             )?.value
-            .trim() ||
+                .trim() ||
             "";
 
 
         // ==================================================
-        // VALIDATION
+        // VALIDATE
         // ==================================================
 
         if (
@@ -459,7 +460,7 @@ async function saveStockAdjustment() {
 
 
         // ==================================================
-        // GET CURRENT PRODUCT
+        // PRODUCT
         // ==================================================
 
         const productRef =
@@ -475,10 +476,12 @@ async function saveStockAdjustment() {
             );
 
 
-        if (!snapshot.exists()) {
+        if (
+            !snapshot.exists()
+        ) {
 
             throw new Error(
-                "Product no longer exists."
+                "Product not found."
             );
 
         }
@@ -495,7 +498,7 @@ async function saveStockAdjustment() {
 
 
         // ==================================================
-        // CALCULATE NEW STOCK
+        // CALCULATE
         // ==================================================
 
         let newStock =
@@ -535,7 +538,7 @@ async function saveStockAdjustment() {
 
 
         // ==================================================
-        // PREVENT NEGATIVE STOCK
+        // NEGATIVE STOCK
         // ==================================================
 
         if (
@@ -543,12 +546,7 @@ async function saveStockAdjustment() {
         ) {
 
             alert(
-                "Stock cannot become negative.\n\n" +
-                "Current Stock: " +
-                formatStockNumber(currentStock) +
-                "\n" +
-                "Stock Out: " +
-                formatStockNumber(quantity)
+                "Stock cannot be negative."
             );
 
             return;
@@ -557,10 +555,10 @@ async function saveStockAdjustment() {
 
 
         // ==================================================
-        // CONFIRM
+        // TYPE LABEL
         // ==================================================
 
-        const typeText =
+        const typeLabel =
 
             type === "in"
 
@@ -573,36 +571,41 @@ async function saveStockAdjustment() {
                     : "Stock Adjustment";
 
 
+        // ==================================================
+        // CONFIRM
+        // ==================================================
+
         const confirmed =
             confirm(
 
-                typeText +
+                typeLabel +
+
                 "\n\n" +
 
                 "Product: " +
                 (
                     product.name ||
-                    "Product"
+                    ""
                 ) +
 
                 "\n\n" +
 
                 "Previous Stock: " +
-                formatStockNumber(
+                formatStock(
                     currentStock
                 ) +
 
                 "\n" +
 
                 "Quantity: " +
-                formatStockNumber(
+                formatStock(
                     quantity
                 ) +
 
                 "\n" +
 
                 "New Stock: " +
-                formatStockNumber(
+                formatStock(
                     newStock
                 ) +
 
@@ -639,7 +642,7 @@ async function saveStockAdjustment() {
 
 
         // ==================================================
-        // CREATE STOCK HISTORY
+        // STOCK HISTORY
         // ==================================================
 
         const historyRef =
@@ -693,7 +696,7 @@ async function saveStockAdjustment() {
 
 
         // ==================================================
-        // CLOSE MODAL
+        // CLOSE
         // ==================================================
 
         const modalElement =
@@ -725,16 +728,7 @@ async function saveStockAdjustment() {
 
 
         // ==================================================
-        // SUCCESS
-        // ==================================================
-
-        showStockAdjustmentStatus(
-            "Stock updated successfully."
-        );
-
-
-        // ==================================================
-        // REFRESH TABLE
+        // REFRESH
         // ==================================================
 
         if (
@@ -745,6 +739,18 @@ async function saveStockAdjustment() {
             renderProductTable();
 
         }
+
+
+        alert(
+            "Stock updated successfully.\n\n" +
+
+            "New Stock: " +
+
+            formatStock(
+                newStock
+            )
+
+        );
 
     }
 
@@ -770,78 +776,24 @@ async function saveStockAdjustment() {
 // FORMAT STOCK
 // ==========================================================
 
-function formatStockNumber(
+function formatStock(
     value
 ) {
 
-    const number =
-        Number(
-            value || 0
-        );
-
-
-    return number
-        .toLocaleString(
-            "en-PH",
-            {
-                maximumFractionDigits: 3
-            }
-        );
-
-}
-
-
-// ==========================================================
-// STATUS MESSAGE
-// ==========================================================
-
-function showStockAdjustmentStatus(
-    message
-) {
-
-    const status =
-        document.getElementById(
-            "posStatus"
-        ) ||
-        document.getElementById(
-            "productStatusMessage"
-        );
-
-
-    if (!status) {
-
-        alert(message);
-
-        return;
-
-    }
-
-
-    status.textContent =
-        message;
-
-
-    status.classList.add(
-        "show"
-    );
-
-
-    setTimeout(
-        function () {
-
-            status.classList.remove(
-                "show"
-            );
-
-        },
-        2500
+    return Number(
+        value || 0
+    ).toLocaleString(
+        "en-PH",
+        {
+            maximumFractionDigits: 3
+        }
     );
 
 }
 
 
 // ==========================================================
-// EVENT LISTENERS
+// CLICK STOCK BUTTON
 // ==========================================================
 
 document.addEventListener(
@@ -881,7 +833,7 @@ document.addEventListener(
 
 
 // ==========================================================
-// TYPE CHANGE
+// TYPE
 // ==========================================================
 
 document.addEventListener(
@@ -889,12 +841,11 @@ document.addEventListener(
     function (event) {
 
         if (
-            event.target &&
-            event.target.id ===
+            event.target?.id ===
             "stockAdjustmentType"
         ) {
 
-            updateStockAdjustmentPreview();
+            updateStockPreview();
 
         }
 
@@ -903,7 +854,7 @@ document.addEventListener(
 
 
 // ==========================================================
-// QUANTITY INPUT
+// QUANTITY
 // ==========================================================
 
 document.addEventListener(
@@ -911,12 +862,11 @@ document.addEventListener(
     function (event) {
 
         if (
-            event.target &&
-            event.target.id ===
+            event.target?.id ===
             "stockAdjustmentQuantity"
         ) {
 
-            updateStockAdjustmentPreview();
+            updateStockPreview();
 
         }
 
@@ -952,14 +902,17 @@ document.addEventListener(
 
 
 // ==========================================================
-// GLOBAL EXPORTS
+// GLOBAL
 // ==========================================================
 
 window.openStockAdjustment =
     openStockAdjustment;
 
-window.updateStockAdjustmentPreview =
-    updateStockAdjustmentPreview;
+window.updateStockPreview =
+    updateStockPreview;
 
 window.saveStockAdjustment =
     saveStockAdjustment;
+
+window.formatStock =
+    formatStock;
