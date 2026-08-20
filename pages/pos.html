@@ -5,15 +5,15 @@
 
     <!-- ==========================================================
          PAPPRITO ERP
-         FULLSCREEN POS
+         STANDALONE FULLSCREEN POS
          File: pages/pos.html
 
          IMPORTANT:
-         - Standalone POS
          - NO ERP sidebar
          - NO ERP navbar
-         - Fullscreen desktop/laptop
-         - Responsive tablet/mobile
+         - NO app.js
+         - Firebase loads BEFORE POS engine
+         - Responsive desktop / tablet / mobile
     ========================================================== -->
 
     <meta charset="UTF-8">
@@ -38,7 +38,7 @@
 
 
     <!-- ==========================================================
-         BOOTSTRAP
+         BOOTSTRAP CSS
     ========================================================== -->
 
     <link
@@ -57,17 +57,144 @@
 
     <!-- ==========================================================
          POS CSS ONLY
-         
-         IMPORTANT:
-         DO NOT LOAD:
-         - sidebar.css
-         - navbar.css
-         - responsive.css
     ========================================================== -->
 
     <link
         rel="stylesheet"
         href="../assets/css/pos.css">
+
+
+    <!-- ==========================================================
+         FIREBASE SDK
+         IMPORTANT:
+         Firebase MUST load before pos.js
+    ========================================================== -->
+
+    <script
+        src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js">
+    </script>
+
+    <script
+        src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js">
+    </script>
+
+
+    <!-- ==========================================================
+         PAPPRITO FIREBASE CONFIG
+    ========================================================== -->
+
+    <script>
+
+        "use strict";
+
+
+        // ======================================================
+        // FIREBASE CONFIGURATION
+        // ======================================================
+
+        const firebaseConfig = {
+
+            apiKey:
+                "AIzaSyAV9T5w_1azmPHIJcZpraXP06TItj7HEuA",
+
+            authDomain:
+                "papprito-orders.firebaseapp.com",
+
+            databaseURL:
+                "https://papprito-orders-default-rtdb.firebaseio.com",
+
+            projectId:
+                "papprito-orders",
+
+            storageBucket:
+                "papprito-orders.firebasestorage.app",
+
+            messagingSenderId:
+                "831941801424",
+
+            appId:
+                "1:831941801424:web:40a99cdfb312dac2d275d5"
+
+        };
+
+
+        // ======================================================
+        // INITIALIZE FIREBASE
+        // ======================================================
+
+        try {
+
+            if (
+                typeof firebase === "undefined"
+            ) {
+
+                throw new Error(
+                    "Firebase SDK is not loaded."
+                );
+
+            }
+
+
+            if (
+                !firebase.apps.length
+            ) {
+
+                firebase.initializeApp(
+                    firebaseConfig
+                );
+
+                console.log(
+                    "✅ Firebase App Initialized"
+                );
+
+            }
+
+            else {
+
+                console.log(
+                    "✅ Firebase App Already Initialized"
+                );
+
+            }
+
+
+            // ==================================================
+            // GLOBAL DATABASE
+            // ==================================================
+
+            window.db =
+                firebase.database();
+
+
+            window.firebaseApp =
+                firebase.app();
+
+
+            window.firebaseConfig =
+                firebaseConfig;
+
+
+            console.log(
+                "✅ PAPPRITO ERP Firebase Connected"
+            );
+
+
+            console.log(
+                "✅ Realtime Database Ready"
+            );
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "❌ Firebase Initialization Error:",
+                error
+            );
+
+        }
+
+    </script>
 
 </head>
 
@@ -225,7 +352,9 @@
         <section class="pos-order-panel">
 
 
-            <!-- ORDER HEADER -->
+            <!-- ==================================================
+                 ORDER HEADER
+            ================================================== -->
 
             <div class="pos-panel-header">
 
@@ -278,7 +407,11 @@
                 <div class="pos-empty-cart">
 
 
-                    <i class="fa-solid fa-cart-shopping"></i>
+                    <div class="pos-empty-icon">
+
+                        <i class="fa-solid fa-cart-shopping"></i>
+
+                    </div>
 
 
                     <strong>
@@ -440,6 +573,7 @@
 
                     <button
                         type="button"
+                        class="pos-key"
                         data-key="7">
 
                         7
@@ -449,6 +583,7 @@
 
                     <button
                         type="button"
+                        class="pos-key"
                         data-key="8">
 
                         8
@@ -458,6 +593,7 @@
 
                     <button
                         type="button"
+                        class="pos-key"
                         data-key="9">
 
                         9
@@ -467,6 +603,7 @@
 
                     <button
                         type="button"
+                        class="pos-key"
                         data-key="4">
 
                         4
@@ -476,6 +613,7 @@
 
                     <button
                         type="button"
+                        class="pos-key"
                         data-key="5">
 
                         5
@@ -485,6 +623,7 @@
 
                     <button
                         type="button"
+                        class="pos-key"
                         data-key="6">
 
                         6
@@ -494,6 +633,7 @@
 
                     <button
                         type="button"
+                        class="pos-key"
                         data-key="1">
 
                         1
@@ -503,6 +643,7 @@
 
                     <button
                         type="button"
+                        class="pos-key"
                         data-key="2">
 
                         2
@@ -512,6 +653,7 @@
 
                     <button
                         type="button"
+                        class="pos-key"
                         data-key="3">
 
                         3
@@ -521,8 +663,8 @@
 
                     <button
                         type="button"
-                        data-key="0"
-                        class="key-zero">
+                        class="pos-key key-zero"
+                        data-key="0">
 
                         0
 
@@ -531,6 +673,7 @@
 
                     <button
                         type="button"
+                        class="pos-key"
                         data-key=".">
 
                         .
@@ -540,8 +683,8 @@
 
                     <button
                         type="button"
-                        data-key="clear"
-                        class="key-clear">
+                        class="pos-key key-clear"
+                        data-key="clear">
 
                         C
 
@@ -563,7 +706,9 @@
         <section class="pos-product-panel">
 
 
-            <!-- PRODUCT TOOLBAR -->
+            <!-- ==================================================
+                 PRODUCT TOOLBAR
+            ================================================== -->
 
             <div class="pos-product-toolbar">
 
@@ -646,7 +791,9 @@
     <section class="pos-payment-bar">
 
 
-        <!-- CUSTOMER -->
+        <!-- ==================================================
+             CUSTOMER
+        ================================================== -->
 
         <div class="pos-payment-customer">
 
@@ -671,7 +818,9 @@
 
 
 
-        <!-- PAYMENT METHOD -->
+        <!-- ==================================================
+             PAYMENT METHOD
+        ================================================== -->
 
         <div class="pos-payment-method">
 
@@ -687,6 +836,7 @@
                 <button
                     type="button"
                     class="pos-payment-method-btn active"
+                    data-payment-method="Cash"
                     data-method="Cash">
 
 
@@ -702,6 +852,7 @@
                 <button
                     type="button"
                     class="pos-payment-method-btn"
+                    data-payment-method="Card"
                     data-method="Card">
 
 
@@ -717,6 +868,7 @@
                 <button
                     type="button"
                     class="pos-payment-method-btn"
+                    data-payment-method="GCash"
                     data-method="GCash">
 
 
@@ -732,6 +884,7 @@
                 <button
                     type="button"
                     class="pos-payment-method-btn"
+                    data-payment-method="Other"
                     data-method="Other">
 
 
@@ -749,7 +902,45 @@
 
 
 
-        <!-- AMOUNT RECEIVED -->
+        <!-- ==================================================
+             DISCOUNT
+        ================================================== -->
+
+        <div class="pos-payment-input">
+
+
+            <label>
+                Discount
+            </label>
+
+
+            <div class="pos-money-input">
+
+
+                <span>
+                    ₱
+                </span>
+
+
+                <input
+                    type="number"
+                    id="posDiscount"
+                    min="0"
+                    step="0.01"
+                    placeholder="0.00">
+
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ==================================================
+             AMOUNT RECEIVED
+             IMPORTANT:
+             ID MUST MATCH pos.js
+        ================================================== -->
 
         <div class="pos-payment-input">
 
@@ -769,7 +960,7 @@
 
                 <input
                     type="number"
-                    id="posPaymentAmount"
+                    id="posAmountReceived"
                     min="0"
                     step="0.01"
                     placeholder="0.00">
@@ -781,7 +972,9 @@
 
 
 
-        <!-- CHANGE -->
+        <!-- ==================================================
+             CHANGE
+        ================================================== -->
 
         <div class="pos-change-box">
 
@@ -802,7 +995,9 @@
 
 
 
-        <!-- PAY -->
+        <!-- ==================================================
+             PAY
+        ================================================== -->
 
         <button
             type="button"
@@ -1019,8 +1214,13 @@
 
 
 
+                <!-- ==================================================
+                     IMPORTANT:
+                     pos.js expects posReceiptContent
+                ================================================== -->
+
                 <div
-                    id="posReceipt"
+                    id="posReceiptContent"
                     class="modal-body">
 
 
@@ -1042,10 +1242,15 @@
 
 
 
+                    <!-- ==================================================
+                         IMPORTANT:
+                         pos.js expects posPrintReceiptBtn
+                    ================================================== -->
+
                     <button
                         type="button"
                         class="btn btn-danger"
-                        id="posPrintReceipt">
+                        id="posPrintReceiptBtn">
 
 
                         <i class="fa-solid fa-print"></i>
@@ -1096,66 +1301,11 @@
 
 
 <!-- ==========================================================
-     POS DATE / TIME
-========================================================== -->
-
-<script>
-
-(function () {
-
-    function updatePOSDateTime() {
-
-        const element =
-            document.getElementById(
-                "posDateTime"
-            );
-
-
-        if (!element) {
-
-            return;
-
-        }
-
-
-        const now =
-            new Date();
-
-
-        element.textContent =
-            now.toLocaleString(
-                "en-PH",
-                {
-                    year: "numeric",
-                    month: "short",
-                    day: "2-digit",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    second: "2-digit"
-                }
-            );
-
-    }
-
-
-    updatePOSDateTime();
-
-
-    window.pappritoPOSDateTimer =
-        setInterval(
-            updatePOSDateTime,
-            1000
-        );
-
-
-})();
-
-</script>
-
-
-
-<!-- ==========================================================
      POS ENGINE
+     
+     IMPORTANT:
+     Firebase is already initialized above.
+     Therefore pos.js can safely use window.db.
 ========================================================== -->
 
 <script
@@ -1186,6 +1336,12 @@ document.addEventListener(
                 "click",
                 function () {
 
+                    localStorage.setItem(
+                        "currentPage",
+                        "pages/dashboard.html"
+                    );
+
+
                     window.location.href =
                         "../index.html";
 
@@ -1198,6 +1354,7 @@ document.addEventListener(
 );
 
 </script>
+
 
 
 </body>
