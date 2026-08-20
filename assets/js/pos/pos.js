@@ -3,7 +3,7 @@
 // POS ENGINE V3
 // File : assets/js/pos/pos.js
 //
-// CART FORMAT:
+// CART:
 //
 // SN | ITEMS | QTY | TOTAL | ACTIONS
 //
@@ -15,6 +15,7 @@
 // Firebase:
 // products/
 // categories/
+// sales/
 // ==========================================================
 
 "use strict";
@@ -35,6 +36,8 @@ let posSelectedCategory = "ALL";
 let posPaymentMethod = "Cash";
 
 let posOrderNumber = "";
+
+let posLastSale = null;
 
 
 // ==========================================================
@@ -69,11 +72,26 @@ function posEscape(value) {
     return String(
         value ?? ""
     )
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
+    .replace(
+        /&/g,
+        "&amp;"
+    )
+    .replace(
+        /</g,
+        "&lt;"
+    )
+    .replace(
+        />/g,
+        "&gt;"
+    )
+    .replace(
+        /"/g,
+        "&quot;"
+    )
+    .replace(
+        /'/g,
+        "&#039;"
+    );
 
 }
 
@@ -111,7 +129,24 @@ function getProductPrice(product) {
 
 
 // ==========================================================
-// GET PRODUCT CATEGORY
+// GET PRODUCT CATEGORY ID
+// ==========================================================
+
+function getProductCategoryId(product) {
+
+    return String(
+        product.categoryId ||
+        product.categoryID ||
+        product.category_id ||
+        ""
+    )
+    .trim();
+
+}
+
+
+// ==========================================================
+// GET PRODUCT CATEGORY NAME
 // ==========================================================
 
 function getProductCategory(product) {
@@ -119,7 +154,7 @@ function getProductCategory(product) {
     return String(
         product.category ||
         product.categoryName ||
-        product.categoryId ||
+        product.categoryTitle ||
         ""
     )
     .trim();
@@ -153,49 +188,62 @@ function generatePOSOrderNumber() {
     const now =
         new Date();
 
+
     const year =
         now.getFullYear();
+
 
     const month =
         String(
             now.getMonth() + 1
-        ).padStart(
+        )
+        .padStart(
             2,
             "0"
         );
+
 
     const day =
         String(
             now.getDate()
-        ).padStart(
+        )
+        .padStart(
             2,
             "0"
         );
 
+
     const time =
         String(
             now.getHours()
-        ).padStart(
+        )
+        .padStart(
             2,
             "0"
         ) +
+
         String(
             now.getMinutes()
-        ).padStart(
+        )
+        .padStart(
             2,
             "0"
         ) +
+
         String(
             now.getSeconds()
-        ).padStart(
+        )
+        .padStart(
             2,
             "0"
         );
+
 
     const random =
         Math.floor(
             Math.random() * 9000
         ) + 1000;
+
 
     return (
         "POS-" +
@@ -225,23 +273,28 @@ function showPOSStatus(
             "posStatus"
         );
 
+
     if (!status) {
 
         return;
 
     }
 
+
     status.textContent =
         message;
+
 
     status.className =
         "pos-status " +
         "pos-status-" +
         type;
 
+
     clearTimeout(
         window.posStatusTimer
     );
+
 
     window.posStatusTimer =
         setTimeout(
@@ -275,6 +328,7 @@ function checkPOSFirebase() {
 
     }
 
+
     if (
         typeof db ===
         "undefined" ||
@@ -284,6 +338,7 @@ function checkPOSFirebase() {
         return false;
 
     }
+
 
     return true;
 
@@ -301,11 +356,13 @@ async function loadPOSCategories() {
             "posCategories"
         );
 
+
     if (!container) {
 
         return;
 
     }
+
 
     container.innerHTML = `
 
@@ -372,7 +429,9 @@ async function loadPOSCategories() {
 
 
         posCategories =
-            Object.entries(data)
+            Object.entries(
+                data
+            )
             .map(
                 function (
                     [
@@ -386,7 +445,7 @@ async function loadPOSCategories() {
                         categoryId:
                             id,
 
-                        ...value
+                        ...(value || {})
 
                     };
 
@@ -447,6 +506,136 @@ async function loadPOSCategories() {
 
 
 // ==========================================================
+// GET CATEGORY NAME
+// ==========================================================
+
+function getCategoryName(category) {
+
+    return String(
+        category.name ||
+        category.categoryName ||
+        category.title ||
+        "Unnamed Category"
+    )
+    .trim();
+
+}
+
+
+// ==========================================================
+// FIND CATEGORY FOR PRODUCT
+// ==========================================================
+
+function getProductResolvedCategory(
+    product
+) {
+
+    const productCategoryId =
+        getProductCategoryId(
+            product
+        )
+        .toLowerCase();
+
+
+    const productCategoryName =
+        getProductCategory(
+            product
+        )
+        .toLowerCase();
+
+
+    if (
+        productCategoryId
+    ) {
+
+        const matchedById =
+            posCategories.find(
+                function (category) {
+
+                    return (
+                        String(
+                            category.categoryId
+                        )
+                        .toLowerCase() ===
+                        productCategoryId
+                    );
+
+                }
+            );
+
+
+        if (
+            matchedById
+        ) {
+
+            return getCategoryName(
+                matchedById
+            );
+
+        }
+
+    }
+
+
+    if (
+        productCategoryName
+    ) {
+
+        const matchedByName =
+            posCategories.find(
+                function (category) {
+
+                    const name =
+                        getCategoryName(
+                            category
+                        )
+                        .toLowerCase();
+
+
+                    const id =
+                        String(
+                            category.categoryId
+                        )
+                        .toLowerCase();
+
+
+                    return (
+                        name ===
+                        productCategoryName
+                    ) ||
+                    (
+                        id ===
+                        productCategoryName
+                    );
+
+                }
+            );
+
+
+        if (
+            matchedByName
+        ) {
+
+            return getCategoryName(
+                matchedByName
+            );
+
+        }
+
+
+        return getProductCategory(
+            product
+        );
+
+    }
+
+
+    return "";
+
+}
+
+
+// ==========================================================
 // RENDER CATEGORIES
 // ==========================================================
 
@@ -456,6 +645,7 @@ function renderPOSCategories() {
         document.getElementById(
             "posCategories"
         );
+
 
     if (!container) {
 
@@ -499,10 +689,24 @@ function renderPOSCategories() {
         function (category) {
 
             const categoryName =
-                category.name ||
-                category.categoryName ||
-                category.title ||
-                "Unnamed Category";
+                getCategoryName(
+                    category
+                );
+
+
+            const categoryId =
+                String(
+                    category.categoryId
+                );
+
+
+            const active =
+                String(
+                    posSelectedCategory
+                )
+                .toLowerCase() ===
+                categoryName
+                    .toLowerCase();
 
 
             html += `
@@ -512,14 +716,16 @@ function renderPOSCategories() {
                     class="
                         pos-category-btn
                         ${
-                            posSelectedCategory ===
-                            categoryName
+                            active
                                 ? "active"
                                 : ""
                         }
                     "
                     data-category="${posEscape(
                         categoryName
+                    )}"
+                    data-category-id="${posEscape(
+                        categoryId
                     )}">
 
                     <i
@@ -530,11 +736,9 @@ function renderPOSCategories() {
                     </i>
 
                     <span>
-
                         ${posEscape(
                             categoryName
                         )}
-
                     </span>
 
                 </button>
@@ -578,8 +782,17 @@ function bindCategoryButtons() {
                         "ALL";
 
 
+                    const categoryId =
+                        button.dataset.categoryId ||
+                        "";
+
+
                     posSelectedCategory =
                         category;
+
+
+                    window.posSelectedCategoryId =
+                        categoryId;
 
 
                     renderPOSCategories();
@@ -605,6 +818,7 @@ async function loadPOSProducts() {
         document.getElementById(
             "posProducts"
         );
+
 
     if (!container) {
 
@@ -678,7 +892,9 @@ async function loadPOSProducts() {
 
 
         posProducts =
-            Object.entries(data)
+            Object.entries(
+                data
+            )
             .map(
                 function (
                     [
@@ -692,7 +908,7 @@ async function loadPOSProducts() {
                         productId:
                             id,
 
-                        ...value
+                        ...(value || {})
 
                     };
 
@@ -774,6 +990,23 @@ function getFilteredPOSProducts() {
             : "";
 
 
+    const selectedCategory =
+        String(
+            posSelectedCategory
+        )
+        .trim()
+        .toLowerCase();
+
+
+    const selectedCategoryId =
+        String(
+            window.posSelectedCategoryId ||
+            ""
+        )
+        .trim()
+        .toLowerCase();
+
+
     return posProducts.filter(
         function (product) {
 
@@ -793,16 +1026,23 @@ function getFilteredPOSProducts() {
                 .toLowerCase();
 
 
-            const category =
+            const rawCategory =
                 getProductCategory(
                     product
                 )
                 .toLowerCase();
 
 
-            const selected =
-                String(
-                    posSelectedCategory
+            const rawCategoryId =
+                getProductCategoryId(
+                    product
+                )
+                .toLowerCase();
+
+
+            const resolvedCategory =
+                getProductResolvedCategory(
+                    product
                 )
                 .toLowerCase();
 
@@ -817,12 +1057,45 @@ function getFilteredPOSProducts() {
                 );
 
 
-            const matchesCategory =
-                selected === "all" ||
-                category === selected ||
-                category.includes(
-                    selected
-                );
+            let matchesCategory =
+                true;
+
+
+            if (
+                selectedCategory !==
+                "all"
+            ) {
+
+                matchesCategory =
+                    (
+                        rawCategory ===
+                        selectedCategory
+                    ) ||
+
+                    (
+                        resolvedCategory ===
+                        selectedCategory
+                    ) ||
+
+                    (
+                        selectedCategoryId &&
+                        rawCategoryId ===
+                        selectedCategoryId
+                    ) ||
+
+                    (
+                        rawCategory.includes(
+                            selectedCategory
+                        )
+                    ) ||
+
+                    (
+                        resolvedCategory.includes(
+                            selectedCategory
+                        )
+                    );
+
+            }
 
 
             return (
@@ -846,6 +1119,7 @@ function renderPOSProducts() {
         document.getElementById(
             "posProducts"
         );
+
 
     if (!container) {
 
@@ -950,7 +1224,6 @@ function renderPOSProducts() {
                                     pos-product-info
                                 ">
 
-
                                 <strong>
 
                                     ${posEscape(
@@ -967,7 +1240,6 @@ function renderPOSProducts() {
                                     )}
 
                                 </span>
-
 
                             </div>
 
@@ -1109,6 +1381,7 @@ function addProductToCart(
 
     renderPOSCart();
 
+
     showPOSStatus(
         "Product added.",
         "success"
@@ -1233,7 +1506,9 @@ function clearPOSCart() {
 
     posCart = [];
 
+
     renderPOSCart();
+
 
     showPOSStatus(
         "Order cleared.",
@@ -1246,11 +1521,7 @@ function clearPOSCart() {
 // ==========================================================
 // RENDER CART
 //
-// IMPORTANT:
-//
 // SN | ITEMS | QTY | TOTAL | ACTIONS
-//
-// ACTIONS ARE AFTER TOTAL.
 // ==========================================================
 
 function renderPOSCart() {
@@ -1319,8 +1590,16 @@ function renderPOSCart() {
                 ) {
 
                     const lineTotal =
-                        item.price *
-                        item.qty;
+                        (
+                            Number(
+                                item.price
+                            ) || 0
+                        ) *
+                        (
+                            Number(
+                                item.qty
+                            ) || 0
+                        );
 
 
                     return `
@@ -1356,7 +1635,6 @@ function renderPOSCart() {
                                     pos-cart-item
                                 ">
 
-
                                 <strong>
 
                                     ${posEscape(
@@ -1374,7 +1652,6 @@ function renderPOSCart() {
                                     each
 
                                 </small>
-
 
                             </div>
 
@@ -1414,7 +1691,7 @@ function renderPOSCart() {
 
 
 
-                            <!-- ACTIONS -->
+                            <!-- ACTIONS AFTER TOTAL -->
 
                             <div
                                 class="
@@ -1435,14 +1712,12 @@ function renderPOSCart() {
                                     )}"
                                     title="Decrease Quantity">
 
-
                                     <i
                                         class="
                                             fa-solid
                                             fa-minus
                                         ">
                                     </i>
-
 
                                 </button>
 
@@ -1460,14 +1735,12 @@ function renderPOSCart() {
                                     )}"
                                     title="Increase Quantity">
 
-
                                     <i
                                         class="
                                             fa-solid
                                             fa-plus
                                         ">
                                     </i>
-
 
                                 </button>
 
@@ -1485,14 +1758,12 @@ function renderPOSCart() {
                                     )}"
                                     title="Delete Item">
 
-
                                     <i
                                         class="
                                             fa-solid
                                             fa-trash-can
                                         ">
                                     </i>
-
 
                                 </button>
 
@@ -1510,6 +1781,7 @@ function renderPOSCart() {
 
 
     bindCartButtons();
+
 
     updatePOSTotals();
 
@@ -1762,6 +2034,7 @@ function updatePOSTotals() {
 
     updatePOSChange();
 
+
     updatePOSPayButton();
 
 }
@@ -1914,7 +2187,7 @@ function updatePOSPayButton() {
 
 
 // ==========================================================
-// PAYMENT METHOD
+// PAYMENT METHODS
 // ==========================================================
 
 function setupPaymentMethods() {
@@ -1983,35 +2256,29 @@ function updatePOSPaymentFields() {
     }
 
 
+    const total =
+        getPOSGrandTotal();
+
+
     if (
-        posPaymentMethod ===
+        posPaymentMethod !==
         "Cash"
     ) {
-
-        amountInput.disabled =
-            false;
-
-    }
-
-    else {
-
-        const total =
-            getPOSGrandTotal();
-
 
         amountInput.value =
             total
                 ? total.toFixed(2)
                 : "";
 
-
-        amountInput.disabled =
-            false;
-
     }
 
 
+    amountInput.disabled =
+        false;
+
+
     updatePOSChange();
+
 
     updatePOSPayButton();
 
@@ -2050,7 +2317,7 @@ function setupPOSSearch() {
 
 
 // ==========================================================
-// REFRESH PRODUCTS
+// REFRESH
 // ==========================================================
 
 function setupPOSRefresh() {
@@ -2090,6 +2357,15 @@ function setupPOSRefresh() {
                 showPOSStatus(
                     "Products refreshed.",
                     "success"
+                );
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Refresh Error:",
+                    error
                 );
 
             }
@@ -2164,6 +2440,7 @@ function setupPOSAmountReceived() {
 
             updatePOSChange();
 
+
             updatePOSPayButton();
 
         }
@@ -2173,7 +2450,7 @@ function setupPOSAmountReceived() {
 
 
 // ==========================================================
-// CLEAR CART BUTTON
+// CLEAR CART
 // ==========================================================
 
 function setupPOSClearCart() {
@@ -2232,13 +2509,16 @@ function setupPOSFullscreen() {
                     !document.fullscreenElement
                 ) {
 
-                    await document.documentElement.requestFullscreen();
+                    await document
+                        .documentElement
+                        .requestFullscreen();
 
                 }
 
                 else {
 
-                    await document.exitFullscreen();
+                    await document
+                        .exitFullscreen();
 
                 }
 
@@ -2339,6 +2619,7 @@ function setupPOSHold() {
                 "pappritoHeldOrder",
                 JSON.stringify(
                     {
+
                         orderNumber:
                             posOrderNumber,
 
@@ -2366,6 +2647,7 @@ function setupPOSHold() {
 
 
             posCart = [];
+
 
             renderPOSCart();
 
@@ -2449,9 +2731,7 @@ function setupPOSRecall() {
                     );
 
 
-                if (
-                    customer
-                ) {
+                if (customer) {
 
                     customer.value =
                         order.customer ||
@@ -2471,9 +2751,7 @@ function setupPOSRecall() {
                     );
 
 
-                if (
-                    discount
-                ) {
+                if (discount) {
 
                     discount.value =
                         order.discount ||
@@ -2484,12 +2762,16 @@ function setupPOSRecall() {
 
                 renderPOSCart();
 
+
                 updatePaymentMethodUI();
 
 
                 localStorage.removeItem(
                     "pappritoHeldOrder"
                 );
+
+
+                updatePOSOrderNumber();
 
 
                 showPOSStatus(
@@ -2641,9 +2923,13 @@ function openPOSPaymentModal() {
         );
 
 
-    if (
-        modalTotal
-    ) {
+    const modalChange =
+        document.getElementById(
+            "posModalChange"
+        );
+
+
+    if (modalTotal) {
 
         modalTotal.textContent =
             posMoney(
@@ -2653,16 +2939,14 @@ function openPOSPaymentModal() {
     }
 
 
-    if (
-        modalAmount
-    ) {
+    if (modalAmount) {
 
         modalAmount.value =
             getPOSAmountReceived()
                 .toFixed(2);
 
-        modalAmount.addEventListener(
-            "input",
+
+        modalAmount.oninput =
             function () {
 
                 const amount =
@@ -2679,25 +2963,19 @@ function openPOSPaymentModal() {
                     );
 
 
-                const changeElement =
-                    document.getElementById(
-                        "posModalChange"
-                    );
+                if (modalChange) {
 
-
-                if (
-                    changeElement
-                ) {
-
-                    changeElement.textContent =
+                    modalChange.textContent =
                         posMoney(
                             change
                         );
 
                 }
 
-            }
-        );
+            };
+
+
+        modalAmount.oninput();
 
     }
 
@@ -2713,14 +2991,13 @@ function openPOSPaymentModal() {
             );
 
 
-        if (
-            element
-        ) {
+        if (element) {
 
             const modal =
-                bootstrap.Modal.getOrCreateInstance(
-                    element
-                );
+                bootstrap.Modal
+                    .getOrCreateInstance(
+                        element
+                    );
 
 
             modal.show();
@@ -2817,8 +3094,16 @@ async function completePOSPayment() {
                             item.qty,
 
                         total:
-                            item.price *
-                            item.qty
+                            (
+                                Number(
+                                    item.price
+                                ) || 0
+                            ) *
+                            (
+                                Number(
+                                    item.qty
+                                ) || 0
+                            )
 
                     };
 
@@ -2864,6 +3149,14 @@ async function completePOSPayment() {
         }
 
 
+        posLastSale =
+            sale;
+
+
+        window.currentPOSReceipt =
+            sale;
+
+
         generatePOSReceipt(
             sale
         );
@@ -2871,23 +3164,50 @@ async function completePOSPayment() {
 
         posCart = [];
 
+
         renderPOSCart();
 
 
-        document.getElementById(
-            "posAmountReceived"
-        ).value = "";
+        const amountInput =
+            document.getElementById(
+                "posAmountReceived"
+            );
 
 
-        document.getElementById(
-            "posDiscount"
-        ).value = "";
+        if (amountInput) {
+
+            amountInput.value =
+                "";
+
+        }
 
 
-        document.getElementById(
-            "posCustomerName"
-        ).value =
-            "Walk-in Customer";
+        const discountInput =
+            document.getElementById(
+                "posDiscount"
+            );
+
+
+        if (discountInput) {
+
+            discountInput.value =
+                "";
+
+        }
+
+
+        const customerInput =
+            document.getElementById(
+                "posCustomerName"
+            );
+
+
+        if (customerInput) {
+
+            customerInput.value =
+                "Walk-in Customer";
+
+        }
 
 
         posOrderNumber =
@@ -2962,7 +3282,7 @@ function closePaymentModal() {
 
 
 // ==========================================================
-// RECEIPT
+// GENERATE RECEIPT MODAL
 // ==========================================================
 
 function generatePOSReceipt(
@@ -3162,7 +3482,10 @@ function generatePOSReceipt(
                 </div>
 
 
-                <div class="receipt-grand-total">
+                <div
+                    class="
+                        receipt-grand-total
+                    ">
 
                     <span>
                         TOTAL
@@ -3192,7 +3515,12 @@ function generatePOSReceipt(
                 </div>
 
 
-                <div class="receipt-change">
+                <!-- ONE CHANGE ONLY -->
+
+                <div
+                    class="
+                        receipt-change
+                    ">
 
                     <span>
                         CHANGE
@@ -3250,6 +3578,10 @@ function generatePOSReceipt(
 
 // ==========================================================
 // PRINT RECEIPT
+//
+// TRUE 80MM THERMAL STYLE
+//
+// SN | ITEMS | QTY | TOTAL
 // ==========================================================
 
 function setupPOSPrintReceipt() {
@@ -3271,13 +3603,17 @@ function setupPOSPrintReceipt() {
         "click",
         function () {
 
-            const receipt =
-                document.getElementById(
-                    "posReceiptContent"
+            const sale =
+                posLastSale ||
+                window.currentPOSReceipt;
+
+
+            if (!sale) {
+
+                showPOSStatus(
+                    "No receipt available.",
+                    "error"
                 );
-
-
-            if (!receipt) {
 
                 return;
 
@@ -3288,7 +3624,7 @@ function setupPOSPrintReceipt() {
                 window.open(
                     "",
                     "_blank",
-                    "width=450,height=700"
+                    "width=420,height=700"
                 );
 
 
@@ -3303,196 +3639,1004 @@ function setupPOSPrintReceipt() {
             }
 
 
-            printWindow.document.write(`
+            const itemsHTML =
+                (sale.items || [])
+                    .map(
+                        function (
+                            item,
+                            index
+                        ) {
 
-                <!DOCTYPE html>
-
-                <html>
-
-                <head>
-
-                    <title>
-                        PAPPRITO Receipt
-                    </title>
-
-
-                    <style>
-
-                        body {
-
-                            font-family:
-                                Arial,
-                                sans-serif;
-
-                            width:
-                                300px;
-
-                            margin:
-                                0 auto;
-
-                            padding:
-                                15px;
-
-                            font-size:
-                                12px;
-
-                        }
+                            const qty =
+                                Number(
+                                    item.qty
+                                ) || 0;
 
 
-                        .pos-receipt {
-
-                            width:
-                                100%;
-
-                        }
+                            const price =
+                                Number(
+                                    item.price
+                                ) || 0;
 
 
-                        .pos-receipt-header {
-
-                            text-align:
-                                center;
-
-                            margin-bottom:
-                                15px;
-
-                        }
-
-
-                        .pos-receipt-header h3 {
-
-                            margin:
-                                0;
-
-                            font-size:
-                                22px;
-
-                        }
+                            const itemTotal =
+                                Number(
+                                    item.total
+                                ) ||
+                                (
+                                    price *
+                                    qty
+                                );
 
 
-                        .pos-receipt-header p {
+                            return `
 
-                            margin:
-                                2px 0;
+                                <div
+                                    class="
+                                        thermal-item
+                                    ">
 
-                        }
+
+                                    <div
+                                        class="
+                                            thermal-sn
+                                        ">
+
+                                        ${index + 1}
+
+                                    </div>
 
 
-                        .pos-receipt-info > div,
-                        .pos-receipt-summary > div {
+                                    <div
+                                        class="
+                                            thermal-item-name
+                                        ">
 
-                            display:
-                                flex;
+                                        ${posEscape(
+                                            item.name
+                                        )}
 
-                            justify-content:
-                                space-between;
+                                    </div>
 
-                            gap:
-                                10px;
 
-                            margin:
-                                5px 0;
+                                    <div
+                                        class="
+                                            thermal-qty
+                                        ">
+
+                                        ${qty}
+
+                                    </div>
+
+
+                                    <div
+                                        class="
+                                            thermal-item-total
+                                        ">
+
+                                        ${posMoney(
+                                            itemTotal
+                                        )}
+
+                                    </div>
+
+
+                                </div>
+
+                            `;
 
                         }
+                    )
+                    .join("");
 
 
-                        .receipt-item {
+            const receiptHTML = `
 
-                            display:
-                                flex;
+<!DOCTYPE html>
 
-                            justify-content:
-                                space-between;
+<html lang="en">
 
-                            gap:
-                                10px;
+<head>
 
-                            border-bottom:
-                                1px dashed #999;
+<meta charset="UTF-8">
 
-                            padding:
-                                7px 0;
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0">
 
-                        }
-
-
-                        .receipt-item small {
-
-                            display:
-                                block;
-
-                        }
+<title>
+    PAPPRITO Receipt
+</title>
 
 
-                        .receipt-grand-total {
+<style>
 
-                            border-top:
-                                2px solid #000;
+/* ======================================================
+   THERMAL 80MM
+====================================================== */
 
-                            padding-top:
-                                8px;
+@page {
 
-                            font-size:
-                                15px;
+    size:
+        80mm auto;
 
-                        }
+    margin:
+        0;
 
-
-                        .receipt-change {
-
-                            font-size:
-                                14px;
-
-                        }
+}
 
 
-                        .pos-receipt-footer {
+html,
+body {
 
-                            text-align:
-                                center;
+    width:
+        80mm;
 
-                            border-top:
-                                1px dashed #000;
+    margin:
+        0;
 
-                            margin-top:
-                                15px;
+    padding:
+        0;
 
-                            padding-top:
-                                10px;
+    background:
+        #ffffff;
 
-                        }
-
-                    </style>
-
-                </head>
+}
 
 
-                <body>
+body {
 
-                    ${receipt.innerHTML}
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
 
-                </body>
+    color:
+        #000000;
 
-                </html>
+    font-size:
+        10px;
 
-            `);
+    line-height:
+        1.25;
+
+    -webkit-print-color-adjust:
+        exact;
+
+    print-color-adjust:
+        exact;
+
+}
+
+
+/* ======================================================
+   RECEIPT
+====================================================== */
+
+.thermal-receipt {
+
+    width:
+        72mm;
+
+    max-width:
+        72mm;
+
+    margin:
+        0 auto;
+
+    padding:
+        3mm 0 6mm;
+
+}
+
+
+/* ======================================================
+   HEADER
+====================================================== */
+
+.thermal-header {
+
+    text-align:
+        center;
+
+    margin-bottom:
+        5px;
+
+}
+
+
+.thermal-logo {
+
+    font-size:
+        22px;
+
+    line-height:
+        23px;
+
+    font-weight:
+        900;
+
+    letter-spacing:
+        .5px;
+
+}
+
+
+.thermal-restaurant {
+
+    font-size:
+        11px;
+
+    font-weight:
+        700;
+
+    margin-top:
+        2px;
+
+}
+
+
+.thermal-receipt-title {
+
+    font-size:
+        9px;
+
+    margin-top:
+        2px;
+
+}
+
+
+/* ======================================================
+   LINES
+====================================================== */
+
+.thermal-line {
+
+    border-top:
+        1px dashed #000;
+
+    margin:
+        5px 0;
+
+}
+
+
+.thermal-line-solid {
+
+    border-top:
+        1px solid #000;
+
+    margin:
+        5px 0;
+
+}
+
+
+/* ======================================================
+   INFO
+====================================================== */
+
+.thermal-info-row {
+
+    display:
+        flex;
+
+    justify-content:
+        space-between;
+
+    align-items:
+        flex-start;
+
+    gap:
+        8px;
+
+    padding:
+        1.5px 0;
+
+    font-size:
+        9px;
+
+}
+
+
+.thermal-info-label {
+
+    white-space:
+        nowrap;
+
+}
+
+
+.thermal-info-value {
+
+    text-align:
+        right;
+
+    font-weight:
+        700;
+
+    overflow-wrap:
+        anywhere;
+
+}
+
+
+/* ======================================================
+   ITEM HEADER
+====================================================== */
+
+.thermal-items-header {
+
+    display:
+        grid;
+
+    grid-template-columns:
+        20px
+        minmax(0,1fr)
+        28px
+        58px;
+
+    column-gap:
+        3px;
+
+    align-items:
+        center;
+
+    padding:
+        3px 0;
+
+    border-top:
+        1px solid #000;
+
+    border-bottom:
+        1px solid #000;
+
+    font-size:
+        8px;
+
+    font-weight:
+        900;
+
+}
+
+
+.thermal-items-header .sn {
+
+    text-align:
+        center;
+
+}
+
+
+.thermal-items-header .qty {
+
+    text-align:
+        center;
+
+}
+
+
+.thermal-items-header .total {
+
+    text-align:
+        right;
+
+}
+
+
+/* ======================================================
+   ITEMS
+====================================================== */
+
+.thermal-item {
+
+    display:
+        grid;
+
+    grid-template-columns:
+        20px
+        minmax(0,1fr)
+        28px
+        58px;
+
+    column-gap:
+        3px;
+
+    align-items:
+        start;
+
+    padding:
+        4px 0;
+
+    border-bottom:
+        1px dashed #aaa;
+
+    font-size:
+        9px;
+
+}
+
+
+.thermal-sn {
+
+    text-align:
+        center;
+
+}
+
+
+.thermal-item-name {
+
+    min-width:
+        0;
+
+    overflow-wrap:
+        anywhere;
+
+    font-weight:
+        700;
+
+}
+
+
+.thermal-qty {
+
+    text-align:
+        center;
+
+    font-weight:
+        700;
+
+}
+
+
+.thermal-item-total {
+
+    text-align:
+        right;
+
+    font-weight:
+        700;
+
+    white-space:
+        nowrap;
+
+}
+
+
+/* ======================================================
+   SUMMARY
+====================================================== */
+
+.thermal-summary {
+
+    margin-top:
+        5px;
+
+}
+
+
+.thermal-summary-row {
+
+    display:
+        flex;
+
+    justify-content:
+        space-between;
+
+    align-items:
+        center;
+
+    gap:
+        8px;
+
+    padding:
+        2px 0;
+
+    font-size:
+        9px;
+
+}
+
+
+.thermal-summary-row strong {
+
+    white-space:
+        nowrap;
+
+}
+
+
+/* ======================================================
+   GRAND TOTAL
+====================================================== */
+
+.thermal-grand-total {
+
+    display:
+        flex;
+
+    justify-content:
+        space-between;
+
+    align-items:
+        center;
+
+    gap:
+        8px;
+
+    margin:
+        4px 0;
+
+    padding:
+        5px 0;
+
+    border-top:
+        2px solid #000;
+
+    border-bottom:
+        2px solid #000;
+
+    font-size:
+        14px;
+
+    font-weight:
+        900;
+
+}
+
+
+.thermal-grand-total strong {
+
+    font-size:
+        15px;
+
+    white-space:
+        nowrap;
+
+}
+
+
+/* ======================================================
+   CHANGE
+====================================================== */
+
+.thermal-change {
+
+    display:
+        flex;
+
+    justify-content:
+        space-between;
+
+    align-items:
+        center;
+
+    gap:
+        8px;
+
+    padding:
+        4px 0;
+
+    font-size:
+        12px;
+
+    font-weight:
+        900;
+
+}
+
+
+.thermal-change strong {
+
+    white-space:
+        nowrap;
+
+}
+
+
+/* ======================================================
+   FOOTER
+====================================================== */
+
+.thermal-footer {
+
+    text-align:
+        center;
+
+    margin-top:
+        8px;
+
+    font-size:
+        9px;
+
+}
+
+
+.thermal-thank-you {
+
+    font-size:
+        10px;
+
+    font-weight:
+        700;
+
+    margin-top:
+        6px;
+
+}
+
+
+.thermal-system {
+
+    font-size:
+        7px;
+
+    margin-top:
+        3px;
+
+}
+
+
+/* ======================================================
+   PRINT
+====================================================== */
+
+@media print {
+
+    html,
+    body {
+
+        width:
+            80mm;
+
+        margin:
+            0;
+
+        padding:
+            0;
+
+    }
+
+
+    .thermal-receipt {
+
+        width:
+            72mm;
+
+        max-width:
+            72mm;
+
+        margin:
+            0 auto;
+
+        padding:
+            3mm 0 6mm;
+
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="thermal-receipt">
+
+
+    <!-- ==============================================
+         HEADER
+    =============================================== -->
+
+    <div class="thermal-header">
+
+        <div class="thermal-logo">
+
+            PAPPRITO
+
+        </div>
+
+
+        <div class="thermal-restaurant">
+
+            RESTAURANT
+
+        </div>
+
+
+        <div class="thermal-receipt-title">
+
+            Official Sales Receipt
+
+        </div>
+
+    </div>
+
+
+    <div class="thermal-line"></div>
+
+
+    <!-- ==============================================
+         ORDER INFORMATION
+    =============================================== -->
+
+    <div class="thermal-info-row">
+
+        <span class="thermal-info-label">
+            Order
+        </span>
+
+        <span class="thermal-info-value">
+
+            ${posEscape(
+                sale.orderNumber ||
+                ""
+            )}
+
+        </span>
+
+    </div>
+
+
+    <div class="thermal-info-row">
+
+        <span class="thermal-info-label">
+            Customer
+        </span>
+
+        <span class="thermal-info-value">
+
+            ${posEscape(
+                sale.customer ||
+                "Walk-in Customer"
+            )}
+
+        </span>
+
+    </div>
+
+
+    <div class="thermal-info-row">
+
+        <span class="thermal-info-label">
+            Payment
+        </span>
+
+        <span class="thermal-info-value">
+
+            ${posEscape(
+                sale.paymentMethod ||
+                "Cash"
+            )}
+
+        </span>
+
+    </div>
+
+
+    <div class="thermal-info-row">
+
+        <span class="thermal-info-label">
+            Date
+        </span>
+
+        <span class="thermal-info-value">
+
+            ${new Date(
+                sale.createdAt ||
+                Date.now()
+            ).toLocaleString(
+                "en-PH"
+            )}
+
+        </span>
+
+    </div>
+
+
+    <div class="thermal-line"></div>
+
+
+    <!-- ==============================================
+         ITEMS HEADER
+    =============================================== -->
+
+    <div class="thermal-items-header">
+
+        <div class="sn">
+            SN
+        </div>
+
+        <div>
+            ITEMS
+        </div>
+
+        <div class="qty">
+            QTY
+        </div>
+
+        <div class="total">
+            TOTAL
+        </div>
+
+    </div>
+
+
+    <!-- ==============================================
+         ITEMS
+    =============================================== -->
+
+    ${itemsHTML}
+
+
+    <!-- ==============================================
+         SUMMARY
+    =============================================== -->
+
+    <div class="thermal-summary">
+
+
+        <div class="thermal-summary-row">
+
+            <span>
+                Subtotal
+            </span>
+
+            <strong>
+                ${posMoney(
+                    sale.subtotal
+                )}
+            </strong>
+
+        </div>
+
+
+        <div class="thermal-summary-row">
+
+            <span>
+                Discount
+            </span>
+
+            <strong>
+                ${posMoney(
+                    sale.discount
+                )}
+            </strong>
+
+        </div>
+
+
+        <div class="thermal-grand-total">
+
+            <span>
+                TOTAL
+            </span>
+
+            <strong>
+                ${posMoney(
+                    sale.total
+                )}
+            </strong>
+
+        </div>
+
+
+        <div class="thermal-summary-row">
+
+            <span>
+                Amount Received
+            </span>
+
+            <strong>
+                ${posMoney(
+                    sale.amountReceived
+                )}
+            </strong>
+
+        </div>
+
+
+        <!-- ONE CHANGE ROW -->
+
+        <div class="thermal-change">
+
+            <span>
+                CHANGE
+            </span>
+
+            <strong>
+                ${posMoney(
+                    sale.change
+                )}
+            </strong>
+
+        </div>
+
+
+    </div>
+
+
+    <!-- ==============================================
+         FOOTER
+    =============================================== -->
+
+    <div class="thermal-footer">
+
+        <div class="thermal-line"></div>
+
+
+        <div class="thermal-thank-you">
+
+            Thank you for dining with us!
+
+        </div>
+
+
+        <div class="thermal-system">
+
+            PAPPRITO Restaurant POS
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+<script>
+
+window.onload = function () {
+
+    setTimeout(
+        function () {
+
+            window.print();
+
+        },
+        300
+    );
+
+};
+
+
+window.onafterprint = function () {
+
+    setTimeout(
+        function () {
+
+            window.close();
+
+        },
+        300
+    );
+
+};
+
+<\/script>
+
+
+</body>
+
+</html>
+
+            `;
+
+
+            printWindow.document.write(
+                receiptHTML
+            );
 
 
             printWindow.document.close();
 
 
             printWindow.focus();
-
-
-            setTimeout(
-                function () {
-
-                    printWindow.print();
-
-                    printWindow.close();
-
-                },
-                300
-            );
 
         }
     );
@@ -3553,6 +4697,7 @@ function setupPOSDateTime() {
             now.toLocaleString(
                 "en-PH",
                 {
+
                     year:
                         "numeric",
 
@@ -3595,7 +4740,7 @@ function setupPOSDateTime() {
 
 
 // ==========================================================
-// KEY PAD
+// KEYPAD
 // ==========================================================
 
 function setupPOSKeypad() {
@@ -3628,10 +4773,8 @@ function setupPOSKeypad() {
 
                         if (
                             input &&
-                            (
-                                input.tagName ===
-                                "INPUT"
-                            )
+                            input.tagName ===
+                            "INPUT"
                         ) {
 
                             input.value =
@@ -3652,10 +4795,8 @@ function setupPOSKeypad() {
 
                     if (
                         input &&
-                        (
-                            input.tagName ===
-                            "INPUT"
-                        )
+                        input.tagName ===
+                        "INPUT"
                     ) {
 
                         input.value +=
@@ -3679,9 +4820,7 @@ function setupPOSKeypad() {
                         );
 
 
-                    if (
-                        amount
-                    ) {
+                    if (amount) {
 
                         amount.value +=
                             value;
