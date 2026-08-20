@@ -1434,9 +1434,7 @@ else {
         function renderCart() {
 
             const container =
-                el(
-                    "posCart"
-                );
+                el("posCart");
 
 
             if (!container) {
@@ -1446,9 +1444,7 @@ else {
             }
 
 
-            if (
-                POS.cart.length === 0
-            ) {
+            if (POS.cart.length === 0) {
 
                 container.innerHTML = `
 
@@ -1473,114 +1469,161 @@ else {
             }
 
 
-            container.innerHTML =
-                POS.cart
-                .map(
-                    (item, index) => {
+            /*
+               CART FORMAT
 
-                        const lineTotal =
-                            number(
-                                item.price
-                            ) *
-                            number(
-                                item.quantity
-                            );
+               SN | ITEMS | QTY | TOTAL
+            */
+
+            container.innerHTML = `
+
+                <div class="pos-cart-table">
+
+                    <div class="pos-cart-table-head">
+
+                        <div class="pos-cart-sn">
+                            SN
+                        </div>
+
+                        <div class="pos-cart-items">
+                            ITEMS
+                        </div>
+
+                        <div class="pos-cart-qty">
+                            QTY
+                        </div>
+
+                        <div class="pos-cart-total">
+                            TOTAL
+                        </div>
+
+                    </div>
 
 
-                        return `
+                    <div class="pos-cart-table-body">
 
-                            <div
-                                class="pos-cart-item"
-                                data-cart-index="${index}">
+                        ${POS.cart.map(
+                            (item, index) => {
 
-                                <div class="pos-cart-item-main">
+                                const lineTotal =
+                                    number(item.price) *
+                                    number(item.quantity);
 
-                                    <div class="pos-cart-item-name">
 
-                                        ${escapeHTML(
-                                            item.name
-                                        )}
+                                return `
+
+                                    <div
+                                        class="pos-cart-row"
+                                        data-cart-index="${index}">
+
+                                        <div class="pos-cart-sn">
+
+                                            ${index + 1}
+
+                                        </div>
+
+
+                                        <div class="pos-cart-items">
+
+                                            <div class="pos-cart-item-name">
+
+                                                ${escapeHTML(
+                                                    item.name
+                                                )}
+
+                                            </div>
+
+
+                                            <div class="pos-cart-item-price">
+
+                                                ${money(
+                                                    item.price
+                                                )}
+                                                each
+
+                                            </div>
+
+                                        </div>
+
+
+                                        <div class="pos-cart-qty">
+
+                                            <div class="pos-cart-controls">
+
+                                                <button
+                                                    type="button"
+                                                    data-action="decrease"
+                                                    data-index="${index}"
+                                                    aria-label="Decrease quantity">
+
+                                                    <i class="fa-solid fa-minus"></i>
+
+                                                </button>
+
+
+                                                <span class="pos-cart-quantity">
+
+                                                    ${item.quantity}
+
+                                                </span>
+
+
+                                                <button
+                                                    type="button"
+                                                    data-action="increase"
+                                                    data-index="${index}"
+                                                    aria-label="Increase quantity">
+
+                                                    <i class="fa-solid fa-plus"></i>
+
+                                                </button>
+
+                                            </div>
+
+                                        </div>
+
+
+                                        <div class="pos-cart-total">
+
+                                            <strong>
+
+                                                ${money(
+                                                    lineTotal
+                                                )}
+
+                                            </strong>
+
+
+                                            <button
+                                                type="button"
+                                                class="pos-cart-remove"
+                                                data-action="remove"
+                                                data-index="${index}"
+                                                aria-label="Remove item"
+                                                title="Remove item">
+
+                                                <i class="fa-solid fa-trash"></i>
+
+                                            </button>
+
+                                        </div>
 
                                     </div>
 
+                                `;
 
-                                    <div class="pos-cart-item-price">
+                            }
+                        ).join("")}
 
-                                        ${money(
-                                            item.price
-                                        )}
-                                        each
+                    </div>
 
-                                    </div>
+                </div>
 
-                                </div>
-
-
-                                <div class="pos-cart-item-total">
-
-                                    ${money(
-                                        lineTotal
-                                    )}
-
-                                </div>
-
-
-                                <div class="pos-cart-controls">
-
-                                    <button
-                                        type="button"
-                                        data-action="decrease"
-                                        data-index="${index}"
-                                        aria-label="Decrease">
-
-                                        <i class="fa-solid fa-minus"></i>
-
-                                    </button>
-
-
-                                    <span>
-
-                                        ${item.quantity}
-
-                                    </span>
-
-
-                                    <button
-                                        type="button"
-                                        data-action="increase"
-                                        data-index="${index}"
-                                        aria-label="Increase">
-
-                                        <i class="fa-solid fa-plus"></i>
-
-                                    </button>
-
-
-                                    <button
-                                        type="button"
-                                        data-action="remove"
-                                        data-index="${index}"
-                                        aria-label="Remove">
-
-                                        <i class="fa-solid fa-trash"></i>
-
-                                    </button>
-
-                                </div>
-
-                            </div>
-
-                        `;
-
-                    }
-                )
-                .join("");
+            `;
 
 
             container
-                .querySelectorAll(
-                    "[data-action]"
-                )
+                .querySelectorAll("[data-action]")
                 .forEach(
                     button => {
 
@@ -1601,36 +1644,21 @@ else {
                                     button.dataset.action;
 
 
-                                if (
-                                    action ===
-                                    "increase"
-                                ) {
+                                if (action === "increase") {
 
-                                    increaseItem(
-                                        index
-                                    );
+                                    increaseItem(index);
 
                                 }
 
-                                else if (
-                                    action ===
-                                    "decrease"
-                                ) {
+                                else if (action === "decrease") {
 
-                                    decreaseItem(
-                                        index
-                                    );
+                                    decreaseItem(index);
 
                                 }
 
-                                else if (
-                                    action ===
-                                    "remove"
-                                ) {
+                                else if (action === "remove") {
 
-                                    removeItem(
-                                        index
-                                    );
+                                    removeItem(index);
 
                                 }
 
@@ -1829,9 +1857,8 @@ else {
 
 
             const amountInput =
-                el(
-                    "posAmountReceived"
-                );
+                el("posPaymentAmount") ||
+                el("posAmountReceived");
 
 
             if (amountInput) {
@@ -2161,9 +2188,8 @@ else {
         function paymentAmount() {
 
             const input =
-                el(
-                    "posAmountReceived"
-                );
+                el("posPaymentAmount") ||
+                el("posAmountReceived");
 
 
             return input
@@ -2757,9 +2783,8 @@ else {
 
 
                 const amountInput =
-                    el(
-                        "posAmountReceived"
-                    );
+                    el("posPaymentAmount") ||
+                    el("posAmountReceived");
 
 
                 if (amountInput) {
@@ -2845,22 +2870,45 @@ else {
             const items =
                 (sale.items || [])
                 .map(
-                    item => `
+                    (item, index) => {
 
-                        <div
-                            style="
-                                display:flex;
-                                justify-content:space-between;
-                                gap:12px;
-                                padding:6px 0;
-                                border-bottom:1px dashed #ddd;
-                            ">
+                        const qty =
+                            number(item.quantity);
 
-                            <div>
+
+                        const total =
+                            number(item.total) ||
+                            (
+                                number(item.price) *
+                                qty
+                            );
+
+
+                        return `
+
+                            <div
+                                style="
+                                    display:grid;
+                                    grid-template-columns:28px minmax(0,1fr) 42px 78px;
+                                    align-items:center;
+                                    gap:6px;
+                                    padding:7px 0;
+                                    border-bottom:1px dashed #ddd;
+                                    font-size:12px;
+                                ">
+
+                                <div style="text-align:center;">
+
+                                    ${index + 1}
+
+                                </div>
+
 
                                 <div
                                     style="
                                         font-weight:700;
+                                        overflow:hidden;
+                                        word-break:break-word;
                                     ">
 
                                     ${escapeHTML(
@@ -2869,34 +2917,31 @@ else {
 
                                 </div>
 
+
+                                <div style="text-align:center;">
+
+                                    ${qty}
+
+                                </div>
+
+
                                 <div
                                     style="
-                                        font-size:11px;
-                                        color:#777;
+                                        text-align:right;
+                                        font-weight:700;
                                     ">
 
-                                    ${item.quantity}
-                                    ×
                                     ${money(
-                                        item.price
+                                        total
                                     )}
 
                                 </div>
 
                             </div>
 
+                        `;
 
-                            <strong>
-
-                                ${money(
-                                    item.total
-                                )}
-
-                            </strong>
-
-                        </div>
-
-                    `
+                    }
                 )
                 .join("");
 
@@ -3014,6 +3059,41 @@ else {
                     <hr>
 
 
+                    <!-- ==================================================
+                         RECEIPT TABLE
+                         SN | ITEMS | QTY | TOTAL
+                    ================================================== -->
+
+                    <div
+                        style="
+                            display:grid;
+                            grid-template-columns:28px minmax(0,1fr) 42px 78px;
+                            gap:6px;
+                            padding:6px 0;
+                            border-bottom:2px solid #222;
+                            font-size:10px;
+                            font-weight:900;
+                        ">
+
+                        <div style="text-align:center;">
+                            SN
+                        </div>
+
+                        <div>
+                            ITEMS
+                        </div>
+
+                        <div style="text-align:center;">
+                            QTY
+                        </div>
+
+                        <div style="text-align:right;">
+                            TOTAL
+                        </div>
+
+                    </div>
+
+
                     ${items}
 
 
@@ -3074,6 +3154,7 @@ else {
                             TOTAL
                         </span>
 
+
                         <strong
                             style="
                                 color:#c8102e;
@@ -3108,15 +3189,21 @@ else {
                     </div>
 
 
+                    <!-- ==================================================
+                         ONE CHANGE ROW ONLY
+                    ================================================== -->
+
                     <div
                         style="
                             display:flex;
                             justify-content:space-between;
-                            padding:4px 0;
+                            padding:6px 0;
+                            border-top:1px solid #ddd;
+                            font-weight:900;
                         ">
 
                         <span>
-                            Change
+                            CHANGE
                         </span>
 
                         <strong>
@@ -3168,9 +3255,8 @@ else {
         ) {
 
             const content =
-                el(
-                    "posReceiptContent"
-                );
+                el("posReceipt") ||
+                el("posReceiptContent");
 
 
             if (content) {
@@ -3465,9 +3551,8 @@ else {
 
 
                                 const input =
-                                    el(
-                                        "posAmountReceived"
-                                    );
+                                    el("posPaymentAmount") ||
+                                    el("posAmountReceived");
 
 
                                 if (!input) {
@@ -3744,9 +3829,8 @@ else {
         function bindPaymentInput() {
 
             const input =
-                el(
-                    "posAmountReceived"
-                );
+                el("posPaymentAmount") ||
+                el("posAmountReceived");
 
 
             if (!input) {
@@ -3876,9 +3960,8 @@ else {
         function bindPrint() {
 
             const button =
-                el(
-                    "posPrintReceiptBtn"
-                );
+                el("posPrintReceipt") ||
+                el("posPrintReceiptBtn");
 
 
             if (!button) {
@@ -3926,9 +4009,8 @@ else {
 
 
             const mainInput =
-                el(
-                    "posAmountReceived"
-                );
+                el("posPaymentAmount") ||
+                el("posAmountReceived");
 
 
             if (
@@ -4780,7 +4862,7 @@ else {
 
         /* ==================================================
            DIRECT POS SUPPORT
-           
+
            Only initialize automatically when this script
            is used independently and app.js is NOT controlling
            initialization.
@@ -4852,4 +4934,4 @@ else {
 
     })();
 
-}
+} 
