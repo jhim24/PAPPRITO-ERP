@@ -1,17 +1,18 @@
 // ==========================================================
 // PAPPRITO ERP
-// PRODUCT MASTER - LOAD ENGINE V2
+// PRODUCT MASTER - LOAD ENGINE V3
 // File : assets/js/products/product-load.js
 //
-// CATEGORY INTEGRATION:
-//
-// categories/
-//      ↓
-// Product Category Dropdown
-//      ↓
-// categoryId + categoryName
-//      ↓
-// products/
+// FEATURES:
+// - Load Products
+// - Load Categories
+// - Search
+// - Category Filter
+// - Status Filter
+// - Stock Display
+// - Stock Adjustment Button
+// - Edit
+// - Delete
 //
 // IMPORTANT:
 // Product Save Engine remains unchanged.
@@ -38,7 +39,7 @@ let productCategories = [];
 function initializeProductPage() {
 
     console.log(
-        "PAPPRITO PRODUCT MASTER V2 INITIALIZING..."
+        "PAPPRITO PRODUCT MASTER V3 INITIALIZING..."
     );
 
 
@@ -191,6 +192,23 @@ function startProductListener() {
                         child.key;
 
 
+                    // --------------------------------------------------
+                    // ENSURE CURRENT STOCK EXISTS
+                    // --------------------------------------------------
+
+                    if (
+                        product.currentStock ===
+                        undefined ||
+                        product.currentStock ===
+                        null
+                    ) {
+
+                        product.currentStock =
+                            0;
+
+                    }
+
+
                     productList.push(
                         product
                     );
@@ -299,7 +317,13 @@ function renderProductTable() {
                     <div>
 
                         <i
-                            class="fa-solid fa-box-open fa-3x text-secondary mb-3">
+                            class="
+                                fa-solid
+                                fa-box-open
+                                fa-3x
+                                text-secondary
+                                mb-3
+                            ">
                         </i>
 
                     </div>
@@ -311,8 +335,10 @@ function renderProductTable() {
                     <br>
 
                     <small class="text-muted">
-                        Click "Add Product" to create
-                        your first product.
+
+                        Click "Add Product"
+                        to create your first product.
+
                     </small>
 
                 </td>
@@ -335,9 +361,9 @@ function renderProductTable() {
         function (product) {
 
 
-            // ----------------------------------------------
+            // ==================================================
             // IMAGE
-            // ----------------------------------------------
+            // ==================================================
 
             const image =
 
@@ -351,9 +377,9 @@ function renderProductTable() {
                     : "assets/img/logo.png";
 
 
-            // ----------------------------------------------
+            // ==================================================
             // STATUS
-            // ----------------------------------------------
+            // ==================================================
 
             const status =
                 product.status ||
@@ -365,21 +391,27 @@ function renderProductTable() {
                 status === "Active"
 
                     ? `
-                        <span class="badge bg-success">
+                        <span
+                            class="badge bg-success">
+
                             Active
+
                         </span>
                     `
 
                     : `
-                        <span class="badge bg-secondary">
+                        <span
+                            class="badge bg-secondary">
+
                             Inactive
+
                         </span>
                     `;
 
 
-            // ----------------------------------------------
+            // ==================================================
             // STOCK
-            // ----------------------------------------------
+            // ==================================================
 
             const stock =
                 Number(
@@ -387,15 +419,19 @@ function renderProductTable() {
                 );
 
 
-            // ----------------------------------------------
-            // STOCK CLASS
-            // ----------------------------------------------
+            // ==================================================
+            // REORDER LEVEL
+            // ==================================================
 
             const reorderLevel =
                 Number(
                     product.reorderLevel || 0
                 );
 
+
+            // ==================================================
+            // STOCK CLASS
+            // ==================================================
 
             let stockClass =
                 "product-stock";
@@ -418,9 +454,9 @@ function renderProductTable() {
             }
 
 
-            // ----------------------------------------------
+            // ==================================================
             // CATEGORY
-            // ----------------------------------------------
+            // ==================================================
 
             const categoryName =
                 product.categoryName ||
@@ -430,16 +466,18 @@ function renderProductTable() {
                 "Uncategorized";
 
 
-            // ----------------------------------------------
-            // TABLE
-            // ----------------------------------------------
+            // ==================================================
+            // TABLE ROW
+            // ==================================================
 
             table.innerHTML += `
 
                 <tr>
 
 
-                    <!-- CODE -->
+                    <!-- ======================================
+                         CODE
+                    ======================================= -->
 
                     <td>
 
@@ -454,7 +492,9 @@ function renderProductTable() {
                     </td>
 
 
-                    <!-- IMAGE -->
+                    <!-- ======================================
+                         IMAGE
+                    ======================================= -->
 
                     <td>
 
@@ -481,7 +521,9 @@ function renderProductTable() {
                     </td>
 
 
-                    <!-- PRODUCT -->
+                    <!-- ======================================
+                         PRODUCT
+                    ======================================= -->
 
                     <td>
 
@@ -497,7 +539,8 @@ function renderProductTable() {
                         ${
                             product.description
                                 ? `
-                                    <small class="text-muted">
+                                    <small
+                                        class="text-muted">
 
                                         ${escapeProductHTML(
                                             product.description
@@ -511,13 +554,20 @@ function renderProductTable() {
                     </td>
 
 
-                    <!-- CATEGORY -->
+                    <!-- ======================================
+                         CATEGORY
+                    ======================================= -->
 
                     <td>
 
                         <span class="product-category">
 
-                            <i class="fa-solid fa-tag"></i>
+                            <i
+                                class="
+                                    fa-solid
+                                    fa-tag
+                                ">
+                            </i>
 
                             ${escapeProductHTML(
                                 categoryName
@@ -528,7 +578,9 @@ function renderProductTable() {
                     </td>
 
 
-                    <!-- PRICE -->
+                    <!-- ======================================
+                         PRICE
+                    ======================================= -->
 
                     <td>
 
@@ -543,20 +595,62 @@ function renderProductTable() {
                     </td>
 
 
-                    <!-- STOCK -->
+                    <!-- ======================================
+                         STOCK
+                    ======================================= -->
 
                     <td>
 
-                        <span class="${stockClass}">
+                        <div
+                            class="
+                                d-flex
+                                align-items-center
+                                gap-2
+                            ">
 
-                            ${stock}
+                            <span
+                                class="${stockClass}">
 
-                        </span>
+                                ${formatProductStock(
+                                    stock
+                                )}
+
+                            </span>
+
+
+                            <!-- STOCK BUTTON -->
+
+                            <button
+
+                                type="button"
+
+                                class="
+                                    product-stock-btn
+                                "
+
+                                data-product-id="${escapeProductAttribute(
+                                    product.productId
+                                )}"
+
+                                title="Adjust Stock">
+
+                                <i
+                                    class="
+                                        fa-solid
+                                        fa-boxes-stacked
+                                    ">
+                                </i>
+
+                            </button>
+
+                        </div>
 
                     </td>
 
 
-                    <!-- STATUS -->
+                    <!-- ======================================
+                         STATUS
+                    ======================================= -->
 
                     <td>
 
@@ -565,9 +659,42 @@ function renderProductTable() {
                     </td>
 
 
-                    <!-- ACTION -->
+                    <!-- ======================================
+                         ACTION
+                    ======================================= -->
 
                     <td>
+
+
+                        <!-- STOCK -->
+
+                        <button
+
+                            type="button"
+
+                            class="
+                                product-action-btn
+                                product-stock-btn
+                                me-1
+                            "
+
+                            data-product-id="${escapeProductAttribute(
+                                product.productId
+                            )}"
+
+                            title="Adjust Stock">
+
+                            <i
+                                class="
+                                    fa-solid
+                                    fa-boxes-stacked
+                                ">
+                            </i>
+
+                        </button>
+
+
+                        <!-- EDIT -->
 
                         <button
 
@@ -590,11 +717,16 @@ function renderProductTable() {
                             title="Edit Product">
 
                             <i
-                                class="fa-solid fa-pen">
+                                class="
+                                    fa-solid
+                                    fa-pen
+                                ">
                             </i>
 
                         </button>
 
+
+                        <!-- DELETE -->
 
                         <button
 
@@ -616,10 +748,14 @@ function renderProductTable() {
                             title="Delete Product">
 
                             <i
-                                class="fa-solid fa-trash">
+                                class="
+                                    fa-solid
+                                    fa-trash
+                                ">
                             </i>
 
                         </button>
+
 
                     </td>
 
@@ -630,6 +766,30 @@ function renderProductTable() {
 
         }
 
+    );
+
+}
+
+
+// ==========================================================
+// FORMAT PRODUCT STOCK
+// ==========================================================
+
+function formatProductStock(
+    value
+) {
+
+    const number =
+        Number(
+            value || 0
+        );
+
+
+    return number.toLocaleString(
+        "en-PH",
+        {
+            maximumFractionDigits: 3
+        }
     );
 
 }
@@ -862,11 +1022,6 @@ function updateProductCounter() {
 
 // ==========================================================
 // LOAD PRODUCT CATEGORIES
-//
-// SOURCE:
-// Firebase categories/
-//
-// ONLY ACTIVE CATEGORIES
 // ==========================================================
 
 async function loadProductCategories() {
@@ -933,10 +1088,6 @@ async function loadProductCategories() {
                 const category =
                     child.val() || {};
 
-
-                // ------------------------------------------
-                // ONLY ACTIVE
-                // ------------------------------------------
 
                 const status =
                     category.status ||
@@ -1029,7 +1180,7 @@ async function loadProductCategories() {
 
 
         // --------------------------------------------------
-        // RESET DROPDOWN
+        // RESET
         // --------------------------------------------------
 
         dropdown.innerHTML = `
@@ -1044,7 +1195,7 @@ async function loadProductCategories() {
 
 
         // --------------------------------------------------
-        // ADD CATEGORIES
+        // ADD
         // --------------------------------------------------
 
         productCategories.forEach(
@@ -1076,10 +1227,6 @@ async function loadProductCategories() {
             productCategories.length
         );
 
-
-        // --------------------------------------------------
-        // REFRESH FILTER
-        // --------------------------------------------------
 
         refreshProductFilters();
 
@@ -1116,10 +1263,6 @@ async function loadProductCategories() {
 
 // ==========================================================
 // REFRESH PRODUCT CATEGORY FILTER
-//
-// IMPORTANT:
-// This now uses Firebase categories,
-// NOT only categories already used by products.
 // ==========================================================
 
 function refreshProductFilters() {
@@ -1140,10 +1283,6 @@ function refreshProductFilters() {
     const currentValue =
         filter.value;
 
-
-    // ------------------------------------------------------
-    // IF CATEGORIES HAVE NOT LOADED YET
-    // ------------------------------------------------------
 
     if (
         !Array.isArray(
@@ -1166,10 +1305,6 @@ function refreshProductFilters() {
 
     `;
 
-
-    // ------------------------------------------------------
-    // ADD ALL ACTIVE CATEGORIES
-    // ------------------------------------------------------
 
     productCategories.forEach(
 
@@ -1194,10 +1329,6 @@ function refreshProductFilters() {
 
     );
 
-
-    // ------------------------------------------------------
-    // RESTORE FILTER
-    // ------------------------------------------------------
 
     const optionExists =
 
@@ -1293,10 +1424,6 @@ function generateProductCode() {
 
     }
 
-
-    // ------------------------------------------------------
-    // DO NOT REPLACE CODE DURING EDIT
-    // ------------------------------------------------------
 
     if (
 
@@ -1537,3 +1664,38 @@ document.addEventListener(
     }
 
 );
+
+
+// ==========================================================
+// GLOBAL EXPORTS
+// ==========================================================
+
+window.initializeProductPage =
+    initializeProductPage;
+
+window.startProductListener =
+    startProductListener;
+
+window.renderProductTable =
+    renderProductTable;
+
+window.getFilteredProducts =
+    getFilteredProducts;
+
+window.updateProductCounter =
+    updateProductCounter;
+
+window.loadProductCategories =
+    loadProductCategories;
+
+window.refreshProductFilters =
+    refreshProductFilters;
+
+window.getCategoryNameById =
+    getCategoryNameById;
+
+window.generateProductCode =
+    generateProductCode;
+
+window.formatProductStock =
+    formatProductStock;
