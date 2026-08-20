@@ -81,10 +81,11 @@ const productScripts = [
 
     "assets/js/products/product-edit.js",
 
-    "assets/js/products/product-delete.js"
+    "assets/js/products/product-delete.js",
+
+    "assets/js/products/product-stock.js"
 
 ];
-
 
 const categoryScripts = [
 
