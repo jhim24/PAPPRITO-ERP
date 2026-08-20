@@ -4463,3 +4463,461 @@ input:focus-visible {
     }
 
 }
+/* ==========================================================
+   PAPPRITO POS
+   THERMAL RECEIPT PREVIEW
+   80MM STYLE
+========================================================== */
+
+.pos-receipt-modal {
+    background: #f1f1f1;
+    border: none;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+
+/* ==========================================================
+   RECEIPT MODAL HEADER
+========================================================== */
+
+.pos-receipt-modal .modal-header {
+    background: #ffffff;
+    border-bottom: 1px solid #ddd;
+    padding: 12px 16px;
+}
+
+
+.pos-receipt-modal .modal-title {
+    font-size: 17px;
+    font-weight: 700;
+}
+
+
+.pos-receipt-modal .modal-title i {
+    color: #c8102e;
+    margin-right: 6px;
+}
+
+
+/* ==========================================================
+   RECEIPT BODY
+========================================================== */
+
+.pos-receipt-modal .modal-body {
+    background: #e9e9e9;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+
+/* ==========================================================
+   THERMAL PAPER
+========================================================== */
+
+.pos-receipt {
+    width: 80mm;
+    max-width: 80mm;
+
+    min-height: 100mm;
+
+    margin: 0 auto;
+
+    padding: 8mm 5mm;
+
+    background: #ffffff;
+
+    color: #000000;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    font-size: 10px;
+
+    line-height: 1.25;
+
+    box-shadow:
+        0 2px 12px rgba(0,0,0,.18);
+
+    box-sizing: border-box;
+}
+
+
+/* ==========================================================
+   RECEIPT HEADER
+========================================================== */
+
+.pos-receipt-header {
+    text-align: center;
+
+    margin-bottom: 8px;
+
+    color: #000;
+}
+
+
+.pos-receipt-header h3 {
+    margin: 0;
+
+    padding: 0;
+
+    font-size: 22px;
+
+    line-height: 24px;
+
+    font-weight: 900;
+
+    letter-spacing: .5px;
+
+    color: #000;
+}
+
+
+.pos-receipt-header p {
+    margin: 2px 0;
+
+    font-size: 9px;
+
+    line-height: 12px;
+
+    color: #000;
+}
+
+
+.pos-receipt-header p:last-child {
+    font-weight: 700;
+}
+
+
+/* ==========================================================
+   RECEIPT INFO
+========================================================== */
+
+.pos-receipt-info {
+    border-top: 1px dashed #000;
+
+    border-bottom: 1px dashed #000;
+
+    padding: 5px 0;
+
+    margin-bottom: 6px;
+}
+
+
+.pos-receipt-info > div {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: flex-start;
+
+    gap: 8px;
+
+    padding: 2px 0;
+
+    font-size: 9px;
+}
+
+
+.pos-receipt-info span {
+    white-space: nowrap;
+}
+
+
+.pos-receipt-info strong {
+    text-align: right;
+
+    max-width: 65%;
+
+    overflow-wrap: anywhere;
+
+    font-weight: 700;
+}
+
+
+/* ==========================================================
+   RECEIPT ITEMS
+========================================================== */
+
+.pos-receipt-items {
+    width: 100%;
+
+    margin: 0;
+
+    padding: 0;
+}
+
+
+/*
+   The JS receipt rows are transformed into:
+
+   SN | ITEMS | QTY | TOTAL
+*/
+
+.receipt-item {
+    display: grid;
+
+    grid-template-columns:
+        20px
+        minmax(0, 1fr)
+        26px
+        58px;
+
+    column-gap: 3px;
+
+    align-items: start;
+
+    width: 100%;
+
+    padding: 4px 0;
+
+    border-bottom: 1px dashed #aaa;
+
+    box-sizing: border-box;
+}
+
+
+.receipt-item > div:first-child {
+    display: contents;
+}
+
+
+.receipt-item strong {
+    font-size: 9px;
+
+    line-height: 12px;
+
+    font-weight: 700;
+}
+
+
+.receipt-item small {
+    font-size: 8px;
+
+    line-height: 10px;
+
+    color: #000;
+}
+
+
+/*
+   Because the current JS puts the item information
+   inside the first div, make it compact.
+*/
+
+.receipt-item > div:first-child {
+    min-width: 0;
+}
+
+
+/* ==========================================================
+   RECEIPT SUMMARY
+========================================================== */
+
+.pos-receipt-summary {
+    margin-top: 6px;
+
+    padding-top: 3px;
+}
+
+
+.pos-receipt-summary > div {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 8px;
+
+    padding: 2px 0;
+
+    font-size: 9px;
+}
+
+
+.pos-receipt-summary strong {
+    white-space: nowrap;
+
+    font-weight: 700;
+}
+
+
+/* ==========================================================
+   GRAND TOTAL
+========================================================== */
+
+.pos-receipt-summary .receipt-grand-total {
+    margin-top: 4px;
+
+    margin-bottom: 4px;
+
+    padding: 5px 0;
+
+    border-top: 2px solid #000;
+
+    border-bottom: 2px solid #000;
+
+    font-size: 14px;
+
+    font-weight: 900;
+}
+
+
+.pos-receipt-summary .receipt-grand-total strong {
+    font-size: 15px;
+
+    font-weight: 900;
+}
+
+
+/* ==========================================================
+   CHANGE
+========================================================== */
+
+.pos-receipt-summary .receipt-change {
+    padding: 4px 0;
+
+    font-size: 12px;
+
+    font-weight: 900;
+}
+
+
+.pos-receipt-summary .receipt-change strong {
+    font-size: 13px;
+
+    font-weight: 900;
+}
+
+
+/* ==========================================================
+   RECEIPT FOOTER
+========================================================== */
+
+.pos-receipt-footer {
+    margin-top: 8px;
+
+    padding-top: 7px;
+
+    border-top: 1px dashed #000;
+
+    text-align: center;
+
+    font-size: 9px;
+
+    line-height: 13px;
+
+    color: #000;
+}
+
+
+/* ==========================================================
+   RECEIPT MODAL FOOTER
+========================================================== */
+
+.pos-receipt-modal .modal-footer {
+    background: #ffffff;
+
+    border-top: 1px solid #ddd;
+
+    padding: 10px 14px;
+}
+
+
+.pos-receipt-modal .modal-footer .btn {
+    min-height: 40px;
+
+    font-weight: 600;
+}
+
+
+/* ==========================================================
+   DESKTOP
+========================================================== */
+
+@media (min-width: 768px) {
+
+    #posReceiptModal .modal-dialog {
+        max-width: 520px;
+    }
+
+}
+
+
+/* ==========================================================
+   MOBILE
+========================================================== */
+
+@media (max-width: 767px) {
+
+    #posReceiptModal .modal-dialog {
+        width: 100%;
+
+        max-width: 100%;
+
+        margin: 0;
+    }
+
+
+    #posReceiptModal .modal-content {
+        min-height: 100vh;
+
+        border-radius: 0;
+    }
+
+
+    .pos-receipt-modal .modal-body {
+        padding: 12px 6px;
+    }
+
+
+    .pos-receipt {
+        width: 80mm;
+
+        max-width: 80mm;
+
+        margin-left: auto;
+
+        margin-right: auto;
+
+        box-shadow:
+            0 1px 8px rgba(0,0,0,.15);
+    }
+
+}
+
+
+/* ==========================================================
+   VERY SMALL MOBILE
+========================================================== */
+
+@media (max-width: 360px) {
+
+    .pos-receipt-modal .modal-body {
+        padding-left: 2px;
+
+        padding-right: 2px;
+    }
+
+
+    .pos-receipt {
+        transform-origin: top center;
+
+        /*
+           Keep the thermal paper visible on very
+           small screens.
+        */
+
+        width: 76mm;
+
+        max-width: 76mm;
+
+        padding-left: 4mm;
+
+        padding-right: 4mm;
+    }
+
+}
