@@ -4,13 +4,8 @@
    File:
    assets/css/pos.css
 
-   DESIGN:
-   - Standalone POS
-   - Desktop / Laptop
-   - Tablet
-   - Mobile
-   - Clean restaurant cashier interface
-   - Red PAPPRITO branding
+   CART:
+   SN | ITEMS | QTY | TOTAL | ACTIONS
 ========================================================== */
 
 
@@ -698,7 +693,7 @@ body {
 
 
 /* ==========================================================
-   ORDER PANEL LAYOUT
+   ORDER PANEL
 ========================================================== */
 
 .pos-order-panel {
@@ -714,6 +709,8 @@ body {
 
 /* ==========================================================
    CART HEADER
+
+   SN | ITEMS | QTY | TOTAL | ACTIONS
 ========================================================== */
 
 .pos-cart-header {
@@ -728,13 +725,17 @@ body {
         grid;
 
     grid-template-columns:
-        38px
+        34px
         minmax(0, 1fr)
-        72px
-        92px;
+        52px
+        78px
+        105px;
 
     align-items:
         center;
+
+    column-gap:
+        6px;
 
     padding:
         0 8px;
@@ -788,6 +789,14 @@ body {
 
     text-align:
         right;
+
+}
+
+
+.cart-col-actions {
+
+    text-align:
+        center;
 
 }
 
@@ -926,22 +935,39 @@ body {
 
 
 /* ==========================================================
-   CART ITEM
+   CART ROW
+
+   IMPORTANT:
+   JS V3 USES:
+
+   .pos-cart-row
+
+   Structure:
+
+   SN
+   ITEMS
+   QTY
+   TOTAL
+   ACTIONS
 ========================================================== */
 
-.pos-cart-item {
+.pos-cart-row {
 
     display:
         grid;
 
     grid-template-columns:
-        38px
+        34px
         minmax(0, 1fr)
-        72px
-        92px;
+        52px
+        78px
+        105px;
 
     align-items:
         center;
+
+    column-gap:
+        6px;
 
     min-height:
         68px;
@@ -958,7 +984,7 @@ body {
 }
 
 
-.pos-cart-item:hover {
+.pos-cart-row:hover {
 
     background:
         #fafafa;
@@ -971,6 +997,12 @@ body {
 ========================================================== */
 
 .pos-cart-sn {
+
+    min-width:
+        0;
+
+    text-align:
+        left;
 
     font-size:
         11px;
@@ -988,13 +1020,282 @@ body {
    CART ITEM DETAILS
 ========================================================== */
 
-.pos-cart-item-details {
+.pos-cart-item {
 
     min-width:
         0;
 
     padding-right:
-        7px;
+        5px;
+
+}
+
+
+.pos-cart-item strong {
+
+    display:
+        block;
+
+    overflow:
+        hidden;
+
+    text-overflow:
+        ellipsis;
+
+    white-space:
+        nowrap;
+
+    color:
+        #222222;
+
+    font-size:
+        12px;
+
+    line-height:
+        17px;
+
+    font-weight:
+        800;
+
+}
+
+
+.pos-cart-item small {
+
+    display:
+        block;
+
+    margin-top:
+        2px;
+
+    color:
+        var(--pos-muted);
+
+    font-size:
+        10px;
+
+    line-height:
+        14px;
+
+}
+
+
+/* ==========================================================
+   CART QTY
+
+   QTY NUMBER ONLY
+========================================================== */
+
+.pos-cart-qty {
+
+    min-width:
+        0;
+
+    text-align:
+        center;
+
+    color:
+        #222222;
+
+    font-size:
+        12px;
+
+    font-weight:
+        800;
+
+}
+
+
+/* ==========================================================
+   CART TOTAL
+========================================================== */
+
+.pos-cart-total {
+
+    min-width:
+        0;
+
+    text-align:
+        right;
+
+    color:
+        #222222;
+
+    font-size:
+        12px;
+
+    font-weight:
+        800;
+
+    white-space:
+        nowrap;
+
+}
+
+
+/* ==========================================================
+   CART ACTIONS
+
+   AFTER TOTAL:
+
+   −  +  DELETE
+========================================================== */
+
+.pos-cart-actions {
+
+    min-width:
+        0;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        flex-end;
+
+    gap:
+        4px;
+
+}
+
+
+/* ==========================================================
+   CART ACTION BUTTON
+========================================================== */
+
+.pos-cart-btn {
+
+    width:
+        28px;
+
+    height:
+        28px;
+
+    min-width:
+        28px;
+
+    padding:
+        0;
+
+    border:
+        1px solid #d8dce1;
+
+    border-radius:
+        5px;
+
+    background:
+        #ffffff;
+
+    color:
+        #333333;
+
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    cursor:
+        pointer;
+
+    font-size:
+        10px;
+
+    transition:
+        .12s ease;
+
+}
+
+
+.pos-cart-btn:hover {
+
+    border-color:
+        var(--pos-red);
+
+    color:
+        var(--pos-red);
+
+    background:
+        var(--pos-red-light);
+
+}
+
+
+.pos-cart-btn:active {
+
+    transform:
+        scale(.95);
+
+}
+
+
+/* ==========================================================
+   PLUS
+========================================================== */
+
+.pos-cart-plus {
+
+    color:
+        #333333;
+
+}
+
+
+/* ==========================================================
+   MINUS
+========================================================== */
+
+.pos-cart-minus {
+
+    color:
+        #333333;
+
+}
+
+
+/* ==========================================================
+   DELETE
+========================================================== */
+
+.pos-cart-delete {
+
+    color:
+        var(--pos-red);
+
+    border-color:
+        #efc6cd;
+
+}
+
+
+.pos-cart-delete:hover {
+
+    background:
+        var(--pos-red);
+
+    border-color:
+        var(--pos-red);
+
+    color:
+        #ffffff;
+
+}
+
+
+/* ==========================================================
+   OLD CART SELECTORS
+   Compatibility
+========================================================== */
+
+.pos-cart-item-details {
+
+    min-width:
+        0;
 
 }
 
@@ -1053,43 +1354,16 @@ body {
 }
 
 
-/* ==========================================================
-   CART QTY
-========================================================== */
-
 .pos-cart-qty-area {
 
     display:
         flex;
-
-    flex-direction:
-        column;
 
     align-items:
         center;
 
     justify-content:
         center;
-
-    gap:
-        4px;
-
-}
-
-
-.pos-cart-qty {
-
-    min-width:
-        25px;
-
-    text-align:
-        center;
-
-    font-size:
-        12px;
-
-    font-weight:
-        800;
 
 }
 
@@ -1170,27 +1444,6 @@ body {
 
     color:
         var(--pos-red);
-
-}
-
-
-/* ==========================================================
-   CART TOTAL
-========================================================== */
-
-.pos-cart-item-total {
-
-    text-align:
-        right;
-
-    font-size:
-        12px;
-
-    font-weight:
-        800;
-
-    color:
-        #222222;
 
 }
 
@@ -1744,13 +1997,29 @@ body {
 }
 
 
-.pos-refresh-btn:disabled {
+.pos-refresh-btn.is-loading i {
 
-    opacity:
-        .55;
+    animation:
+        posRotate .8s linear infinite;
 
-    cursor:
-        not-allowed;
+}
+
+
+@keyframes posRotate {
+
+    from {
+
+        transform:
+            rotate(0deg);
+
+    }
+
+    to {
+
+        transform:
+            rotate(360deg);
+
+    }
 
 }
 
@@ -1875,6 +2144,23 @@ body {
 }
 
 
+.pos-product-image img {
+
+    width:
+        100%;
+
+    height:
+        100%;
+
+    display:
+        block;
+
+    object-fit:
+        cover;
+
+}
+
+
 /* ==========================================================
    PRODUCT INFO
 ========================================================== */
@@ -1883,6 +2169,58 @@ body {
 
     padding:
         7px 8px 8px;
+
+}
+
+
+.pos-product-info strong {
+
+    min-height:
+        30px;
+
+    display:
+        -webkit-box;
+
+    -webkit-line-clamp:
+        2;
+
+    -webkit-box-orient:
+        vertical;
+
+    overflow:
+        hidden;
+
+    color:
+        #20252b;
+
+    font-size:
+        11px;
+
+    line-height:
+        15px;
+
+    font-weight:
+        800;
+
+}
+
+
+.pos-product-info span {
+
+    display:
+        block;
+
+    margin-top:
+        4px;
+
+    color:
+        var(--pos-red);
+
+    font-size:
+        13px;
+
+    font-weight:
+        900;
 
 }
 
@@ -2012,9 +2350,68 @@ body {
 
 
 /* ==========================================================
-   NO PRODUCTS
+   ERROR
 ========================================================== */
 
+.pos-error {
+
+    min-height:
+        150px;
+
+    padding:
+        20px;
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    gap:
+        7px;
+
+    color:
+        var(--pos-muted);
+
+    text-align:
+        center;
+
+}
+
+
+.pos-error i {
+
+    color:
+        var(--pos-red);
+
+    font-size:
+        28px;
+
+}
+
+
+.pos-error strong {
+
+    color:
+        #333333;
+
+    font-size:
+        13px;
+
+}
+
+
+/* ==========================================================
+   EMPTY PRODUCTS
+========================================================== */
+
+.pos-empty-products,
 .pos-products-empty {
 
     grid-column:
@@ -2047,6 +2444,7 @@ body {
 }
 
 
+.pos-empty-products i,
 .pos-products-empty i {
 
     font-size:
@@ -2058,6 +2456,7 @@ body {
 }
 
 
+.pos-empty-products strong,
 .pos-products-empty strong {
 
     color:
@@ -2117,7 +2516,7 @@ body {
 
 
 /* ==========================================================
-   PAYMENT CUSTOMER
+   PAYMENT
 ========================================================== */
 
 .pos-payment-customer,
@@ -2414,7 +2813,7 @@ body {
 
 
 /* ==========================================================
-   CHANGE BOX
+   CHANGE
 ========================================================== */
 
 .pos-change-box {
@@ -2487,7 +2886,7 @@ body {
 
 
 /* ==========================================================
-   PAY BUTTON
+   PAY
 ========================================================== */
 
 .pos-pay-btn {
@@ -2872,7 +3271,7 @@ body {
 
 
 /* ==========================================================
-   RECEIPT MODAL
+   RECEIPT
 ========================================================== */
 
 .pos-receipt-modal {
@@ -2918,7 +3317,7 @@ body {
 
 
 /* ==========================================================
-   FORM CONTROLS
+   FORM
 ========================================================== */
 
 button,
@@ -3040,6 +3439,43 @@ input:focus-visible {
             1fr
             .8fr
             1fr;
+
+    }
+
+
+    /* CART */
+
+    .pos-cart-header,
+    .pos-cart-row {
+
+        grid-template-columns:
+            30px
+            minmax(0, 1fr)
+            48px
+            72px
+            100px;
+
+    }
+
+
+    .pos-cart-actions {
+
+        gap:
+            3px;
+
+    }
+
+
+    .pos-cart-btn {
+
+        width:
+            26px;
+
+        height:
+            26px;
+
+        min-width:
+            26px;
 
     }
 
@@ -3202,6 +3638,35 @@ input:focus-visible {
 
         width:
             100%;
+
+    }
+
+
+    /* CART */
+
+    .pos-cart-header,
+    .pos-cart-row {
+
+        grid-template-columns:
+            28px
+            minmax(0, 1fr)
+            45px
+            68px
+            92px;
+
+    }
+
+
+    .pos-cart-btn {
+
+        width:
+            25px;
+
+        height:
+            25px;
+
+        min-width:
+            25px;
 
     }
 
@@ -3419,68 +3884,82 @@ input:focus-visible {
     }
 
 
-    .pos-cart-header {
+    /* ======================================================
+       MOBILE CART
+
+       SN | ITEMS | QTY | TOTAL | ACTIONS
+    ====================================================== */
+
+    .pos-cart-header,
+    .pos-cart-row {
 
         grid-template-columns:
-            30px
+            25px
             minmax(0, 1fr)
+            38px
             62px
-            76px;
+            88px;
 
-        padding:
-            0 6px;
+        column-gap:
+            3px;
+
+        padding-left:
+            5px;
+
+        padding-right:
+            5px;
+
+    }
+
+
+    .pos-cart-header {
 
         font-size:
-            9px;
+            8px;
+
+    }
+
+
+    .pos-cart-row {
+
+        min-height:
+            62px;
+
+        padding-top:
+            6px;
+
+        padding-bottom:
+            6px;
 
     }
 
 
     .pos-cart-item {
 
-        grid-template-columns:
-            30px
-            minmax(0, 1fr)
-            62px
-            76px;
-
-        padding:
-            6px;
+        padding-right:
+            2px;
 
     }
 
 
-    .pos-cart-item-name {
+    .pos-cart-item strong {
 
         font-size:
+            10px;
+
+        line-height:
+            14px;
+
+    }
+
+
+    .pos-cart-item small {
+
+        font-size:
+            8px;
+
+        line-height:
             11px;
-
-    }
-
-
-    .pos-cart-item-price {
-
-        font-size:
-            9px;
-
-    }
-
-
-    .pos-cart-item-total {
-
-        font-size:
-            11px;
-
-    }
-
-
-    .pos-cart-controls button {
-
-        width:
-            20px;
-
-        height:
-            20px;
 
     }
 
@@ -3488,7 +3967,46 @@ input:focus-visible {
     .pos-cart-qty {
 
         font-size:
-            11px;
+            10px;
+
+    }
+
+
+    .pos-cart-total {
+
+        font-size:
+            10px;
+
+    }
+
+
+    .pos-cart-actions {
+
+        justify-content:
+            flex-end;
+
+        gap:
+            2px;
+
+    }
+
+
+    .pos-cart-btn {
+
+        width:
+            25px;
+
+        height:
+            25px;
+
+        min-width:
+            25px;
+
+        border-radius:
+            4px;
+
+        font-size:
+            9px;
 
     }
 
@@ -3624,6 +4142,7 @@ input:focus-visible {
     }
 
 
+    .pos-product-info strong,
     .pos-product-name {
 
         min-height:
@@ -3638,6 +4157,7 @@ input:focus-visible {
     }
 
 
+    .pos-product-info span,
     .pos-product-price {
 
         font-size:
@@ -3767,19 +4287,67 @@ input:focus-visible {
     }
 
 
+    /* ======================================================
+       VERY SMALL CART
+
+       SN | ITEMS | QTY | TOTAL | ACTIONS
+    ====================================================== */
+
     .pos-cart-header,
-    .pos-cart-item {
+    .pos-cart-row {
 
         grid-template-columns:
-            26px
+            22px
             minmax(0, 1fr)
-            55px
-            68px;
+            34px
+            57px
+            78px;
+
+        column-gap:
+            2px;
+
+        padding-left:
+            4px;
+
+        padding-right:
+            4px;
 
     }
 
 
-    .pos-cart-controls {
+    .pos-cart-header {
+
+        font-size:
+            7px;
+
+    }
+
+
+    .pos-cart-item strong {
+
+        font-size:
+            9px;
+
+    }
+
+
+    .pos-cart-item small {
+
+        font-size:
+            7px;
+
+    }
+
+
+    .pos-cart-total {
+
+        font-size:
+            9px;
+
+    }
+
+
+    .pos-cart-actions {
 
         gap:
             2px;
@@ -3787,13 +4355,16 @@ input:focus-visible {
     }
 
 
-    .pos-cart-controls button {
+    .pos-cart-btn {
 
         width:
-            18px;
+            22px;
 
         height:
-            18px;
+            22px;
+
+        min-width:
+            22px;
 
         font-size:
             8px;
