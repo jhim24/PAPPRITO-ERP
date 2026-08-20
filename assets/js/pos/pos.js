@@ -7,10 +7,9 @@
 //
 // SN | ITEMS | QTY | TOTAL | ACTIONS
 //
-// ACTIONS:
-// -
-// +
-// DELETE
+// RECEIPT:
+//
+// SN | ITEMS | QTY | TOTAL
 //
 // Firebase:
 // products/
@@ -33,6 +32,8 @@ let posCart = [];
 
 let posSelectedCategory = "ALL";
 
+let posSelectedCategoryId = "";
+
 let posPaymentMethod = "Cash";
 
 let posOrderNumber = "";
@@ -41,7 +42,7 @@ let posLastSale = null;
 
 
 // ==========================================================
-// HELPERS
+// MONEY
 // ==========================================================
 
 function posMoney(value) {
@@ -72,32 +73,17 @@ function posEscape(value) {
     return String(
         value ?? ""
     )
-    .replace(
-        /&/g,
-        "&amp;"
-    )
-    .replace(
-        /</g,
-        "&lt;"
-    )
-    .replace(
-        />/g,
-        "&gt;"
-    )
-    .replace(
-        /"/g,
-        "&quot;"
-    )
-    .replace(
-        /'/g,
-        "&#039;"
-    );
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 
 }
 
 
 // ==========================================================
-// GET PRODUCT NAME
+// PRODUCT HELPERS
 // ==========================================================
 
 function getProductName(product) {
@@ -112,10 +98,6 @@ function getProductName(product) {
 }
 
 
-// ==========================================================
-// GET PRODUCT PRICE
-// ==========================================================
-
 function getProductPrice(product) {
 
     return Number(
@@ -127,10 +109,6 @@ function getProductPrice(product) {
 
 }
 
-
-// ==========================================================
-// GET PRODUCT CATEGORY ID
-// ==========================================================
 
 function getProductCategoryId(product) {
 
@@ -145,10 +123,6 @@ function getProductCategoryId(product) {
 }
 
 
-// ==========================================================
-// GET PRODUCT CATEGORY NAME
-// ==========================================================
-
 function getProductCategory(product) {
 
     return String(
@@ -161,10 +135,6 @@ function getProductCategory(product) {
 
 }
 
-
-// ==========================================================
-// GET PRODUCT IMAGE
-// ==========================================================
 
 function getProductImage(product) {
 
@@ -180,7 +150,7 @@ function getProductImage(product) {
 
 
 // ==========================================================
-// GENERATE ORDER NUMBER
+// ORDER NUMBER
 // ==========================================================
 
 function generatePOSOrderNumber() {
@@ -188,62 +158,42 @@ function generatePOSOrderNumber() {
     const now =
         new Date();
 
-
     const year =
         now.getFullYear();
-
 
     const month =
         String(
             now.getMonth() + 1
-        )
-        .padStart(
+        ).padStart(
             2,
             "0"
         );
-
 
     const day =
         String(
             now.getDate()
-        )
-        .padStart(
+        ).padStart(
             2,
             "0"
         );
-
 
     const time =
         String(
             now.getHours()
-        )
-        .padStart(
-            2,
-            "0"
-        ) +
+        ).padStart(2, "0") +
 
         String(
             now.getMinutes()
-        )
-        .padStart(
-            2,
-            "0"
-        ) +
+        ).padStart(2, "0") +
 
         String(
             now.getSeconds()
-        )
-        .padStart(
-            2,
-            "0"
-        );
-
+        ).padStart(2, "0");
 
     const random =
         Math.floor(
             Math.random() * 9000
         ) + 1000;
-
 
     return (
         "POS-" +
@@ -273,28 +223,21 @@ function showPOSStatus(
             "posStatus"
         );
 
-
     if (!status) {
-
         return;
-
     }
-
 
     status.textContent =
         message;
-
 
     status.className =
         "pos-status " +
         "pos-status-" +
         type;
 
-
     clearTimeout(
         window.posStatusTimer
     );
-
 
     window.posStatusTimer =
         setTimeout(
@@ -323,24 +266,34 @@ function checkPOSFirebase() {
         typeof firebase ===
         "undefined"
     ) {
-
         return false;
-
     }
-
 
     if (
         typeof db ===
         "undefined" ||
         !db
     ) {
-
         return false;
-
     }
 
-
     return true;
+
+}
+
+
+// ==========================================================
+// CATEGORY NAME
+// ==========================================================
+
+function getCategoryName(category) {
+
+    return String(
+        category.name ||
+        category.categoryName ||
+        category.title ||
+        "Unnamed Category"
+    ).trim();
 
 }
 
@@ -356,24 +309,15 @@ async function loadPOSCategories() {
             "posCategories"
         );
 
-
     if (!container) {
-
         return;
-
     }
-
 
     container.innerHTML = `
 
         <div class="pos-loading">
 
-            <div
-                class="
-                    spinner-border
-                    text-danger
-                ">
-            </div>
+            <div class="spinner-border text-danger"></div>
 
             <span>
                 Loading categories...
@@ -383,7 +327,6 @@ async function loadPOSCategories() {
 
     `;
 
-
     if (
         !checkPOSFirebase()
     ) {
@@ -392,12 +335,7 @@ async function loadPOSCategories() {
 
             <div class="pos-error">
 
-                <i
-                    class="
-                        fa-solid
-                        fa-triangle-exclamation
-                    ">
-                </i>
+                <i class="fa-solid fa-triangle-exclamation"></i>
 
                 <strong>
                     Firebase is not ready
@@ -412,9 +350,7 @@ async function loadPOSCategories() {
         `;
 
         return;
-
     }
-
 
     try {
 
@@ -423,45 +359,37 @@ async function loadPOSCategories() {
                 .ref("categories")
                 .once("value");
 
-
         const data =
             snapshot.val() || {};
 
-
         posCategories =
-            Object.entries(
-                data
-            )
-            .map(
-                function (
-                    [
-                        id,
-                        value
-                    ]
-                ) {
+            Object.entries(data)
+                .map(
+                    function (
+                        [id, value]
+                    ) {
 
-                    return {
+                        return {
 
-                        categoryId:
-                            id,
+                            categoryId:
+                                id,
 
-                        ...(value || {})
+                            ...(value || {})
 
-                    };
+                        };
 
-                }
-            )
-            .filter(
-                function (category) {
+                    }
+                )
+                .filter(
+                    function (category) {
 
-                    return (
-                        category.status !==
-                        "Inactive"
-                    );
+                        return (
+                            category.status !==
+                            "Inactive"
+                        );
 
-                }
-            );
-
+                    }
+                );
 
         renderPOSCategories();
 
@@ -474,17 +402,11 @@ async function loadPOSCategories() {
             error
         );
 
-
         container.innerHTML = `
 
             <div class="pos-error">
 
-                <i
-                    class="
-                        fa-solid
-                        fa-triangle-exclamation
-                    ">
-                </i>
+                <i class="fa-solid fa-triangle-exclamation"></i>
 
                 <strong>
                     Unable to load categories
@@ -506,47 +428,22 @@ async function loadPOSCategories() {
 
 
 // ==========================================================
-// GET CATEGORY NAME
+// RESOLVE PRODUCT CATEGORY
 // ==========================================================
 
-function getCategoryName(category) {
+function getProductResolvedCategory(product) {
 
-    return String(
-        category.name ||
-        category.categoryName ||
-        category.title ||
-        "Unnamed Category"
-    )
-    .trim();
-
-}
-
-
-// ==========================================================
-// FIND CATEGORY FOR PRODUCT
-// ==========================================================
-
-function getProductResolvedCategory(
-    product
-) {
-
-    const productCategoryId =
+    const categoryId =
         getProductCategoryId(
             product
-        )
-        .toLowerCase();
+        ).toLowerCase();
 
-
-    const productCategoryName =
+    const categoryName =
         getProductCategory(
             product
-        )
-        .toLowerCase();
+        ).toLowerCase();
 
-
-    if (
-        productCategoryId
-    ) {
+    if (categoryId) {
 
         const matchedById =
             posCategories.find(
@@ -557,16 +454,13 @@ function getProductResolvedCategory(
                             category.categoryId
                         )
                         .toLowerCase() ===
-                        productCategoryId
+                        categoryId
                     );
 
                 }
             );
 
-
-        if (
-            matchedById
-        ) {
+        if (matchedById) {
 
             return getCategoryName(
                 matchedById
@@ -576,10 +470,7 @@ function getProductResolvedCategory(
 
     }
 
-
-    if (
-        productCategoryName
-    ) {
+    if (categoryName) {
 
         const matchedByName =
             posCategories.find(
@@ -591,30 +482,25 @@ function getProductResolvedCategory(
                         )
                         .toLowerCase();
 
-
                     const id =
                         String(
                             category.categoryId
                         )
                         .toLowerCase();
 
-
                     return (
                         name ===
-                        productCategoryName
+                        categoryName
                     ) ||
                     (
                         id ===
-                        productCategoryName
+                        categoryName
                     );
 
                 }
             );
 
-
-        if (
-            matchedByName
-        ) {
+        if (matchedByName) {
 
             return getCategoryName(
                 matchedByName
@@ -622,13 +508,11 @@ function getProductResolvedCategory(
 
         }
 
-
         return getProductCategory(
             product
         );
 
     }
-
 
     return "";
 
@@ -646,35 +530,25 @@ function renderPOSCategories() {
             "posCategories"
         );
 
-
     if (!container) {
-
         return;
-
     }
-
 
     let html = `
 
         <button
             type="button"
-            class="
-                pos-category-btn
-                ${
-                    posSelectedCategory ===
-                    "ALL"
-                        ? "active"
-                        : ""
-                }
-            "
-            data-category="ALL">
+            class="pos-category-btn ${
+                String(
+                    posSelectedCategory
+                ).toLowerCase() === "all"
+                    ? "active"
+                    : ""
+            }"
+            data-category="ALL"
+            data-category-id="">
 
-            <i
-                class="
-                    fa-solid
-                    fa-border-all
-                ">
-            </i>
+            <i class="fa-solid fa-border-all"></i>
 
             <span>
                 All Products
@@ -684,7 +558,6 @@ function renderPOSCategories() {
 
     `;
 
-
     posCategories.forEach(
         function (category) {
 
@@ -693,12 +566,10 @@ function renderPOSCategories() {
                     category
                 );
 
-
             const categoryId =
                 String(
                     category.categoryId
                 );
-
 
             const active =
                 String(
@@ -708,19 +579,15 @@ function renderPOSCategories() {
                 categoryName
                     .toLowerCase();
 
-
             html += `
 
                 <button
                     type="button"
-                    class="
-                        pos-category-btn
-                        ${
-                            active
-                                ? "active"
-                                : ""
-                        }
-                    "
+                    class="pos-category-btn ${
+                        active
+                            ? "active"
+                            : ""
+                    }"
                     data-category="${posEscape(
                         categoryName
                     )}"
@@ -728,12 +595,7 @@ function renderPOSCategories() {
                         categoryId
                     )}">
 
-                    <i
-                        class="
-                            fa-solid
-                            fa-tag
-                        ">
-                    </i>
+                    <i class="fa-solid fa-tag"></i>
 
                     <span>
                         ${posEscape(
@@ -748,10 +610,8 @@ function renderPOSCategories() {
         }
     );
 
-
     container.innerHTML =
         html;
-
 
     bindCategoryButtons();
 
@@ -769,7 +629,6 @@ function bindCategoryButtons() {
             ".pos-category-btn"
         );
 
-
     buttons.forEach(
         function (button) {
 
@@ -777,23 +636,16 @@ function bindCategoryButtons() {
                 "click",
                 function () {
 
-                    const category =
+                    posSelectedCategory =
                         button.dataset.category ||
                         "ALL";
 
-
-                    const categoryId =
+                    posSelectedCategoryId =
                         button.dataset.categoryId ||
                         "";
 
-
-                    posSelectedCategory =
-                        category;
-
-
                     window.posSelectedCategoryId =
-                        categoryId;
-
+                        posSelectedCategoryId;
 
                     renderPOSCategories();
 
@@ -819,24 +671,15 @@ async function loadPOSProducts() {
             "posProducts"
         );
 
-
     if (!container) {
-
         return;
-
     }
-
 
     container.innerHTML = `
 
         <div class="pos-loading">
 
-            <div
-                class="
-                    spinner-border
-                    text-danger
-                ">
-            </div>
+            <div class="spinner-border text-danger"></div>
 
             <span>
                 Loading products...
@@ -846,7 +689,6 @@ async function loadPOSProducts() {
 
     `;
 
-
     if (
         !checkPOSFirebase()
     ) {
@@ -855,12 +697,7 @@ async function loadPOSProducts() {
 
             <div class="pos-error">
 
-                <i
-                    class="
-                        fa-solid
-                        fa-triangle-exclamation
-                    ">
-                </i>
+                <i class="fa-solid fa-triangle-exclamation"></i>
 
                 <strong>
                     Products unavailable
@@ -875,9 +712,7 @@ async function loadPOSProducts() {
         `;
 
         return;
-
     }
-
 
     try {
 
@@ -886,47 +721,39 @@ async function loadPOSProducts() {
                 .ref("products")
                 .once("value");
 
-
         const data =
             snapshot.val() || {};
 
-
         posProducts =
-            Object.entries(
-                data
-            )
-            .map(
-                function (
-                    [
-                        id,
-                        value
-                    ]
-                ) {
+            Object.entries(data)
+                .map(
+                    function (
+                        [id, value]
+                    ) {
 
-                    return {
+                        return {
 
-                        productId:
-                            id,
+                            productId:
+                                id,
 
-                        ...(value || {})
+                            ...(value || {})
 
-                    };
+                        };
 
-                }
-            )
-            .filter(
-                function (product) {
+                    }
+                )
+                .filter(
+                    function (product) {
 
-                    return (
-                        product.status ===
-                        undefined ||
-                        product.status ===
-                        "Active"
-                    );
+                        return (
+                            product.status ===
+                            undefined ||
+                            product.status ===
+                            "Active"
+                        );
 
-                }
-            );
-
+                    }
+                );
 
         renderPOSProducts();
 
@@ -939,17 +766,11 @@ async function loadPOSProducts() {
             error
         );
 
-
         container.innerHTML = `
 
             <div class="pos-error">
 
-                <i
-                    class="
-                        fa-solid
-                        fa-triangle-exclamation
-                    ">
-                </i>
+                <i class="fa-solid fa-triangle-exclamation"></i>
 
                 <strong>
                     Unable to load products
@@ -971,7 +792,7 @@ async function loadPOSProducts() {
 
 
 // ==========================================================
-// GET FILTERED PRODUCTS
+// FILTER PRODUCTS
 // ==========================================================
 
 function getFilteredPOSProducts() {
@@ -981,14 +802,12 @@ function getFilteredPOSProducts() {
             "posProductSearch"
         );
 
-
     const search =
         searchInput
             ? searchInput.value
                 .trim()
                 .toLowerCase()
             : "";
-
 
     const selectedCategory =
         String(
@@ -997,15 +816,12 @@ function getFilteredPOSProducts() {
         .trim()
         .toLowerCase();
 
-
     const selectedCategoryId =
         String(
-            window.posSelectedCategoryId ||
-            ""
+            posSelectedCategoryId
         )
         .trim()
         .toLowerCase();
-
 
     return posProducts.filter(
         function (product) {
@@ -1016,7 +832,6 @@ function getFilteredPOSProducts() {
                 )
                 .toLowerCase();
 
-
             const productCode =
                 String(
                     product.productCode ||
@@ -1025,13 +840,11 @@ function getFilteredPOSProducts() {
                 )
                 .toLowerCase();
 
-
             const rawCategory =
                 getProductCategory(
                     product
                 )
                 .toLowerCase();
-
 
             const rawCategoryId =
                 getProductCategoryId(
@@ -1039,13 +852,11 @@ function getFilteredPOSProducts() {
                 )
                 .toLowerCase();
 
-
             const resolvedCategory =
                 getProductResolvedCategory(
                     product
                 )
                 .toLowerCase();
-
 
             const matchesSearch =
                 !search ||
@@ -1056,10 +867,8 @@ function getFilteredPOSProducts() {
                     search
                 );
 
-
             let matchesCategory =
                 true;
-
 
             if (
                 selectedCategory !==
@@ -1067,15 +876,11 @@ function getFilteredPOSProducts() {
             ) {
 
                 matchesCategory =
-                    (
-                        rawCategory ===
-                        selectedCategory
-                    ) ||
+                    rawCategory ===
+                        selectedCategory ||
 
-                    (
-                        resolvedCategory ===
-                        selectedCategory
-                    ) ||
+                    resolvedCategory ===
+                        selectedCategory ||
 
                     (
                         selectedCategoryId &&
@@ -1083,20 +888,15 @@ function getFilteredPOSProducts() {
                         selectedCategoryId
                     ) ||
 
-                    (
-                        rawCategory.includes(
-                            selectedCategory
-                        )
+                    rawCategory.includes(
+                        selectedCategory
                     ) ||
 
-                    (
-                        resolvedCategory.includes(
-                            selectedCategory
-                        )
+                    resolvedCategory.includes(
+                        selectedCategory
                     );
 
             }
-
 
             return (
                 matchesSearch &&
@@ -1120,17 +920,12 @@ function renderPOSProducts() {
             "posProducts"
         );
 
-
     if (!container) {
-
         return;
-
     }
-
 
     const products =
         getFilteredPOSProducts();
-
 
     if (
         products.length ===
@@ -1141,12 +936,7 @@ function renderPOSProducts() {
 
             <div class="pos-empty-products">
 
-                <i
-                    class="
-                        fa-solid
-                        fa-box-open
-                    ">
-                </i>
+                <i class="fa-solid fa-box-open"></i>
 
                 <strong>
                     No Products Found
@@ -1161,9 +951,7 @@ function renderPOSProducts() {
         `;
 
         return;
-
     }
-
 
     container.innerHTML =
         products
@@ -1175,35 +963,26 @@ function renderPOSProducts() {
                             product
                         );
 
-
                     const price =
                         getProductPrice(
                             product
                         );
-
 
                     const image =
                         getProductImage(
                             product
                         );
 
-
                     return `
 
                         <button
                             type="button"
-                            class="
-                                pos-product-card
-                            "
+                            class="pos-product-card"
                             data-product-id="${posEscape(
                                 product.productId
                             )}">
 
-
-                            <div
-                                class="
-                                    pos-product-image
-                                ">
+                            <div class="pos-product-image">
 
                                 <img
                                     src="${posEscape(
@@ -1213,36 +992,27 @@ function renderPOSProducts() {
                                         name
                                     )}"
                                     onerror="
-                                        this.src='../assets/img/no-product.png'
+                                        this.src='../assets/img/no-product.png';
+                                        this.onerror=null;
                                     ">
 
                             </div>
 
-
-                            <div
-                                class="
-                                    pos-product-info
-                                ">
+                            <div class="pos-product-info">
 
                                 <strong>
-
                                     ${posEscape(
                                         name
                                     )}
-
                                 </strong>
 
-
                                 <span>
-
                                     ${posMoney(
                                         price
                                     )}
-
                                 </span>
 
                             </div>
-
 
                         </button>
 
@@ -1251,7 +1021,6 @@ function renderPOSProducts() {
                 }
             )
             .join("");
-
 
     bindProductButtons();
 
@@ -1264,32 +1033,26 @@ function renderPOSProducts() {
 
 function bindProductButtons() {
 
-    const buttons =
-        document.querySelectorAll(
+    document
+        .querySelectorAll(
             ".pos-product-card"
+        )
+        .forEach(
+            function (button) {
+
+                button.addEventListener(
+                    "click",
+                    function () {
+
+                        addProductToCart(
+                            button.dataset.productId
+                        );
+
+                    }
+                );
+
+            }
         );
-
-
-    buttons.forEach(
-        function (button) {
-
-            button.addEventListener(
-                "click",
-                function () {
-
-                    const productId =
-                        button.dataset.productId;
-
-
-                    addProductToCart(
-                        productId
-                    );
-
-                }
-            );
-
-        }
-    );
 
 }
 
@@ -1318,7 +1081,6 @@ function addProductToCart(
             }
         );
 
-
     if (!product) {
 
         showPOSStatus(
@@ -1329,7 +1091,6 @@ function addProductToCart(
         return;
 
     }
-
 
     const existing =
         posCart.find(
@@ -1346,7 +1107,6 @@ function addProductToCart(
 
             }
         );
-
 
     if (existing) {
 
@@ -1378,9 +1138,7 @@ function addProductToCart(
 
     }
 
-
     renderPOSCart();
-
 
     showPOSStatus(
         "Product added.",
@@ -1415,17 +1173,12 @@ function changeCartQuantity(
             }
         );
 
-
     if (!item) {
-
         return;
-
     }
-
 
     item.qty +=
         Number(amount);
-
 
     if (
         item.qty <= 0
@@ -1439,14 +1192,13 @@ function changeCartQuantity(
 
     }
 
-
     renderPOSCart();
 
 }
 
 
 // ==========================================================
-// REMOVE CART ITEM
+// REMOVE ITEM
 // ==========================================================
 
 function removeCartItem(
@@ -1469,7 +1221,6 @@ function removeCartItem(
             }
         );
 
-
     renderPOSCart();
 
 }
@@ -1485,30 +1236,21 @@ function clearPOSCart() {
         posCart.length ===
         0
     ) {
-
         return;
-
     }
-
 
     const confirmed =
         window.confirm(
             "Clear the current order?"
         );
 
-
     if (!confirmed) {
-
         return;
-
     }
-
 
     posCart = [];
 
-
     renderPOSCart();
-
 
     showPOSStatus(
         "Order cleared.",
@@ -1531,13 +1273,9 @@ function renderPOSCart() {
             "posCart"
         );
 
-
     if (!container) {
-
         return;
-
     }
-
 
     if (
         posCart.length ===
@@ -1550,20 +1288,13 @@ function renderPOSCart() {
 
                 <div class="pos-empty-icon">
 
-                    <i
-                        class="
-                            fa-solid
-                            fa-cart-shopping
-                        ">
-                    </i>
+                    <i class="fa-solid fa-cart-shopping"></i>
 
                 </div>
-
 
                 <strong>
                     No Items
                 </strong>
-
 
                 <span>
                     Select a product to start
@@ -1573,13 +1304,10 @@ function renderPOSCart() {
 
         `;
 
-
         updatePOSTotals();
 
         return;
-
     }
-
 
     container.innerHTML =
         posCart
@@ -1589,99 +1317,70 @@ function renderPOSCart() {
                     index
                 ) {
 
-                    const lineTotal =
-                        (
-                            Number(
-                                item.price
-                            ) || 0
-                        ) *
-                        (
-                            Number(
-                                item.qty
-                            ) || 0
-                        );
+                    const price =
+                        Number(
+                            item.price
+                        ) || 0;
 
+                    const qty =
+                        Number(
+                            item.qty
+                        ) || 0;
+
+                    const lineTotal =
+                        price *
+                        qty;
 
                     return `
 
                         <div
-                            class="
-                                pos-cart-row
-                            "
+                            class="pos-cart-row"
                             data-product-id="${posEscape(
                                 item.productId
                             )}">
 
-
                             <!-- SN -->
 
-                            <div
-                                class="
-                                    cart-col-sn
-                                    pos-cart-sn
-                                ">
+                            <div class="cart-col-sn pos-cart-sn">
 
                                 ${index + 1}
 
                             </div>
 
 
+                            <!-- ITEM -->
 
-                            <!-- ITEMS -->
-
-                            <div
-                                class="
-                                    cart-col-items
-                                    pos-cart-item
-                                ">
+                            <div class="cart-col-items pos-cart-item">
 
                                 <strong>
-
                                     ${posEscape(
                                         item.name
                                     )}
-
                                 </strong>
 
-
                                 <small>
-
                                     ${posMoney(
-                                        item.price
-                                    )}
-                                    each
-
+                                        price
+                                    )} each
                                 </small>
 
                             </div>
 
 
-
                             <!-- QTY -->
 
-                            <div
-                                class="
-                                    cart-col-qty
-                                    pos-cart-qty
-                                ">
+                            <div class="cart-col-qty pos-cart-qty">
 
                                 <span>
-
-                                    ${item.qty}
-
+                                    ${qty}
                                 </span>
 
                             </div>
 
 
-
                             <!-- TOTAL -->
 
-                            <div
-                                class="
-                                    cart-col-total
-                                    pos-cart-total
-                                ">
+                            <div class="cart-col-total pos-cart-total">
 
                                 ${posMoney(
                                     lineTotal
@@ -1690,86 +1389,52 @@ function renderPOSCart() {
                             </div>
 
 
-
                             <!-- ACTIONS AFTER TOTAL -->
 
-                            <div
-                                class="
-                                    cart-col-actions
-                                    pos-cart-actions
-                                ">
-
+                            <div class="cart-col-actions pos-cart-actions">
 
                                 <button
                                     type="button"
-                                    class="
-                                        pos-cart-btn
-                                        pos-cart-minus
-                                    "
+                                    class="pos-cart-btn pos-cart-minus"
                                     data-action="minus"
                                     data-product-id="${posEscape(
                                         item.productId
                                     )}"
-                                    title="Decrease Quantity">
+                                    title="Decrease">
 
-                                    <i
-                                        class="
-                                            fa-solid
-                                            fa-minus
-                                        ">
-                                    </i>
+                                    <i class="fa-solid fa-minus"></i>
 
                                 </button>
 
 
-
                                 <button
                                     type="button"
-                                    class="
-                                        pos-cart-btn
-                                        pos-cart-plus
-                                    "
+                                    class="pos-cart-btn pos-cart-plus"
                                     data-action="plus"
                                     data-product-id="${posEscape(
                                         item.productId
                                     )}"
-                                    title="Increase Quantity">
+                                    title="Increase">
 
-                                    <i
-                                        class="
-                                            fa-solid
-                                            fa-plus
-                                        ">
-                                    </i>
+                                    <i class="fa-solid fa-plus"></i>
 
                                 </button>
-
 
 
                                 <button
                                     type="button"
-                                    class="
-                                        pos-cart-btn
-                                        pos-cart-delete
-                                    "
+                                    class="pos-cart-btn pos-cart-delete"
                                     data-action="delete"
                                     data-product-id="${posEscape(
                                         item.productId
                                     )}"
-                                    title="Delete Item">
+                                    title="Delete">
 
-                                    <i
-                                        class="
-                                            fa-solid
-                                            fa-trash-can
-                                        ">
-                                    </i>
+                                    <i class="fa-solid fa-trash-can"></i>
 
                                 </button>
 
-
                             </div>
-
 
                         </div>
 
@@ -1779,9 +1444,7 @@ function renderPOSCart() {
             )
             .join("");
 
-
     bindCartButtons();
-
 
     updatePOSTotals();
 
@@ -1794,78 +1457,71 @@ function renderPOSCart() {
 
 function bindCartButtons() {
 
-    const buttons =
-        document.querySelectorAll(
+    document
+        .querySelectorAll(
             "#posCart [data-action]"
+        )
+        .forEach(
+            function (button) {
+
+                button.addEventListener(
+                    "click",
+                    function (event) {
+
+                        event.stopPropagation();
+
+                        const action =
+                            button.dataset.action;
+
+                        const productId =
+                            button.dataset.productId;
+
+                        if (
+                            action ===
+                            "minus"
+                        ) {
+
+                            changeCartQuantity(
+                                productId,
+                                -1
+                            );
+
+                        }
+
+                        else if (
+                            action ===
+                            "plus"
+                        ) {
+
+                            changeCartQuantity(
+                                productId,
+                                1
+                            );
+
+                        }
+
+                        else if (
+                            action ===
+                            "delete"
+                        ) {
+
+                            removeCartItem(
+                                productId
+                            );
+
+                        }
+
+                    }
+                );
+
+            }
         );
-
-
-    buttons.forEach(
-        function (button) {
-
-            button.addEventListener(
-                "click",
-                function (event) {
-
-                    event.stopPropagation();
-
-
-                    const action =
-                        button.dataset.action;
-
-
-                    const productId =
-                        button.dataset.productId;
-
-
-                    if (
-                        action ===
-                        "minus"
-                    ) {
-
-                        changeCartQuantity(
-                            productId,
-                            -1
-                        );
-
-                    }
-
-
-                    else if (
-                        action ===
-                        "plus"
-                    ) {
-
-                        changeCartQuantity(
-                            productId,
-                            1
-                        );
-
-                    }
-
-
-                    else if (
-                        action ===
-                        "delete"
-                    ) {
-
-                        removeCartItem(
-                            productId
-                        );
-
-                    }
-
-                }
-            );
-
-        }
-    );
 
 }
 
 
 // ==========================================================
-// CALCULATE SUBTOTAL
+// SUBTOTAL
 // ==========================================================
 
 function calculatePOSSubtotal() {
@@ -1898,7 +1554,7 @@ function calculatePOSSubtotal() {
 
 
 // ==========================================================
-// GET DISCOUNT
+// DISCOUNT
 // ==========================================================
 
 function getPOSDiscount() {
@@ -1908,23 +1564,39 @@ function getPOSDiscount() {
             "posDiscount"
         );
 
-
     if (!input) {
-
         return 0;
-
     }
-
-
-    const value =
-        Number(
-            input.value
-        ) || 0;
-
 
     return Math.max(
         0,
-        value
+        Number(
+            input.value
+        ) || 0
+    );
+
+}
+
+
+// ==========================================================
+// GRAND TOTAL
+// ==========================================================
+
+function getPOSGrandTotal() {
+
+    const subtotal =
+        calculatePOSSubtotal();
+
+    const discount =
+        Math.min(
+            getPOSDiscount(),
+            subtotal
+        );
+
+    return Math.max(
+        0,
+        subtotal -
+        discount
     );
 
 }
@@ -1939,17 +1611,14 @@ function updatePOSTotals() {
     const subtotal =
         calculatePOSSubtotal();
 
-
     const discount =
         Math.min(
             getPOSDiscount(),
             subtotal
         );
 
-
     const tax =
         0;
-
 
     const total =
         Math.max(
@@ -1959,34 +1628,27 @@ function updatePOSTotals() {
             tax
         );
 
-
     const subtotalElement =
         document.getElementById(
             "posSubtotal"
         );
-
 
     const discountElement =
         document.getElementById(
             "posDiscountAmount"
         );
 
-
     const taxElement =
         document.getElementById(
             "posTax"
         );
-
 
     const totalElement =
         document.getElementById(
             "posGrandTotal"
         );
 
-
-    if (
-        subtotalElement
-    ) {
+    if (subtotalElement) {
 
         subtotalElement.textContent =
             posMoney(
@@ -1995,10 +1657,7 @@ function updatePOSTotals() {
 
     }
 
-
-    if (
-        discountElement
-    ) {
+    if (discountElement) {
 
         discountElement.textContent =
             posMoney(
@@ -2007,10 +1666,7 @@ function updatePOSTotals() {
 
     }
 
-
-    if (
-        taxElement
-    ) {
+    if (taxElement) {
 
         taxElement.textContent =
             posMoney(
@@ -2019,10 +1675,7 @@ function updatePOSTotals() {
 
     }
 
-
-    if (
-        totalElement
-    ) {
+    if (totalElement) {
 
         totalElement.textContent =
             posMoney(
@@ -2031,9 +1684,7 @@ function updatePOSTotals() {
 
     }
 
-
     updatePOSChange();
-
 
     updatePOSPayButton();
 
@@ -2041,33 +1692,7 @@ function updatePOSTotals() {
 
 
 // ==========================================================
-// GET GRAND TOTAL
-// ==========================================================
-
-function getPOSGrandTotal() {
-
-    const subtotal =
-        calculatePOSSubtotal();
-
-
-    const discount =
-        Math.min(
-            getPOSDiscount(),
-            subtotal
-        );
-
-
-    return Math.max(
-        0,
-        subtotal -
-        discount
-    );
-
-}
-
-
-// ==========================================================
-// GET AMOUNT RECEIVED
+// AMOUNT RECEIVED
 // ==========================================================
 
 function getPOSAmountReceived() {
@@ -2077,13 +1702,9 @@ function getPOSAmountReceived() {
             "posAmountReceived"
         );
 
-
     if (!input) {
-
         return 0;
-
     }
-
 
     return Math.max(
         0,
@@ -2096,7 +1717,7 @@ function getPOSAmountReceived() {
 
 
 // ==========================================================
-// UPDATE CHANGE
+// CHANGE
 // ==========================================================
 
 function updatePOSChange() {
@@ -2104,10 +1725,8 @@ function updatePOSChange() {
     const total =
         getPOSGrandTotal();
 
-
     const received =
         getPOSAmountReceived();
-
 
     const change =
         Math.max(
@@ -2116,12 +1735,10 @@ function updatePOSChange() {
             total
         );
 
-
     const element =
         document.getElementById(
             "posChange"
         );
-
 
     if (element) {
 
@@ -2132,12 +1749,10 @@ function updatePOSChange() {
 
     }
 
-
     const modalChange =
         document.getElementById(
             "posModalChange"
         );
-
 
     if (modalChange) {
 
@@ -2152,7 +1767,7 @@ function updatePOSChange() {
 
 
 // ==========================================================
-// UPDATE PAY BUTTON
+// PAY BUTTON
 // ==========================================================
 
 function updatePOSPayButton() {
@@ -2162,21 +1777,15 @@ function updatePOSPayButton() {
             "posPayBtn"
         );
 
-
     if (!button) {
-
         return;
-
     }
-
 
     const total =
         getPOSGrandTotal();
 
-
     const received =
         getPOSAmountReceived();
-
 
     button.disabled =
         posCart.length === 0 ||
@@ -2197,7 +1806,6 @@ function setupPaymentMethods() {
             ".pos-payment-method-btn"
         );
 
-
     buttons.forEach(
         function (button) {
 
@@ -2215,16 +1823,13 @@ function setupPaymentMethods() {
                         }
                     );
 
-
                     button.classList.add(
                         "active"
                     );
 
-
                     posPaymentMethod =
                         button.dataset.paymentMethod ||
                         "Cash";
-
 
                     updatePOSPaymentFields();
 
@@ -2238,7 +1843,7 @@ function setupPaymentMethods() {
 
 
 // ==========================================================
-// PAYMENT FIELD BEHAVIOR
+// UPDATE PAYMENT FIELDS
 // ==========================================================
 
 function updatePOSPaymentFields() {
@@ -2248,17 +1853,12 @@ function updatePOSPaymentFields() {
             "posAmountReceived"
         );
 
-
     if (!amountInput) {
-
         return;
-
     }
-
 
     const total =
         getPOSGrandTotal();
-
 
     if (
         posPaymentMethod !==
@@ -2272,15 +1872,41 @@ function updatePOSPaymentFields() {
 
     }
 
-
     amountInput.disabled =
         false;
 
-
     updatePOSChange();
 
-
     updatePOSPayButton();
+
+}
+
+
+// ==========================================================
+// UPDATE PAYMENT UI
+// ==========================================================
+
+function updatePaymentMethodUI() {
+
+    const buttons =
+        document.querySelectorAll(
+            ".pos-payment-method-btn"
+        );
+
+    buttons.forEach(
+        function (button) {
+
+            const method =
+                button.dataset.paymentMethod;
+
+            button.classList.toggle(
+                "active",
+                method ===
+                posPaymentMethod
+            );
+
+        }
+    );
 
 }
 
@@ -2296,13 +1922,9 @@ function setupPOSSearch() {
             "posProductSearch"
         );
 
-
     if (!input) {
-
         return;
-
     }
-
 
     input.addEventListener(
         "input",
@@ -2327,13 +1949,9 @@ function setupPOSRefresh() {
             "posRefreshProductsBtn"
         );
 
-
     if (!button) {
-
         return;
-
     }
-
 
     button.addEventListener(
         "click",
@@ -2343,16 +1961,11 @@ function setupPOSRefresh() {
                 "is-loading"
             );
 
-
             try {
 
-                await Promise.all(
-                    [
-                        loadPOSCategories(),
-                        loadPOSProducts()
-                    ]
-                );
+                await loadPOSCategories();
 
+                await loadPOSProducts();
 
                 showPOSStatus(
                     "Products refreshed.",
@@ -2395,13 +2008,9 @@ function setupPOSDiscount() {
             "posDiscount"
         );
 
-
     if (!input) {
-
         return;
-
     }
-
 
     input.addEventListener(
         "input",
@@ -2426,20 +2035,15 @@ function setupPOSAmountReceived() {
             "posAmountReceived"
         );
 
-
     if (!input) {
-
         return;
-
     }
-
 
     input.addEventListener(
         "input",
         function () {
 
             updatePOSChange();
-
 
             updatePOSPayButton();
 
@@ -2450,7 +2054,7 @@ function setupPOSAmountReceived() {
 
 
 // ==========================================================
-// CLEAR CART
+// CLEAR CART BUTTON
 // ==========================================================
 
 function setupPOSClearCart() {
@@ -2460,13 +2064,9 @@ function setupPOSClearCart() {
             "posClearCartBtn"
         );
 
-
     if (!button) {
-
         return;
-
     }
-
 
     button.addEventListener(
         "click",
@@ -2491,13 +2091,9 @@ function setupPOSFullscreen() {
             "posFullscreenBtn"
         );
 
-
     if (!button) {
-
         return;
-
     }
-
 
     button.addEventListener(
         "click",
@@ -2540,7 +2136,7 @@ function setupPOSFullscreen() {
 
 
 // ==========================================================
-// EXIT POS
+// EXIT
 // ==========================================================
 
 function setupPOSExit() {
@@ -2550,13 +2146,9 @@ function setupPOSExit() {
             "posExitBtn"
         );
 
-
     if (!button) {
-
         return;
-
     }
-
 
     button.addEventListener(
         "click",
@@ -2566,7 +2158,6 @@ function setupPOSExit() {
                 "currentPage",
                 "pages/dashboard.html"
             );
-
 
             window.location.href =
                 "../index.html";
@@ -2578,7 +2169,7 @@ function setupPOSExit() {
 
 
 // ==========================================================
-// HOLD ORDER
+// HOLD
 // ==========================================================
 
 function setupPOSHold() {
@@ -2588,13 +2179,9 @@ function setupPOSHold() {
             "posHoldBtn"
         );
 
-
     if (!button) {
-
         return;
-
     }
-
 
     button.addEventListener(
         "click",
@@ -2614,43 +2201,37 @@ function setupPOSHold() {
 
             }
 
-
             localStorage.setItem(
                 "pappritoHeldOrder",
-                JSON.stringify(
-                    {
+                JSON.stringify({
 
-                        orderNumber:
-                            posOrderNumber,
+                    orderNumber:
+                        posOrderNumber,
 
-                        cart:
-                            posCart,
+                    cart:
+                        posCart,
 
-                        customer:
-                            document.getElementById(
-                                "posCustomerName"
-                            )?.value ||
-                            "Walk-in Customer",
+                    customer:
+                        document.getElementById(
+                            "posCustomerName"
+                        )?.value ||
+                        "Walk-in Customer",
 
-                        paymentMethod:
-                            posPaymentMethod,
+                    paymentMethod:
+                        posPaymentMethod,
 
-                        discount:
-                            getPOSDiscount(),
+                    discount:
+                        getPOSDiscount(),
 
-                        date:
-                            new Date().toISOString()
+                    date:
+                        new Date().toISOString()
 
-                    }
-                )
+                })
             );
-
 
             posCart = [];
 
-
             renderPOSCart();
-
 
             showPOSStatus(
                 "Order placed on hold.",
@@ -2664,7 +2245,7 @@ function setupPOSHold() {
 
 
 // ==========================================================
-// RECALL ORDER
+// RECALL
 // ==========================================================
 
 function setupPOSRecall() {
@@ -2674,13 +2255,9 @@ function setupPOSRecall() {
             "posRecallBtn"
         );
 
-
     if (!button) {
-
         return;
-
     }
-
 
     button.addEventListener(
         "click",
@@ -2690,7 +2267,6 @@ function setupPOSRecall() {
                 localStorage.getItem(
                     "pappritoHeldOrder"
                 );
-
 
             if (!saved) {
 
@@ -2703,14 +2279,12 @@ function setupPOSRecall() {
 
             }
 
-
             try {
 
                 const order =
                     JSON.parse(
                         saved
                     );
-
 
                 posCart =
                     Array.isArray(
@@ -2719,17 +2293,14 @@ function setupPOSRecall() {
                         ? order.cart
                         : [];
 
-
                 posOrderNumber =
                     order.orderNumber ||
                     generatePOSOrderNumber();
-
 
                 const customer =
                     document.getElementById(
                         "posCustomerName"
                     );
-
 
                 if (customer) {
 
@@ -2739,17 +2310,14 @@ function setupPOSRecall() {
 
                 }
 
-
                 posPaymentMethod =
                     order.paymentMethod ||
                     "Cash";
-
 
                 const discount =
                     document.getElementById(
                         "posDiscount"
                     );
-
 
                 if (discount) {
 
@@ -2759,20 +2327,15 @@ function setupPOSRecall() {
 
                 }
 
-
                 renderPOSCart();
 
-
                 updatePaymentMethodUI();
-
 
                 localStorage.removeItem(
                     "pappritoHeldOrder"
                 );
 
-
                 updatePOSOrderNumber();
-
 
                 showPOSStatus(
                     "Held order recalled.",
@@ -2788,44 +2351,12 @@ function setupPOSRecall() {
                     error
                 );
 
-
                 showPOSStatus(
                     "Unable to recall order.",
                     "error"
                 );
 
             }
-
-        }
-    );
-
-}
-
-
-// ==========================================================
-// UPDATE PAYMENT UI
-// ==========================================================
-
-function updatePaymentMethodUI() {
-
-    const buttons =
-        document.querySelectorAll(
-            ".pos-payment-method-btn"
-        );
-
-
-    buttons.forEach(
-        function (button) {
-
-            const method =
-                button.dataset.paymentMethod;
-
-
-            button.classList.toggle(
-                "active",
-                method ===
-                posPaymentMethod
-            );
 
         }
     );
@@ -2844,13 +2375,9 @@ function setupPOSPayment() {
             "posPayBtn"
         );
 
-
     if (!button) {
-
         return;
-
     }
-
 
     button.addEventListener(
         "click",
@@ -2861,16 +2388,12 @@ function setupPOSPayment() {
         }
     );
 
-
     const confirmButton =
         document.getElementById(
             "posConfirmPaymentBtn"
         );
 
-
-    if (
-        confirmButton
-    ) {
+    if (confirmButton) {
 
         confirmButton.addEventListener(
             "click",
@@ -2895,7 +2418,6 @@ function openPOSPaymentModal() {
     const total =
         getPOSGrandTotal();
 
-
     if (
         posCart.length ===
         0
@@ -2910,24 +2432,20 @@ function openPOSPaymentModal() {
 
     }
 
-
     const modalTotal =
         document.getElementById(
             "posModalTotal"
         );
-
 
     const modalAmount =
         document.getElementById(
             "posModalAmountReceived"
         );
 
-
     const modalChange =
         document.getElementById(
             "posModalChange"
         );
-
 
     if (modalTotal) {
 
@@ -2938,13 +2456,11 @@ function openPOSPaymentModal() {
 
     }
 
-
     if (modalAmount) {
 
         modalAmount.value =
             getPOSAmountReceived()
                 .toFixed(2);
-
 
         modalAmount.oninput =
             function () {
@@ -2954,14 +2470,12 @@ function openPOSPaymentModal() {
                         modalAmount.value
                     ) || 0;
 
-
                 const change =
                     Math.max(
                         0,
                         amount -
                         total
                     );
-
 
                 if (modalChange) {
 
@@ -2974,11 +2488,9 @@ function openPOSPaymentModal() {
 
             };
 
-
         modalAmount.oninput();
 
     }
-
 
     if (
         typeof bootstrap !==
@@ -2990,17 +2502,13 @@ function openPOSPaymentModal() {
                 "posPaymentModal"
             );
 
-
         if (element) {
 
-            const modal =
-                bootstrap.Modal
-                    .getOrCreateInstance(
-                        element
-                    );
-
-
-            modal.show();
+            bootstrap.Modal
+                .getOrCreateInstance(
+                    element
+                )
+                .show();
 
         }
 
@@ -3018,12 +2526,10 @@ async function completePOSPayment() {
     const total =
         getPOSGrandTotal();
 
-
     const modalAmount =
         document.getElementById(
             "posModalAmountReceived"
         );
-
 
     const received =
         modalAmount
@@ -3031,7 +2537,6 @@ async function completePOSPayment() {
                 modalAmount.value
             ) || 0
             : getPOSAmountReceived();
-
 
     if (
         received <
@@ -3047,22 +2552,21 @@ async function completePOSPayment() {
 
     }
 
-
     const change =
-        received -
-        total;
-
+        Math.max(
+            0,
+            received -
+            total
+        );
 
     const customer =
         document.getElementById(
             "posCustomerName"
         );
 
-
     const customerName =
         customer?.value.trim() ||
         "Walk-in Customer";
-
 
     const sale = {
 
@@ -3088,10 +2592,14 @@ async function completePOSPayment() {
                             item.name,
 
                         price:
-                            item.price,
+                            Number(
+                                item.price
+                            ) || 0,
 
                         qty:
-                            item.qty,
+                            Number(
+                                item.qty
+                            ) || 0,
 
                         total:
                             (
@@ -3133,7 +2641,6 @@ async function completePOSPayment() {
 
     };
 
-
     try {
 
         if (
@@ -3148,31 +2655,24 @@ async function completePOSPayment() {
 
         }
 
-
         posLastSale =
             sale;
 
-
         window.currentPOSReceipt =
             sale;
-
 
         generatePOSReceipt(
             sale
         );
 
-
         posCart = [];
 
-
         renderPOSCart();
-
 
         const amountInput =
             document.getElementById(
                 "posAmountReceived"
             );
-
 
         if (amountInput) {
 
@@ -3181,12 +2681,10 @@ async function completePOSPayment() {
 
         }
 
-
         const discountInput =
             document.getElementById(
                 "posDiscount"
             );
-
 
         if (discountInput) {
 
@@ -3195,12 +2693,10 @@ async function completePOSPayment() {
 
         }
 
-
         const customerInput =
             document.getElementById(
                 "posCustomerName"
             );
-
 
         if (customerInput) {
 
@@ -3209,16 +2705,12 @@ async function completePOSPayment() {
 
         }
 
-
         posOrderNumber =
             generatePOSOrderNumber();
 
-
         updatePOSOrderNumber();
 
-
         closePaymentModal();
-
 
         showPOSStatus(
             "Payment completed successfully.",
@@ -3233,7 +2725,6 @@ async function completePOSPayment() {
             "Payment Error:",
             error
         );
-
 
         showPOSStatus(
             "Payment failed: " +
@@ -3257,7 +2748,6 @@ function closePaymentModal() {
             "posPaymentModal"
         );
 
-
     if (
         element &&
         typeof bootstrap !==
@@ -3268,7 +2758,6 @@ function closePaymentModal() {
             bootstrap.Modal.getInstance(
                 element
             );
-
 
         if (modal) {
 
@@ -3282,7 +2771,93 @@ function closePaymentModal() {
 
 
 // ==========================================================
-// GENERATE RECEIPT MODAL
+// RECEIPT ITEM HTML
+// ==========================================================
+
+function buildReceiptItemsHTML(
+    items
+) {
+
+    return (
+        items || []
+    )
+    .map(
+        function (
+            item,
+            index
+        ) {
+
+            const qty =
+                Number(
+                    item.qty
+                ) || 0;
+
+            const price =
+                Number(
+                    item.price
+                ) || 0;
+
+            const total =
+                Number(
+                    item.total
+                ) ||
+                (
+                    price *
+                    qty
+                );
+
+            return `
+
+                <div class="receipt-item">
+
+                    <div class="receipt-sn">
+
+                        ${index + 1}
+
+                    </div>
+
+
+                    <div class="receipt-item-name">
+
+                        ${posEscape(
+                            item.name
+                        )}
+
+                    </div>
+
+
+                    <div class="receipt-qty">
+
+                        ${qty}
+
+                    </div>
+
+
+                    <div class="receipt-total">
+
+                        ${posMoney(
+                            total
+                        )}
+
+                    </div>
+
+                </div>
+
+            `;
+
+        }
+    )
+    .join("");
+
+}
+
+
+// ==========================================================
+// GENERATE RECEIPT PREVIEW
+//
+// THERMAL STYLE
+//
+// SN | ITEMS | QTY | TOTAL
 // ==========================================================
 
 function generatePOSReceipt(
@@ -3294,100 +2869,51 @@ function generatePOSReceipt(
             "posReceiptContent"
         );
 
-
     if (!container) {
-
         return;
-
     }
 
-
     const itemRows =
-        sale.items
-            .map(
-                function (
-                    item,
-                    index
-                ) {
+        buildReceiptItemsHTML(
+            sale.items
+        );
 
-                    return `
-
-                        <div
-                            class="
-                                receipt-item
-                            ">
-
-                            <div>
-
-                                <strong>
-
-                                    ${index + 1}.
-                                    ${posEscape(
-                                        item.name
-                                    )}
-
-                                </strong>
-
-
-                                <small>
-
-                                    ${item.qty}
-                                    ×
-                                    ${posMoney(
-                                        item.price
-                                    )}
-
-                                </small>
-
-                            </div>
-
-
-                            <strong>
-
-                                ${posMoney(
-                                    item.total
-                                )}
-
-                            </strong>
-
-                        </div>
-
-                    `;
-
-                }
-            )
-            .join("");
-
+    const createdDate =
+        new Date(
+            sale.createdAt ||
+            Date.now()
+        );
 
     container.innerHTML = `
 
         <div class="pos-receipt">
 
+            <!-- ==========================================
+                 HEADER
+            =========================================== -->
 
-            <div
-                class="
-                    pos-receipt-header
-                ">
+            <div class="pos-receipt-header">
 
                 <h3>
                     PAPPRITO
                 </h3>
 
                 <p>
-                    Restaurant
+                    RESTAURANT
                 </p>
 
                 <p>
-                    Official Receipt
+                    Official Sales Receipt
                 </p>
 
             </div>
 
 
-            <div
-                class="
-                    pos-receipt-info
-                ">
+            <!-- ==========================================
+                 INFORMATION
+            =========================================== -->
+
+            <div class="pos-receipt-info">
 
                 <div>
 
@@ -3412,7 +2938,8 @@ function generatePOSReceipt(
 
                     <strong>
                         ${posEscape(
-                            sale.customer
+                            sale.customer ||
+                            "Walk-in Customer"
                         )}
                     </strong>
 
@@ -3427,7 +2954,25 @@ function generatePOSReceipt(
 
                     <strong>
                         ${posEscape(
-                            sale.paymentMethod
+                            sale.paymentMethod ||
+                            "Cash"
+                        )}
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Date
+                    </span>
+
+                    <strong>
+                        ${posEscape(
+                            createdDate.toLocaleString(
+                                "en-PH"
+                            )
                         )}
                     </strong>
 
@@ -3436,21 +2981,47 @@ function generatePOSReceipt(
             </div>
 
 
-            <div
-                class="
-                    pos-receipt-items
-                ">
+            <!-- ==========================================
+                 ITEMS HEADER
+            =========================================== -->
+
+            <div class="pos-receipt-items-header">
+
+                <div>
+                    SN
+                </div>
+
+                <div>
+                    ITEMS
+                </div>
+
+                <div>
+                    QTY
+                </div>
+
+                <div>
+                    TOTAL
+                </div>
+
+            </div>
+
+
+            <!-- ==========================================
+                 ITEMS
+            =========================================== -->
+
+            <div class="pos-receipt-items">
 
                 ${itemRows}
 
             </div>
 
 
-            <div
-                class="
-                    pos-receipt-summary
-                ">
+            <!-- ==========================================
+                 SUMMARY
+            =========================================== -->
 
+            <div class="pos-receipt-summary">
 
                 <div>
 
@@ -3482,10 +3053,7 @@ function generatePOSReceipt(
                 </div>
 
 
-                <div
-                    class="
-                        receipt-grand-total
-                    ">
+                <div class="receipt-grand-total">
 
                     <span>
                         TOTAL
@@ -3517,10 +3085,7 @@ function generatePOSReceipt(
 
                 <!-- ONE CHANGE ONLY -->
 
-                <div
-                    class="
-                        receipt-change
-                    ">
+                <div class="receipt-change">
 
                     <span>
                         CHANGE
@@ -3534,30 +3099,31 @@ function generatePOSReceipt(
 
                 </div>
 
-
             </div>
 
 
-            <div
-                class="
-                    pos-receipt-footer
-                ">
+            <!-- ==========================================
+                 FOOTER
+            =========================================== -->
+
+            <div class="pos-receipt-footer">
 
                 Thank you for dining with us!
 
-            </div>
+                <br>
 
+                PAPPRITO Restaurant POS
+
+            </div>
 
         </div>
 
     `;
 
-
     const modal =
         document.getElementById(
             "posReceiptModal"
         );
-
 
     if (
         modal &&
@@ -3579,9 +3145,7 @@ function generatePOSReceipt(
 // ==========================================================
 // PRINT RECEIPT
 //
-// TRUE 80MM THERMAL STYLE
-//
-// SN | ITEMS | QTY | TOTAL
+// TRUE 80MM THERMAL
 // ==========================================================
 
 function setupPOSPrintReceipt() {
@@ -3591,13 +3155,9 @@ function setupPOSPrintReceipt() {
             "posPrintReceiptBtn"
         );
 
-
     if (!button) {
-
         return;
-
     }
-
 
     button.addEventListener(
         "click",
@@ -3606,7 +3166,6 @@ function setupPOSPrintReceipt() {
             const sale =
                 posLastSale ||
                 window.currentPOSReceipt;
-
 
             if (!sale) {
 
@@ -3619,14 +3178,12 @@ function setupPOSPrintReceipt() {
 
             }
 
-
             const printWindow =
                 window.open(
                     "",
                     "_blank",
                     "width=420,height=700"
                 );
-
 
             if (!printWindow) {
 
@@ -3637,7 +3194,6 @@ function setupPOSPrintReceipt() {
                 return;
 
             }
-
 
             const itemsHTML =
                 (sale.items || [])
@@ -3652,12 +3208,10 @@ function setupPOSPrintReceipt() {
                                     item.qty
                                 ) || 0;
 
-
                             const price =
                                 Number(
                                     item.price
                                 ) || 0;
-
 
                             const itemTotal =
                                 Number(
@@ -3668,58 +3222,29 @@ function setupPOSPrintReceipt() {
                                     qty
                                 );
 
-
                             return `
 
-                                <div
-                                    class="
-                                        thermal-item
-                                    ">
+                                <div class="thermal-item">
 
-
-                                    <div
-                                        class="
-                                            thermal-sn
-                                        ">
-
+                                    <div class="thermal-sn">
                                         ${index + 1}
-
                                     </div>
 
-
-                                    <div
-                                        class="
-                                            thermal-item-name
-                                        ">
-
+                                    <div class="thermal-item-name">
                                         ${posEscape(
                                             item.name
                                         )}
-
                                     </div>
 
-
-                                    <div
-                                        class="
-                                            thermal-qty
-                                        ">
-
+                                    <div class="thermal-qty">
                                         ${qty}
-
                                     </div>
 
-
-                                    <div
-                                        class="
-                                            thermal-item-total
-                                        ">
-
+                                    <div class="thermal-item-total">
                                         ${posMoney(
                                             itemTotal
                                         )}
-
                                     </div>
-
 
                                 </div>
 
@@ -3729,6 +3254,13 @@ function setupPOSPrintReceipt() {
                     )
                     .join("");
 
+            const dateText =
+                new Date(
+                    sale.createdAt ||
+                    Date.now()
+                ).toLocaleString(
+                    "en-PH"
+                );
 
             const receiptHTML = `
 
@@ -3744,24 +3276,27 @@ function setupPOSPrintReceipt() {
     name="viewport"
     content="width=device-width, initial-scale=1.0">
 
-<title>
-    PAPPRITO Receipt
-</title>
+<title>PAPPRITO Receipt</title>
 
 
 <style>
 
 /* ======================================================
-   THERMAL 80MM
+   80MM THERMAL PAPER
 ====================================================== */
 
 @page {
 
-    size:
-        80mm auto;
+    size: 80mm auto;
 
-    margin:
-        0;
+    margin: 0;
+
+}
+
+
+* {
+
+    box-sizing: border-box;
 
 }
 
@@ -3769,17 +3304,13 @@ function setupPOSPrintReceipt() {
 html,
 body {
 
-    width:
-        80mm;
+    width: 80mm;
 
-    margin:
-        0;
+    margin: 0;
 
-    padding:
-        0;
+    padding: 0;
 
-    background:
-        #ffffff;
+    background: #ffffff;
 
 }
 
@@ -3791,41 +3322,31 @@ body {
         Helvetica,
         sans-serif;
 
-    color:
-        #000000;
+    color: #000000;
 
-    font-size:
-        10px;
+    font-size: 9px;
 
-    line-height:
-        1.25;
-
-    -webkit-print-color-adjust:
-        exact;
-
-    print-color-adjust:
-        exact;
+    line-height: 1.25;
 
 }
 
 
 /* ======================================================
-   RECEIPT
+   PAPER
 ====================================================== */
 
 .thermal-receipt {
 
-    width:
-        72mm;
+    width: 72mm;
 
-    max-width:
-        72mm;
+    max-width: 72mm;
 
-    margin:
-        0 auto;
+    margin: 0 auto;
 
     padding:
-        3mm 0 6mm;
+        3mm
+        0
+        7mm;
 
 }
 
@@ -3836,59 +3357,48 @@ body {
 
 .thermal-header {
 
-    text-align:
-        center;
+    text-align: center;
 
-    margin-bottom:
-        5px;
+    margin-bottom: 5px;
 
 }
 
 
 .thermal-logo {
 
-    font-size:
-        22px;
+    font-size: 22px;
 
-    line-height:
-        23px;
+    line-height: 24px;
 
-    font-weight:
-        900;
+    font-weight: 900;
 
-    letter-spacing:
-        .5px;
+    letter-spacing: .5px;
 
 }
 
 
 .thermal-restaurant {
 
-    font-size:
-        11px;
+    font-size: 10px;
 
-    font-weight:
-        700;
+    font-weight: 700;
 
-    margin-top:
-        2px;
+    margin-top: 1px;
 
 }
 
 
 .thermal-receipt-title {
 
-    font-size:
-        9px;
+    font-size: 8px;
 
-    margin-top:
-        2px;
+    margin-top: 2px;
 
 }
 
 
 /* ======================================================
-   LINES
+   SEPARATOR
 ====================================================== */
 
 .thermal-line {
@@ -3919,8 +3429,7 @@ body {
 
 .thermal-info-row {
 
-    display:
-        flex;
+    display: flex;
 
     justify-content:
         space-between;
@@ -3928,14 +3437,12 @@ body {
     align-items:
         flex-start;
 
-    gap:
-        8px;
+    gap: 7px;
 
     padding:
         1.5px 0;
 
-    font-size:
-        9px;
+    font-size: 8px;
 
 }
 
@@ -3950,11 +3457,9 @@ body {
 
 .thermal-info-value {
 
-    text-align:
-        right;
+    text-align: right;
 
-    font-weight:
-        700;
+    font-weight: 700;
 
     overflow-wrap:
         anywhere;
@@ -3968,8 +3473,7 @@ body {
 
 .thermal-items-header {
 
-    display:
-        grid;
+    display: grid;
 
     grid-template-columns:
         20px
@@ -3977,11 +3481,9 @@ body {
         28px
         58px;
 
-    column-gap:
-        3px;
+    column-gap: 3px;
 
-    align-items:
-        center;
+    align-items: center;
 
     padding:
         3px 0;
@@ -3992,47 +3494,41 @@ body {
     border-bottom:
         1px solid #000;
 
-    font-size:
-        8px;
+    font-size: 8px;
 
-    font-weight:
-        900;
+    font-weight: 900;
 
 }
 
 
-.thermal-items-header .sn {
+.thermal-items-header > div:first-child {
 
-    text-align:
-        center;
-
-}
-
-
-.thermal-items-header .qty {
-
-    text-align:
-        center;
+    text-align: center;
 
 }
 
 
-.thermal-items-header .total {
+.thermal-items-header > div:nth-child(3) {
 
-    text-align:
-        right;
+    text-align: center;
+
+}
+
+
+.thermal-items-header > div:last-child {
+
+    text-align: right;
 
 }
 
 
 /* ======================================================
-   ITEMS
+   ITEM ROW
 ====================================================== */
 
 .thermal-item {
 
-    display:
-        grid;
+    display: grid;
 
     grid-template-columns:
         20px
@@ -4040,11 +3536,9 @@ body {
         28px
         58px;
 
-    column-gap:
-        3px;
+    column-gap: 3px;
 
-    align-items:
-        start;
+    align-items: start;
 
     padding:
         4px 0;
@@ -4052,55 +3546,46 @@ body {
     border-bottom:
         1px dashed #aaa;
 
-    font-size:
-        9px;
+    font-size: 8px;
 
 }
 
 
 .thermal-sn {
 
-    text-align:
-        center;
+    text-align: center;
 
 }
 
 
 .thermal-item-name {
 
-    min-width:
-        0;
+    min-width: 0;
 
     overflow-wrap:
         anywhere;
 
-    font-weight:
-        700;
+    font-weight: 700;
 
 }
 
 
 .thermal-qty {
 
-    text-align:
-        center;
+    text-align: center;
 
-    font-weight:
-        700;
+    font-weight: 700;
 
 }
 
 
 .thermal-item-total {
 
-    text-align:
-        right;
+    text-align: right;
 
-    font-weight:
-        700;
+    font-weight: 700;
 
-    white-space:
-        nowrap;
+    white-space: nowrap;
 
 }
 
@@ -4111,39 +3596,33 @@ body {
 
 .thermal-summary {
 
-    margin-top:
-        5px;
+    margin-top: 5px;
 
 }
 
 
 .thermal-summary-row {
 
-    display:
-        flex;
+    display: flex;
 
     justify-content:
         space-between;
 
-    align-items:
-        center;
+    align-items: center;
 
-    gap:
-        8px;
+    gap: 8px;
 
     padding:
         2px 0;
 
-    font-size:
-        9px;
+    font-size: 8px;
 
 }
 
 
 .thermal-summary-row strong {
 
-    white-space:
-        nowrap;
+    white-space: nowrap;
 
 }
 
@@ -4154,17 +3633,14 @@ body {
 
 .thermal-grand-total {
 
-    display:
-        flex;
+    display: flex;
 
     justify-content:
         space-between;
 
-    align-items:
-        center;
+    align-items: center;
 
-    gap:
-        8px;
+    gap: 8px;
 
     margin:
         4px 0;
@@ -4178,22 +3654,18 @@ body {
     border-bottom:
         2px solid #000;
 
-    font-size:
-        14px;
+    font-size: 13px;
 
-    font-weight:
-        900;
+    font-weight: 900;
 
 }
 
 
 .thermal-grand-total strong {
 
-    font-size:
-        15px;
+    font-size: 14px;
 
-    white-space:
-        nowrap;
+    white-space: nowrap;
 
 }
 
@@ -4204,34 +3676,28 @@ body {
 
 .thermal-change {
 
-    display:
-        flex;
+    display: flex;
 
     justify-content:
         space-between;
 
-    align-items:
-        center;
+    align-items: center;
 
-    gap:
-        8px;
+    gap: 8px;
 
     padding:
         4px 0;
 
-    font-size:
-        12px;
+    font-size: 11px;
 
-    font-weight:
-        900;
+    font-weight: 900;
 
 }
 
 
 .thermal-change strong {
 
-    white-space:
-        nowrap;
+    white-space: nowrap;
 
 }
 
@@ -4242,39 +3708,31 @@ body {
 
 .thermal-footer {
 
-    text-align:
-        center;
+    text-align: center;
 
-    margin-top:
-        8px;
+    margin-top: 8px;
 
-    font-size:
-        9px;
+    font-size: 8px;
 
 }
 
 
 .thermal-thank-you {
 
-    font-size:
-        10px;
+    font-size: 9px;
 
-    font-weight:
-        700;
+    font-weight: 700;
 
-    margin-top:
-        6px;
+    margin-top: 5px;
 
 }
 
 
 .thermal-system {
 
-    font-size:
-        7px;
+    font-size: 7px;
 
-    margin-top:
-        3px;
+    margin-top: 3px;
 
 }
 
@@ -4288,31 +3746,26 @@ body {
     html,
     body {
 
-        width:
-            80mm;
+        width: 80mm;
 
-        margin:
-            0;
+        margin: 0;
 
-        padding:
-            0;
+        padding: 0;
 
     }
 
-
     .thermal-receipt {
 
-        width:
-            72mm;
+        width: 72mm;
 
-        max-width:
-            72mm;
+        max-width: 72mm;
 
-        margin:
-            0 auto;
+        margin: 0 auto;
 
         padding:
-            3mm 0 6mm;
+            3mm
+            0
+            7mm;
 
     }
 
@@ -4336,23 +3789,15 @@ body {
     <div class="thermal-header">
 
         <div class="thermal-logo">
-
             PAPPRITO
-
         </div>
-
 
         <div class="thermal-restaurant">
-
             RESTAURANT
-
         </div>
 
-
         <div class="thermal-receipt-title">
-
             Official Sales Receipt
-
         </div>
 
     </div>
@@ -4362,7 +3807,7 @@ body {
 
 
     <!-- ==============================================
-         ORDER INFORMATION
+         ORDER INFO
     =============================================== -->
 
     <div class="thermal-info-row">
@@ -4372,12 +3817,10 @@ body {
         </span>
 
         <span class="thermal-info-value">
-
             ${posEscape(
                 sale.orderNumber ||
                 ""
             )}
-
         </span>
 
     </div>
@@ -4390,12 +3833,10 @@ body {
         </span>
 
         <span class="thermal-info-value">
-
             ${posEscape(
                 sale.customer ||
                 "Walk-in Customer"
             )}
-
         </span>
 
     </div>
@@ -4408,12 +3849,10 @@ body {
         </span>
 
         <span class="thermal-info-value">
-
             ${posEscape(
                 sale.paymentMethod ||
                 "Cash"
             )}
-
         </span>
 
     </div>
@@ -4426,14 +3865,9 @@ body {
         </span>
 
         <span class="thermal-info-value">
-
-            ${new Date(
-                sale.createdAt ||
-                Date.now()
-            ).toLocaleString(
-                "en-PH"
+            ${posEscape(
+                dateText
             )}
-
         </span>
 
     </div>
@@ -4448,7 +3882,7 @@ body {
 
     <div class="thermal-items-header">
 
-        <div class="sn">
+        <div>
             SN
         </div>
 
@@ -4456,11 +3890,11 @@ body {
             ITEMS
         </div>
 
-        <div class="qty">
+        <div>
             QTY
         </div>
 
-        <div class="total">
+        <div>
             TOTAL
         </div>
 
@@ -4541,7 +3975,7 @@ body {
         </div>
 
 
-        <!-- ONE CHANGE ROW -->
+        <!-- ONE CHANGE ONLY -->
 
         <div class="thermal-change">
 
@@ -4569,18 +4003,12 @@ body {
 
         <div class="thermal-line"></div>
 
-
         <div class="thermal-thank-you">
-
             Thank you for dining with us!
-
         </div>
 
-
         <div class="thermal-system">
-
             PAPPRITO Restaurant POS
-
         </div>
 
     </div>
@@ -4599,7 +4027,7 @@ window.onload = function () {
             window.print();
 
         },
-        300
+        400
     );
 
 };
@@ -4613,7 +4041,7 @@ window.onafterprint = function () {
             window.close();
 
         },
-        300
+        400
     );
 
 };
@@ -4627,14 +4055,13 @@ window.onafterprint = function () {
 
             `;
 
+            printWindow.document.open();
 
             printWindow.document.write(
                 receiptHTML
             );
 
-
             printWindow.document.close();
-
 
             printWindow.focus();
 
@@ -4645,7 +4072,7 @@ window.onafterprint = function () {
 
 
 // ==========================================================
-// UPDATE ORDER NUMBER
+// ORDER NUMBER UI
 // ==========================================================
 
 function updatePOSOrderNumber() {
@@ -4655,10 +4082,7 @@ function updatePOSOrderNumber() {
             "posOrderNumber"
         );
 
-
-    if (
-        element
-    ) {
+    if (element) {
 
         element.textContent =
             posOrderNumber;
@@ -4679,19 +4103,14 @@ function setupPOSDateTime() {
             "posDateTime"
         );
 
-
     if (!element) {
-
         return;
-
     }
-
 
     function update() {
 
         const now =
             new Date();
-
 
         element.textContent =
             now.toLocaleString(
@@ -4721,14 +4140,11 @@ function setupPOSDateTime() {
 
     }
 
-
     update();
-
 
     clearInterval(
         window.pappritoPOSDateTimer
     );
-
 
     window.pappritoPOSDateTimer =
         setInterval(
@@ -4750,7 +4166,6 @@ function setupPOSKeypad() {
             ".pos-key"
         );
 
-
     keys.forEach(
         function (key) {
 
@@ -4761,10 +4176,8 @@ function setupPOSKeypad() {
                     const value =
                         key.dataset.key;
 
-
-                    const input =
+                    const activeElement =
                         document.activeElement;
-
 
                     if (
                         value ===
@@ -4772,15 +4185,15 @@ function setupPOSKeypad() {
                     ) {
 
                         if (
-                            input &&
-                            input.tagName ===
+                            activeElement &&
+                            activeElement.tagName ===
                             "INPUT"
                         ) {
 
-                            input.value =
+                            activeElement.value =
                                 "";
 
-                            input.dispatchEvent(
+                            activeElement.dispatchEvent(
                                 new Event(
                                     "input"
                                 )
@@ -4792,18 +4205,16 @@ function setupPOSKeypad() {
 
                     }
 
-
                     if (
-                        input &&
-                        input.tagName ===
+                        activeElement &&
+                        activeElement.tagName ===
                         "INPUT"
                     ) {
 
-                        input.value +=
+                        activeElement.value +=
                             value;
 
-
-                        input.dispatchEvent(
+                        activeElement.dispatchEvent(
                             new Event(
                                 "input"
                             )
@@ -4813,18 +4224,15 @@ function setupPOSKeypad() {
 
                     }
 
-
                     const amount =
                         document.getElementById(
                             "posAmountReceived"
                         );
 
-
                     if (amount) {
 
                         amount.value +=
                             value;
-
 
                         amount.dispatchEvent(
                             new Event(
@@ -4853,23 +4261,18 @@ async function initializePOS() {
         "=========================================="
     );
 
-
     console.log(
         "PAPPRITO POS V3 INITIALIZING..."
     );
-
 
     console.log(
         "=========================================="
     );
 
-
     posOrderNumber =
         generatePOSOrderNumber();
 
-
     updatePOSOrderNumber();
-
 
     setupPOSDateTime();
 
@@ -4899,17 +4302,24 @@ async function initializePOS() {
 
     setupPOSKeypad();
 
-
     renderPOSCart();
 
+    try {
 
-    await Promise.all(
-        [
-            loadPOSCategories(),
-            loadPOSProducts()
-        ]
-    );
+        await loadPOSCategories();
 
+        await loadPOSProducts();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "POS initialization error:",
+            error
+        );
+
+    }
 
     console.log(
         "PAPPRITO POS V3 READY."
@@ -4983,6 +4393,9 @@ window.getPOSGrandTotal =
 
 window.completePOSPayment =
     completePOSPayment;
+
+window.generatePOSReceipt =
+    generatePOSReceipt;
 
 
 console.log(
