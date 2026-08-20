@@ -3,13 +3,14 @@
    FULLSCREEN POS CSS
    File: assets/css/pos.css
 
-   DESIGN:
+   UPDATED:
    - Fullscreen POS
    - No sidebar
    - No ERP navbar
    - Desktop / Laptop optimized
    - Tablet responsive
    - Mobile responsive
+   - CART: SN | ITEMS | QTY | TOTAL
 ========================================================== */
 
 
@@ -74,18 +75,16 @@ body {
         Arial,
         sans-serif;
 
-    background: var(--pos-bg);
+    background:
+        var(--pos-bg);
 
-    color: var(--pos-text);
+    color:
+        var(--pos-text);
 
     overflow: hidden;
 
 }
 
-
-/* ==========================================================
-   REMOVE ERP LAYOUT EFFECTS
-========================================================== */
 
 body.papprito-pos-page {
 
@@ -125,7 +124,8 @@ body.papprito-pos-page * {
 
     flex-direction: column;
 
-    background: var(--pos-bg);
+    background:
+        var(--pos-bg);
 
     overflow: hidden;
 
@@ -159,7 +159,8 @@ body.papprito-pos-page * {
     background:
         var(--pos-red);
 
-    color: #ffffff;
+    color:
+        #ffffff;
 
     box-shadow:
         0 2px 8px rgba(0, 0, 0, .15);
@@ -168,10 +169,6 @@ body.papprito-pos-page * {
 
 }
 
-
-/* ==========================================================
-   HEADER LEFT
-========================================================== */
 
 .pos-header-left {
 
@@ -214,7 +211,8 @@ body.papprito-pos-page * {
     background:
         rgba(255, 255, 255, .15);
 
-    color: #ffffff;
+    color:
+        #ffffff;
 
     font-size: 20px;
 
@@ -328,8 +326,8 @@ body.papprito-pos-page * {
 
     min-height: 38px;
 
-    border: 1px solid
-        rgba(255, 255, 255, .22);
+    border:
+        1px solid rgba(255, 255, 255, .22);
 
     border-radius: 7px;
 
@@ -347,7 +345,8 @@ body.papprito-pos-page * {
     background:
         rgba(255, 255, 255, .10);
 
-    color: #ffffff;
+    color:
+        #ffffff;
 
     font-size: 12px;
 
@@ -372,7 +371,8 @@ body.papprito-pos-page * {
 
 .pos-header-action:active {
 
-    transform: scale(.97);
+    transform:
+        scale(.97);
 
 }
 
@@ -524,7 +524,8 @@ body.papprito-pos-page * {
 
     border-radius: 7px;
 
-    background: #ffffff;
+    background:
+        #ffffff;
 
     color:
         var(--pos-muted);
@@ -564,16 +565,91 @@ body.papprito-pos-page * {
     min-height: 0;
 
     overflow-y: auto;
+
     overflow-x: hidden;
 
 }
 
 
+/* ==========================================================
+   CART HEADER
+========================================================== */
+
+.pos-cart-header {
+
+    display: grid;
+
+    grid-template-columns:
+        34px
+        minmax(0, 1fr)
+        42px
+        78px;
+
+    gap: 6px;
+
+    padding:
+        7px 10px;
+
+    border-bottom:
+        1px solid var(--pos-border);
+
+    background:
+        #fafafa;
+
+    color:
+        var(--pos-muted);
+
+    font-size: 9px;
+
+    font-weight: 900;
+
+    text-transform:
+        uppercase;
+
+}
+
+
+.pos-cart-header span {
+
+    display: block;
+
+}
+
+
+.pos-cart-header .cart-head-sn {
+
+    text-align:
+        center;
+
+}
+
+
+.pos-cart-header .cart-head-qty {
+
+    text-align:
+        center;
+
+}
+
+
+.pos-cart-header .cart-head-total {
+
+    text-align:
+        right;
+
+}
+
+
+/* ==========================================================
+   EMPTY CART
+========================================================== */
+
 .pos-empty-cart {
 
     min-height: 100%;
 
-    padding: 30px 15px;
+    padding:
+        30px 15px;
 
     display: flex;
 
@@ -593,20 +669,25 @@ body.papprito-pos-page * {
 
 .pos-empty-cart i {
 
-    margin-bottom: 12px;
+    margin-bottom:
+        12px;
 
-    font-size: 42px;
+    font-size:
+        42px;
 
-    opacity: .45;
+    opacity:
+        .45;
 
 }
 
 
 .pos-empty-cart strong {
 
-    font-size: 15px;
+    font-size:
+        15px;
 
-    font-weight: 900;
+    font-weight:
+        900;
 
     color:
         var(--pos-text);
@@ -616,15 +697,20 @@ body.papprito-pos-page * {
 
 .pos-empty-cart span {
 
-    margin-top: 4px;
+    margin-top:
+        4px;
 
-    font-size: 11px;
+    font-size:
+        11px;
 
 }
 
 
 /* ==========================================================
    CART ITEM
+   STRUCTURE:
+
+   SN | ITEMS | QTY | TOTAL
 ========================================================== */
 
 .pos-cart-item {
@@ -632,101 +718,343 @@ body.papprito-pos-page * {
     display: grid;
 
     grid-template-columns:
+        34px
         minmax(0, 1fr)
-        auto;
+        42px
+        78px;
 
-    gap: 8px;
+    gap: 6px;
+
+    align-items: start;
 
     padding:
-        11px 12px;
+        9px 10px;
 
     border-bottom:
         1px solid var(--pos-border);
+
+    background:
+        #ffffff;
+
+}
+
+
+/* ==========================================================
+   CART SN
+========================================================== */
+
+.pos-cart-sn {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    justify-content: center;
+
+    padding-top:
+        2px;
+
+    color:
+        var(--pos-muted);
+
+    font-size:
+        11px;
+
+    font-weight:
+        900;
+
+}
+
+
+/* ==========================================================
+   CART ITEM INFORMATION
+========================================================== */
+
+.pos-cart-item-info {
+
+    min-width: 0;
 
 }
 
 
 .pos-cart-item-name {
 
-    font-size: 13px;
+    overflow: hidden;
 
-    font-weight: 900;
+    text-overflow: ellipsis;
 
-    line-height: 1.25;
+    white-space: nowrap;
+
+    font-size:
+        12px;
+
+    font-weight:
+        900;
+
+    line-height:
+        1.25;
 
 }
 
 
 .pos-cart-item-price {
 
-    margin-top: 3px;
+    margin-top:
+        3px;
 
     color:
         var(--pos-muted);
 
-    font-size: 10px;
+    font-size:
+        9px;
 
-    font-weight: 600;
+    font-weight:
+        600;
+
+}
+
+
+.pos-cart-item-controls {
+
+    margin-top:
+        5px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        3px;
+
+}
+
+
+.pos-cart-item-controls button {
+
+    width:
+        22px;
+
+    height:
+        22px;
+
+    padding:
+        0;
+
+    border:
+        1px solid var(--pos-border);
+
+    border-radius:
+        5px;
+
+    background:
+        #ffffff;
+
+    color:
+        var(--pos-text);
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    cursor:
+        pointer;
+
+    font-size:
+        9px;
+
+}
+
+
+.pos-cart-item-controls button:hover {
+
+    border-color:
+        var(--pos-red);
+
+    color:
+        var(--pos-red);
+
+}
+
+
+.pos-cart-item-controls .pos-cart-qty-small {
+
+    min-width:
+        20px;
+
+    text-align:
+        center;
+
+    font-size:
+        10px;
+
+    font-weight:
+        900;
+
+}
+
+
+/* ==========================================================
+   CART QTY COLUMN
+========================================================== */
+
+.pos-cart-qty-column {
+
+    display:
+        flex;
+
+    align-items:
+        flex-start;
+
+    justify-content:
+        center;
+
+    padding-top:
+        2px;
+
+}
+
+
+.pos-cart-qty {
+
+    min-width:
+        25px;
+
+    height:
+        25px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    border:
+        1px solid var(--pos-border);
+
+    border-radius:
+        6px;
+
+    background:
+        #fafafa;
+
+    font-size:
+        11px;
+
+    font-weight:
+        900;
+
+}
+
+
+/* ==========================================================
+   CART TOTAL COLUMN
+========================================================== */
+
+.pos-cart-total-column {
+
+    display:
+        flex;
+
+    align-items:
+        flex-start;
+
+    justify-content:
+        flex-end;
+
+    padding-top:
+        2px;
+
+    text-align:
+        right;
 
 }
 
 
 .pos-cart-item-total {
 
-    margin-top: 5px;
-
     color:
         var(--pos-red);
 
-    font-size: 13px;
+    font-size:
+        12px;
 
-    font-weight: 900;
+    font-weight:
+        900;
+
+    white-space:
+        nowrap;
 
 }
 
 
 /* ==========================================================
-   CART CONTROLS
+   OLD CART CONTROLS COMPATIBILITY
 ========================================================== */
 
 .pos-cart-controls {
 
-    display: flex;
+    display:
+        flex;
 
-    align-items: center;
+    align-items:
+        center;
 
-    align-self: center;
+    align-self:
+        center;
 
-    gap: 4px;
+    gap:
+        4px;
 
 }
 
 
 .pos-cart-controls button {
 
-    width: 27px;
-    height: 27px;
+    width:
+        27px;
 
-    padding: 0;
+    height:
+        27px;
+
+    padding:
+        0;
 
     border:
         1px solid var(--pos-border);
 
-    border-radius: 6px;
+    border-radius:
+        6px;
 
-    background: #ffffff;
+    background:
+        #ffffff;
 
     color:
         var(--pos-text);
 
-    display: flex;
+    display:
+        flex;
 
-    align-items: center;
-    justify-content: center;
+    align-items:
+        center;
 
-    cursor: pointer;
+    justify-content:
+        center;
 
-    font-size: 10px;
+    cursor:
+        pointer;
+
+    font-size:
+        10px;
 
 }
 
@@ -738,19 +1066,6 @@ body.papprito-pos-page * {
 
     color:
         var(--pos-red);
-
-}
-
-
-.pos-cart-qty {
-
-    min-width: 24px;
-
-    text-align: center;
-
-    font-size: 12px;
-
-    font-weight: 900;
 
 }
 
@@ -777,48 +1092,63 @@ body.papprito-pos-page * {
 
 .pos-summary-row {
 
-    display: flex;
+    display:
+        flex;
 
-    align-items: center;
+    align-items:
+        center;
 
-    justify-content: space-between;
+    justify-content:
+        space-between;
 
-    gap: 10px;
+    gap:
+        10px;
 
-    margin-bottom: 6px;
+    margin-bottom:
+        6px;
 
-    font-size: 12px;
+    font-size:
+        12px;
 
-    font-weight: 700;
+    font-weight:
+        700;
 
 }
 
 
 .pos-summary-row strong {
 
-    font-weight: 900;
+    font-weight:
+        900;
 
 }
 
 
 .pos-summary-total {
 
-    display: flex;
+    display:
+        flex;
 
-    align-items: center;
+    align-items:
+        center;
 
-    justify-content: space-between;
+    justify-content:
+        space-between;
 
-    margin-top: 9px;
+    margin-top:
+        9px;
 
-    padding-top: 9px;
+    padding-top:
+        9px;
 
     border-top:
         2px solid var(--pos-text);
 
-    font-size: 18px;
+    font-size:
+        18px;
 
-    font-weight: 900;
+    font-weight:
+        900;
 
 }
 
@@ -837,9 +1167,11 @@ body.papprito-pos-page * {
 
 .pos-category-panel {
 
-    display: flex;
+    display:
+        flex;
 
-    flex-direction: column;
+    flex-direction:
+        column;
 
 }
 
@@ -850,26 +1182,34 @@ body.papprito-pos-page * {
 
 .pos-categories {
 
-    flex: 1 1 auto;
+    flex:
+        1 1 auto;
 
-    min-height: 0;
+    min-height:
+        0;
 
-    padding: 9px;
+    padding:
+        9px;
 
-    overflow-y: auto;
+    overflow-y:
+        auto;
 
-    overflow-x: hidden;
+    overflow-x:
+        hidden;
 
 }
 
 
 .pos-category-btn {
 
-    width: 100%;
+    width:
+        100%;
 
-    min-height: 42px;
+    min-height:
+        42px;
 
-    margin-bottom: 6px;
+    margin-bottom:
+        6px;
 
     padding:
         7px 10px;
@@ -877,7 +1217,8 @@ body.papprito-pos-page * {
     border:
         1px solid var(--pos-border);
 
-    border-radius: 7px;
+    border-radius:
+        7px;
 
     background:
         #ffffff;
@@ -885,19 +1226,26 @@ body.papprito-pos-page * {
     color:
         var(--pos-text);
 
-    display: flex;
+    display:
+        flex;
 
-    align-items: center;
+    align-items:
+        center;
 
-    gap: 8px;
+    gap:
+        8px;
 
-    text-align: left;
+    text-align:
+        left;
 
-    font-size: 12px;
+    font-size:
+        12px;
 
-    font-weight: 800;
+    font-weight:
+        800;
 
-    cursor: pointer;
+    cursor:
+        pointer;
 
     transition:
         .15s ease;
@@ -932,7 +1280,8 @@ body.papprito-pos-page * {
 
 .pos-category-btn.active i {
 
-    color: #ffffff;
+    color:
+        #ffffff;
 
 }
 
@@ -943,7 +1292,8 @@ body.papprito-pos-page * {
 
 .pos-keypad-section {
 
-    flex: 0 0 auto;
+    flex:
+        0 0 auto;
 
     padding:
         9px;
@@ -959,17 +1309,23 @@ body.papprito-pos-page * {
 
 .pos-keypad-title {
 
-    margin-bottom: 7px;
+    margin-bottom:
+        7px;
 
-    display: flex;
+    display:
+        flex;
 
-    align-items: center;
+    align-items:
+        center;
 
-    gap: 6px;
+    gap:
+        6px;
 
-    font-size: 11px;
+    font-size:
+        11px;
 
-    font-weight: 900;
+    font-weight:
+        900;
 
     color:
         var(--pos-muted);
@@ -987,24 +1343,28 @@ body.papprito-pos-page * {
 
 .pos-keypad {
 
-    display: grid;
+    display:
+        grid;
 
     grid-template-columns:
         repeat(3, 1fr);
 
-    gap: 5px;
+    gap:
+        5px;
 
 }
 
 
 .pos-keypad button {
 
-    min-height: 34px;
+    min-height:
+        34px;
 
     border:
         1px solid var(--pos-border);
 
-    border-radius: 6px;
+    border-radius:
+        6px;
 
     background:
         #ffffff;
@@ -1012,11 +1372,14 @@ body.papprito-pos-page * {
     color:
         var(--pos-text);
 
-    font-size: 13px;
+    font-size:
+        13px;
 
-    font-weight: 900;
+    font-weight:
+        900;
 
-    cursor: pointer;
+    cursor:
+        pointer;
 
 }
 
@@ -1043,25 +1406,20 @@ body.papprito-pos-page * {
 }
 
 
-.pos-keypad .key-zero {
-
-    grid-column:
-        span 1;
-
-}
-
-
 /* ==========================================================
    PRODUCT PANEL
 ========================================================== */
 
 .pos-product-panel {
 
-    display: flex;
+    display:
+        flex;
 
-    flex-direction: column;
+    flex-direction:
+        column;
 
-    padding: 10px;
+    padding:
+        10px;
 
 }
 
@@ -1072,37 +1430,48 @@ body.papprito-pos-page * {
 
 .pos-product-toolbar {
 
-    flex: 0 0 auto;
+    flex:
+        0 0 auto;
 
-    display: flex;
+    display:
+        flex;
 
-    align-items: center;
+    align-items:
+        center;
 
-    gap: 8px;
+    gap:
+        8px;
 
-    margin-bottom: 9px;
+    margin-bottom:
+        9px;
 
 }
 
 
 .pos-search-wrapper {
 
-    flex: 1;
+    flex:
+        1;
 
-    position: relative;
+    position:
+        relative;
 
-    min-width: 0;
+    min-width:
+        0;
 
 }
 
 
 .pos-search-wrapper i {
 
-    position: absolute;
+    position:
+        absolute;
 
-    left: 12px;
+    left:
+        12px;
 
-    top: 50%;
+    top:
+        50%;
 
     transform:
         translateY(-50%);
@@ -1110,18 +1479,22 @@ body.papprito-pos-page * {
     color:
         var(--pos-muted);
 
-    font-size: 12px;
+    font-size:
+        12px;
 
-    pointer-events: none;
+    pointer-events:
+        none;
 
 }
 
 
 .pos-product-search {
 
-    width: 100%;
+    width:
+        100%;
 
-    height: 40px;
+    height:
+        40px;
 
     padding:
         0 12px 0 34px;
@@ -1129,9 +1502,11 @@ body.papprito-pos-page * {
     border:
         1px solid var(--pos-border);
 
-    border-radius: 7px;
+    border-radius:
+        7px;
 
-    outline: none;
+    outline:
+        none;
 
     background:
         #ffffff;
@@ -1139,9 +1514,11 @@ body.papprito-pos-page * {
     color:
         var(--pos-text);
 
-    font-size: 12px;
+    font-size:
+        12px;
 
-    font-weight: 600;
+    font-weight:
+        600;
 
 }
 
@@ -1152,23 +1529,27 @@ body.papprito-pos-page * {
         var(--pos-red);
 
     box-shadow:
-        0 0 0 3px
-        rgba(200, 16, 46, .08);
+        0 0 0 3px rgba(200, 16, 46, .08);
 
 }
 
 
 .pos-refresh-btn {
 
-    width: 40px;
-    height: 40px;
+    width:
+        40px;
 
-    flex: 0 0 40px;
+    height:
+        40px;
+
+    flex:
+        0 0 40px;
 
     border:
         1px solid var(--pos-border);
 
-    border-radius: 7px;
+    border-radius:
+        7px;
 
     background:
         #ffffff;
@@ -1176,7 +1557,8 @@ body.papprito-pos-page * {
     color:
         var(--pos-text);
 
-    cursor: pointer;
+    cursor:
+        pointer;
 
 }
 
@@ -1198,12 +1580,17 @@ body.papprito-pos-page * {
 
 .pos-products {
 
-    flex: 1 1 auto;
+    flex:
+        1 1 auto;
 
-    min-width: 0;
-    min-height: 0;
+    min-width:
+        0;
 
-    display: grid;
+    min-height:
+        0;
+
+    display:
+        grid;
 
     grid-template-columns:
         repeat(
@@ -1211,11 +1598,14 @@ body.papprito-pos-page * {
             minmax(145px, 1fr)
         );
 
-    align-content: start;
+    align-content:
+        start;
 
-    gap: 9px;
+    gap:
+        9px;
 
-    overflow-y: auto;
+    overflow-y:
+        auto;
 
     padding:
         1px 3px 5px 1px;
@@ -1229,7 +1619,8 @@ body.papprito-pos-page * {
 
 .pos-product-card {
 
-    min-width: 0;
+    min-width:
+        0;
 
     background:
         #ffffff;
@@ -1237,11 +1628,14 @@ body.papprito-pos-page * {
     border:
         1px solid var(--pos-border);
 
-    border-radius: 8px;
+    border-radius:
+        8px;
 
-    overflow: hidden;
+    overflow:
+        hidden;
 
-    cursor: pointer;
+    cursor:
+        pointer;
 
     transition:
         transform .15s ease,
@@ -1260,8 +1654,7 @@ body.papprito-pos-page * {
         var(--pos-red);
 
     box-shadow:
-        0 5px 16px
-        rgba(0, 0, 0, .09);
+        0 5px 16px rgba(0, 0, 0, .09);
 
 }
 
@@ -1280,14 +1673,17 @@ body.papprito-pos-page * {
 
 .pos-product-image {
 
-    width: 100%;
+    width:
+        100%;
 
     aspect-ratio:
         1 / .72;
 
-    display: block;
+    display:
+        block;
 
-    object-fit: cover;
+    object-fit:
+        cover;
 
     background:
         #f1f2f4;
@@ -1309,41 +1705,51 @@ body.papprito-pos-page * {
 
 .pos-product-name {
 
-    min-height: 31px;
+    min-height:
+        31px;
 
-    font-size: 12px;
+    font-size:
+        12px;
 
-    font-weight: 900;
+    font-weight:
+        900;
 
-    line-height: 1.3;
+    line-height:
+        1.3;
 
 }
 
 
 .pos-product-price {
 
-    margin-top: 4px;
+    margin-top:
+        4px;
 
     color:
         var(--pos-red);
 
-    font-size: 14px;
+    font-size:
+        14px;
 
-    font-weight: 900;
+    font-weight:
+        900;
 
 }
 
 
 .pos-product-stock {
 
-    margin-top: 2px;
+    margin-top:
+        2px;
 
     color:
         var(--pos-muted);
 
-    font-size: 10px;
+    font-size:
+        10px;
 
-    font-weight: 700;
+    font-weight:
+        700;
 
 }
 
@@ -1352,26 +1758,35 @@ body.papprito-pos-page * {
    LOADING
 ========================================================== */
 
-.pos-products-loading {
+.pos-products-loading,
+.pos-loading {
 
-    min-height: 160px;
+    min-height:
+        160px;
 
-    display: flex;
+    display:
+        flex;
 
-    align-items: center;
+    align-items:
+        center;
 
-    justify-content: center;
+    justify-content:
+        center;
 
-    flex-direction: column;
+    flex-direction:
+        column;
 
-    gap: 8px;
+    gap:
+        8px;
 
     color:
         var(--pos-muted);
 
-    font-size: 11px;
+    font-size:
+        11px;
 
-    font-weight: 700;
+    font-weight:
+        700;
 
 }
 
@@ -1382,13 +1797,17 @@ body.papprito-pos-page * {
 
 .pos-payment-bar {
 
-    flex: 0 0 auto;
+    flex:
+        0 0 auto;
 
-    width: 100%;
+    width:
+        100%;
 
-    min-width: 0;
+    min-width:
+        0;
 
-    display: grid;
+    display:
+        grid;
 
     grid-template-columns:
         minmax(150px, 1.1fr)
@@ -1397,7 +1816,8 @@ body.papprito-pos-page * {
         minmax(120px, .8fr)
         125px;
 
-    gap: 8px;
+    gap:
+        8px;
 
     padding:
         9px 10px;
@@ -1411,7 +1831,8 @@ body.papprito-pos-page * {
     box-shadow:
         0 -2px 10px rgba(0, 0, 0, .05);
 
-    z-index: 15;
+    z-index:
+        15;
 
 }
 
@@ -1425,7 +1846,8 @@ body.papprito-pos-page * {
 .pos-payment-input,
 .pos-change-box {
 
-    min-width: 0;
+    min-width:
+        0;
 
 }
 
@@ -1434,16 +1856,20 @@ body.papprito-pos-page * {
 .pos-payment-method label,
 .pos-payment-input label {
 
-    display: block;
+    display:
+        block;
 
-    margin-bottom: 4px;
+    margin-bottom:
+        4px;
 
     color:
         var(--pos-muted);
 
-    font-size: 10px;
+    font-size:
+        10px;
 
-    font-weight: 900;
+    font-weight:
+        900;
 
     text-transform:
         uppercase;
@@ -1461,9 +1887,11 @@ body.papprito-pos-page * {
 
 .pos-payment-customer input {
 
-    width: 100%;
+    width:
+        100%;
 
-    height: 39px;
+    height:
+        39px;
 
     padding:
         0 10px;
@@ -1471,13 +1899,17 @@ body.papprito-pos-page * {
     border:
         1px solid var(--pos-border);
 
-    border-radius: 7px;
+    border-radius:
+        7px;
 
-    outline: none;
+    outline:
+        none;
 
-    font-size: 12px;
+    font-size:
+        12px;
 
-    font-weight: 700;
+    font-weight:
+        700;
 
 }
 
@@ -1496,19 +1928,22 @@ body.papprito-pos-page * {
 
 .pos-payment-buttons {
 
-    display: grid;
+    display:
+        grid;
 
     grid-template-columns:
         repeat(4, 1fr);
 
-    gap: 5px;
+    gap:
+        5px;
 
 }
 
 
 .pos-payment-method-btn {
 
-    height: 39px;
+    height:
+        39px;
 
     padding:
         0 7px;
@@ -1516,7 +1951,8 @@ body.papprito-pos-page * {
     border:
         1px solid var(--pos-border);
 
-    border-radius: 7px;
+    border-radius:
+        7px;
 
     background:
         #ffffff;
@@ -1524,19 +1960,26 @@ body.papprito-pos-page * {
     color:
         var(--pos-text);
 
-    display: flex;
+    display:
+        flex;
 
-    align-items: center;
+    align-items:
+        center;
 
-    justify-content: center;
+    justify-content:
+        center;
 
-    gap: 5px;
+    gap:
+        5px;
 
-    font-size: 10px;
+    font-size:
+        10px;
 
-    font-weight: 900;
+    font-weight:
+        900;
 
-    cursor: pointer;
+    cursor:
+        pointer;
 
 }
 
@@ -1569,53 +2012,66 @@ body.papprito-pos-page * {
 
 .pos-money-input {
 
-    height: 39px;
+    height:
+        39px;
 
-    display: flex;
+    display:
+        flex;
 
-    align-items: center;
+    align-items:
+        center;
 
     border:
         1px solid var(--pos-border);
 
-    border-radius: 7px;
+    border-radius:
+        7px;
 
     background:
         #ffffff;
 
-    overflow: hidden;
+    overflow:
+        hidden;
 
 }
 
 
 .pos-money-input span {
 
-    padding-left: 10px;
+    padding-left:
+        10px;
 
     color:
         var(--pos-muted);
 
-    font-weight: 900;
+    font-weight:
+        900;
 
 }
 
 
 .pos-money-input input {
 
-    width: 100%;
+    width:
+        100%;
 
-    height: 100%;
+    height:
+        100%;
 
-    border: 0;
+    border:
+        0;
 
-    outline: 0;
+    outline:
+        0;
 
     padding:
         0 9px;
 
-    font-size: 14px;
+    font-size:
+        14px;
 
-    font-weight: 900;
+    font-weight:
+        900;
 
 }
 
@@ -1634,7 +2090,8 @@ body.papprito-pos-page * {
 
 .pos-change-box {
 
-    min-height: 58px;
+    min-height:
+        58px;
 
     padding:
         7px 10px;
@@ -1642,16 +2099,20 @@ body.papprito-pos-page * {
     border:
         1px solid #d9eadf;
 
-    border-radius: 7px;
+    border-radius:
+        7px;
 
     background:
         #f1faf4;
 
-    display: flex;
+    display:
+        flex;
 
-    flex-direction: column;
+    flex-direction:
+        column;
 
-    justify-content: center;
+    justify-content:
+        center;
 
 }
 
@@ -1661,23 +2122,28 @@ body.papprito-pos-page * {
     color:
         var(--pos-green);
 
-    font-size: 9px;
+    font-size:
+        9px;
 
-    font-weight: 900;
+    font-weight:
+        900;
 
 }
 
 
 .pos-change-box strong {
 
-    margin-top: 2px;
+    margin-top:
+        2px;
 
     color:
         var(--pos-green);
 
-    font-size: 18px;
+    font-size:
+        18px;
 
-    font-weight: 900;
+    font-weight:
+        900;
 
 }
 
@@ -1688,11 +2154,14 @@ body.papprito-pos-page * {
 
 .pos-pay-btn {
 
-    min-height: 58px;
+    min-height:
+        58px;
 
-    border: 0;
+    border:
+        0;
 
-    border-radius: 8px;
+    border-radius:
+        8px;
 
     background:
         var(--pos-red);
@@ -1700,23 +2169,29 @@ body.papprito-pos-page * {
     color:
         #ffffff;
 
-    display: flex;
+    display:
+        flex;
 
-    align-items: center;
+    align-items:
+        center;
 
-    justify-content: center;
+    justify-content:
+        center;
 
-    gap: 7px;
+    gap:
+        7px;
 
-    font-size: 15px;
+    font-size:
+        15px;
 
-    font-weight: 900;
+    font-weight:
+        900;
 
-    cursor: pointer;
+    cursor:
+        pointer;
 
     box-shadow:
-        0 3px 8px
-        rgba(200, 16, 46, .20);
+        0 3px 8px rgba(200, 16, 46, .20);
 
 }
 
@@ -1731,12 +2206,14 @@ body.papprito-pos-page * {
 
 .pos-pay-btn:disabled {
 
-    opacity: .45;
+    opacity:
+        .45;
 
     cursor:
         not-allowed;
 
-    box-shadow: none;
+    box-shadow:
+        none;
 
 }
 
@@ -1773,18 +2250,22 @@ body.papprito-pos-page * {
     background:
         var(--pos-red-light);
 
-    display: flex;
+    display:
+        flex;
 
-    align-items: center;
+    align-items:
+        center;
 
-    justify-content: space-between;
+    justify-content:
+        space-between;
 
 }
 
 
 .pos-modal-total span {
 
-    font-weight: 700;
+    font-weight:
+        700;
 
 }
 
@@ -1794,9 +2275,11 @@ body.papprito-pos-page * {
     color:
         var(--pos-red);
 
-    font-size: 22px;
+    font-size:
+        22px;
 
-    font-weight: 900;
+    font-weight:
+        900;
 
 }
 
@@ -1815,11 +2298,14 @@ body.papprito-pos-page * {
     background:
         #f1faf4;
 
-    display: flex;
+    display:
+        flex;
 
-    align-items: center;
+    align-items:
+        center;
 
-    justify-content: space-between;
+    justify-content:
+        space-between;
 
 }
 
@@ -1829,7 +2315,33 @@ body.papprito-pos-page * {
     color:
         var(--pos-green);
 
-    font-size: 20px;
+    font-size:
+        20px;
+
+}
+
+
+/* ==========================================================
+   RECEIPT
+========================================================== */
+
+#posReceiptContent,
+#posReceipt {
+
+    max-height:
+        65vh;
+
+    overflow-y:
+        auto;
+
+}
+
+
+#posReceiptContent > div,
+#posReceipt > div {
+
+    width:
+        100%;
 
 }
 
@@ -1840,13 +2352,59 @@ body.papprito-pos-page * {
 
 .pos-status {
 
-    position: fixed;
+    position:
+        fixed;
 
-    right: 15px;
+    right:
+        15px;
 
-    bottom: 15px;
+    bottom:
+        15px;
 
-    z-index: 9999;
+    z-index:
+        9999;
+
+    padding:
+        8px 12px;
+
+    border-radius:
+        7px;
+
+    background:
+        rgba(32, 33, 36, .92);
+
+    color:
+        #ffffff;
+
+    font-size:
+        11px;
+
+    font-weight:
+        700;
+
+    opacity:
+        0;
+
+    pointer-events:
+        none;
+
+    transform:
+        translateY(10px);
+
+    transition:
+        opacity .2s ease,
+        transform .2s ease;
+
+}
+
+
+.pos-status.show {
+
+    opacity:
+        1;
+
+    transform:
+        translateY(0);
 
 }
 
@@ -1859,7 +2417,8 @@ body.papprito-pos-page * {
 .pos-categories::-webkit-scrollbar,
 .pos-products::-webkit-scrollbar {
 
-    width: 6px;
+    width:
+        6px;
 
 }
 
@@ -1916,14 +2475,16 @@ body.papprito-pos-page * {
 
     .pos-product-name {
 
-        font-size: 13px;
+        font-size:
+            13px;
 
     }
 
 
     .pos-product-price {
 
-        font-size: 15px;
+        font-size:
+            15px;
 
     }
 
@@ -1976,6 +2537,18 @@ body.papprito-pos-page * {
 
     }
 
+
+    .pos-cart-header,
+    .pos-cart-item {
+
+        grid-template-columns:
+            30px
+            minmax(0, 1fr)
+            38px
+            70px;
+
+    }
+
 }
 
 
@@ -2021,12 +2594,14 @@ body.papprito-pos-page * {
         position:
             sticky;
 
-        top: 0;
+        top:
+            0;
 
         grid-template-columns:
             1fr auto;
 
-        flex: 0 0 auto;
+        flex:
+            0 0 auto;
 
         min-height:
             62px;
@@ -2243,6 +2818,98 @@ body.papprito-pos-page * {
     }
 
 
+    /* ======================================================
+       MOBILE CART
+    ====================================================== */
+
+    .pos-cart-header,
+    .pos-cart-item {
+
+        grid-template-columns:
+            28px
+            minmax(0, 1fr)
+            38px
+            70px;
+
+        gap:
+            5px;
+
+    }
+
+
+    .pos-cart-header {
+
+        padding:
+            7px 8px;
+
+        font-size:
+            8px;
+
+    }
+
+
+    .pos-cart-item {
+
+        padding:
+            9px 8px;
+
+    }
+
+
+    .pos-cart-item-name {
+
+        font-size:
+            11px;
+
+    }
+
+
+    .pos-cart-item-price {
+
+        font-size:
+            8px;
+
+    }
+
+
+    .pos-cart-item-total {
+
+        font-size:
+            11px;
+
+    }
+
+
+    .pos-cart-controls {
+
+        gap:
+            3px;
+
+    }
+
+
+    .pos-cart-controls button {
+
+        width:
+            24px;
+
+        height:
+            24px;
+
+    }
+
+
+    .pos-cart-qty {
+
+        min-width:
+            23px;
+
+        height:
+            24px;
+
+    }
+
+
     .pos-categories {
 
         display:
@@ -2358,6 +3025,37 @@ body.papprito-pos-page * {
 ========================================================== */
 
 @media (max-width: 380px) {
+
+    .pos-cart-header,
+    .pos-cart-item {
+
+        grid-template-columns:
+            25px
+            minmax(0, 1fr)
+            34px
+            64px;
+
+        gap:
+            4px;
+
+    }
+
+
+    .pos-cart-item-name {
+
+        font-size:
+            10px;
+
+    }
+
+
+    .pos-cart-item-total {
+
+        font-size:
+            10px;
+
+    }
+
 
     .pos-product-name {
 
