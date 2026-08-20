@@ -1,7 +1,21 @@
 // ==========================================================
 // PAPPRITO ERP
-// APP / NAVIGATION ENGINE V11
+// APP / NAVIGATION ENGINE V12
 // File : assets/js/app.js
+//
+// IMPORTANT ARCHITECTURE:
+//
+// MAIN ERP
+// - Uses Sidebar
+// - Uses Navbar
+// - Uses #content
+//
+// POS
+// - Standalone page
+// - NO ERP Sidebar
+// - NO ERP Navbar
+// - Fullscreen
+// - Opens directly: pages/pos.html
 //
 // MAIN FUNCTIONS:
 // - Component Loader
@@ -13,7 +27,6 @@
 // - Inventory Loader
 // - Raw Materials Loader
 // - Stock In Loader
-// - POS Loader
 // - Supplier Loader
 // - Mobile Sidebar
 // - Page Navigation
@@ -41,8 +54,6 @@ let inventoryScriptsLoaded = false;
 let rawMaterialsScriptsLoaded = false;
 
 let stockInScriptsLoaded = false;
-
-let posScriptsLoaded = false;
 
 let suppliersScriptsLoaded = false;
 
@@ -106,13 +117,6 @@ const rawMaterialsScripts = [
 const stockInScripts = [
 
     "assets/js/stock-in/stock-in.js"
-
-];
-
-
-const posScripts = [
-
-    "assets/js/pos/pos.js"
 
 ];
 
@@ -524,33 +528,6 @@ async function loadStockInScripts() {
 
 
 // ==========================================================
-// POS
-// ==========================================================
-
-async function loadPOSScripts() {
-
-    if (
-        posScriptsLoaded
-    ) {
-
-        return;
-
-    }
-
-
-    await loadScriptGroup(
-        posScripts,
-        "POS"
-    );
-
-
-    posScriptsLoaded =
-        true;
-
-}
-
-
-// ==========================================================
 // SUPPLIERS
 // ==========================================================
 
@@ -678,10 +655,49 @@ function showModuleError(
 // ==========================================================
 // LOAD PAGE
 // ==========================================================
+//
+// IMPORTANT:
+// POS IS NOT LOADED HERE.
+//
+// POS MUST ALWAYS BE OPENED DIRECTLY:
+//
+// pages/pos.html
+//
+// This prevents the ERP sidebar and navbar from remaining
+// around the POS application.
+// ==========================================================
 
 async function loadPage(
     page
 ) {
+
+    // ======================================================
+    // POS PROTECTION
+    // ======================================================
+
+    if (
+        page ===
+        "pages/pos.html"
+    ) {
+
+        console.log(
+            "POS requested through ERP loader."
+        );
+
+
+        console.log(
+            "Redirecting to standalone POS..."
+        );
+
+
+        window.location.href =
+            "pages/pos.html";
+
+
+        return;
+
+    }
+
 
     const content =
         document.getElementById(
@@ -864,19 +880,6 @@ async function loadPage(
             case "pages/dashboard.html":
 
                 await initializeDashboardModule(
-                    content
-                );
-
-                break;
-
-
-            // ==================================================
-            // POS
-            // ==================================================
-
-            case "pages/pos.html":
-
-                await initializePOSModule(
                     content
                 );
 
@@ -1319,85 +1322,6 @@ async function initializeDashboardModule(
 
 
 // ==========================================================
-// POS INITIALIZATION
-// ==========================================================
-
-async function initializePOSModule(
-    content
-) {
-
-    try {
-
-        console.log(
-            "=========================================="
-        );
-
-
-        console.log(
-            "INITIALIZING POS CASHIER"
-        );
-
-
-        console.log(
-            "=========================================="
-        );
-
-
-        // ==================================================
-        // LOAD POS JAVASCRIPT
-        // ==================================================
-
-        await loadPOSScripts();
-
-
-        // ==================================================
-        // INITIALIZE POS
-        // ==================================================
-
-        if (
-            typeof initializePOS ===
-            "function"
-        ) {
-
-            await initializePOS();
-
-        }
-
-        else {
-
-            throw new Error(
-                "initializePOS() not found."
-            );
-
-        }
-
-
-        console.log(
-            "POS Cashier initialized."
-        );
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "POS Module Error:",
-            error
-        );
-
-
-        showModuleError(
-            content,
-            "POS Cashier",
-            error
-        );
-
-    }
-
-}
-
-
-// ==========================================================
 // PRODUCT INITIALIZATION
 // ==========================================================
 
@@ -1780,6 +1704,7 @@ function openDashboard() {
 
     closeSidebarMobile();
 
+
     loadPage(
         "pages/dashboard.html"
     );
@@ -1787,20 +1712,66 @@ function openDashboard() {
 }
 
 
+// ==========================================================
+// POS — STANDALONE
+// ==========================================================
+//
+// IMPORTANT:
+//
+// DO NOT use loadPage().
+//
+// POS must leave the ERP shell completely.
+//
+// This removes:
+// - Main sidebar
+// - Main navbar
+// - ERP content wrapper
+//
+// POS opens as its own document.
+// ==========================================================
+
 function openPOS() {
+
+    console.log(
+        "Opening standalone PAPPRITO POS..."
+    );
+
+
+    // ======================================================
+    // CLOSE MOBILE SIDEBAR FIRST
+    // ======================================================
 
     closeSidebarMobile();
 
-    loadPage(
+
+    // ======================================================
+    // SAVE POS STATE
+    // ======================================================
+
+    localStorage.setItem(
+        "currentPage",
         "pages/pos.html"
     );
+
+
+    // ======================================================
+    // OPEN STANDALONE POS
+    // ======================================================
+
+    window.location.href =
+        "pages/pos.html";
 
 }
 
 
+// ==========================================================
+// RECEIVING ORDERS
+// ==========================================================
+
 function openReceivingOrders() {
 
     closeSidebarMobile();
+
 
     loadPage(
         "pages/receiving-orders.html"
@@ -1809,9 +1780,14 @@ function openReceivingOrders() {
 }
 
 
+// ==========================================================
+// KITCHEN
+// ==========================================================
+
 function openKitchen() {
 
     closeSidebarMobile();
+
 
     loadPage(
         "pages/kitchen.html"
@@ -1820,9 +1796,14 @@ function openKitchen() {
 }
 
 
+// ==========================================================
+// TABLES
+// ==========================================================
+
 function openTables() {
 
     closeSidebarMobile();
+
 
     loadPage(
         "pages/tables.html"
@@ -1831,9 +1812,14 @@ function openTables() {
 }
 
 
+// ==========================================================
+// PRODUCTS
+// ==========================================================
+
 function openProducts() {
 
     closeSidebarMobile();
+
 
     loadPage(
         "pages/products.html"
@@ -1842,9 +1828,14 @@ function openProducts() {
 }
 
 
+// ==========================================================
+// CATEGORY
+// ==========================================================
+
 function openCategory() {
 
     closeSidebarMobile();
+
 
     loadPage(
         "pages/categories.html"
@@ -1853,9 +1844,14 @@ function openCategory() {
 }
 
 
+// ==========================================================
+// INVENTORY
+// ==========================================================
+
 function openInventory() {
 
     closeSidebarMobile();
+
 
     loadPage(
         "pages/inventory.html"
@@ -1864,9 +1860,14 @@ function openInventory() {
 }
 
 
+// ==========================================================
+// RAW MATERIALS
+// ==========================================================
+
 function openRawMaterials() {
 
     closeSidebarMobile();
+
 
     loadPage(
         "pages/raw-materials.html"
@@ -1875,9 +1876,14 @@ function openRawMaterials() {
 }
 
 
+// ==========================================================
+// STOCK IN
+// ==========================================================
+
 function openStockIn() {
 
     closeSidebarMobile();
+
 
     loadPage(
         "pages/stock-in.html"
@@ -1886,9 +1892,14 @@ function openStockIn() {
 }
 
 
+// ==========================================================
+// STOCK OUT
+// ==========================================================
+
 function openStockOut() {
 
     closeSidebarMobile();
+
 
     loadPage(
         "pages/stock-out.html"
@@ -1897,9 +1908,14 @@ function openStockOut() {
 }
 
 
+// ==========================================================
+// PURCHASE ORDERS
+// ==========================================================
+
 function openPurchaseOrders() {
 
     closeSidebarMobile();
+
 
     loadPage(
         "pages/purchase-orders.html"
@@ -1908,9 +1924,14 @@ function openPurchaseOrders() {
 }
 
 
+// ==========================================================
+// SUPPLIERS
+// ==========================================================
+
 function openSuppliers() {
 
     closeSidebarMobile();
+
 
     loadPage(
         "pages/suppliers.html"
@@ -1919,9 +1940,14 @@ function openSuppliers() {
 }
 
 
+// ==========================================================
+// CUSTOMERS
+// ==========================================================
+
 function openCustomers() {
 
     closeSidebarMobile();
+
 
     loadPage(
         "pages/customers.html"
@@ -1930,9 +1956,14 @@ function openCustomers() {
 }
 
 
+// ==========================================================
+// SALES
+// ==========================================================
+
 function openSales() {
 
     closeSidebarMobile();
+
 
     loadPage(
         "pages/sales.html"
@@ -1941,9 +1972,14 @@ function openSales() {
 }
 
 
+// ==========================================================
+// REPORTS
+// ==========================================================
+
 function openReports() {
 
     closeSidebarMobile();
+
 
     loadPage(
         "pages/reports.html"
@@ -1952,9 +1988,14 @@ function openReports() {
 }
 
 
+// ==========================================================
+// EMPLOYEES
+// ==========================================================
+
 function openEmployees() {
 
     closeSidebarMobile();
+
 
     loadPage(
         "pages/employees.html"
@@ -1963,9 +2004,14 @@ function openEmployees() {
 }
 
 
+// ==========================================================
+// ATTENDANCE
+// ==========================================================
+
 function openAttendance() {
 
     closeSidebarMobile();
+
 
     loadPage(
         "pages/attendance.html"
@@ -1974,9 +2020,14 @@ function openAttendance() {
 }
 
 
+// ==========================================================
+// PAYROLL
+// ==========================================================
+
 function openPayroll() {
 
     closeSidebarMobile();
+
 
     loadPage(
         "pages/payroll.html"
@@ -1985,9 +2036,14 @@ function openPayroll() {
 }
 
 
+// ==========================================================
+// SETTINGS
+// ==========================================================
+
 function openSettings() {
 
     closeSidebarMobile();
+
 
     loadPage(
         "pages/settings.html"
@@ -1996,13 +2052,40 @@ function openSettings() {
 }
 
 
+// ==========================================================
+// COMPANY PROFILE
+// ==========================================================
+
 function openCompanyProfile() {
 
     closeSidebarMobile();
 
+
     loadPage(
         "pages/company-profile.html"
     );
+
+}
+
+
+// ==========================================================
+// RETURN TO ERP
+// ==========================================================
+//
+// POS can call this function if we decide to add
+// an "Exit POS" button later.
+// ==========================================================
+
+function returnToERP() {
+
+    localStorage.setItem(
+        "currentPage",
+        "pages/dashboard.html"
+    );
+
+
+    window.location.href =
+        "../index.html";
 
 }
 
@@ -2281,6 +2364,50 @@ document.addEventListener(
 
 
         // ==================================================
+        // RESTORE LAST PAGE
+        // ==================================================
+
+        const savedPage =
+            localStorage.getItem(
+                "currentPage"
+            );
+
+
+        // ==================================================
+        // POS PROTECTION
+        // ==================================================
+        //
+        // If POS was the last page, DO NOT load it into
+        // the ERP shell.
+        //
+        // Redirect immediately to standalone POS.
+        // ==================================================
+
+        if (
+            savedPage ===
+            "pages/pos.html"
+        ) {
+
+            console.log(
+                "Last page was POS."
+            );
+
+
+            console.log(
+                "Opening standalone POS..."
+            );
+
+
+            window.location.href =
+                "pages/pos.html";
+
+
+            return;
+
+        }
+
+
+        // ==================================================
         // SIDEBAR
         // ==================================================
 
@@ -2328,19 +2455,22 @@ document.addEventListener(
 
 
         // ==================================================
-        // RESTORE LAST PAGE
+        // DEFAULT PAGE
         // ==================================================
 
-        const savedPage =
-            localStorage.getItem(
-                "currentPage"
-            );
-
-
         const firstPage =
-            savedPage ||
-            "pages/dashboard.html";
+            savedPage &&
+            savedPage !==
+            "pages/pos.html"
 
+            ? savedPage
+
+            : "pages/dashboard.html";
+
+
+        // ==================================================
+        // LOAD ERP PAGE
+        // ==================================================
 
         await loadPage(
             firstPage
@@ -2373,140 +2503,182 @@ document.addEventListener(
 window.loadComponent =
     loadComponent;
 
+
 window.loadScript =
     loadScript;
+
 
 window.loadScriptGroup =
     loadScriptGroup;
 
+
 window.loadDashboardScripts =
     loadDashboardScripts;
+
 
 window.loadProductScripts =
     loadProductScripts;
 
+
 window.loadCategoryScripts =
     loadCategoryScripts;
+
 
 window.loadReceivingOrdersScripts =
     loadReceivingOrdersScripts;
 
+
 window.loadInventoryScripts =
     loadInventoryScripts;
+
 
 window.loadRawMaterialsScripts =
     loadRawMaterialsScripts;
 
+
 window.loadStockInScripts =
     loadStockInScripts;
 
-window.loadPOSScripts =
-    loadPOSScripts;
 
 window.loadSuppliersScripts =
     loadSuppliersScripts;
 
+
 window.loadPage =
     loadPage;
+
 
 window.safeInitialize =
     safeInitialize;
 
+
 window.initializeDashboardModule =
     initializeDashboardModule;
 
-window.initializePOSModule =
-    initializePOSModule;
 
 window.initializeProductModule =
     initializeProductModule;
 
+
 window.initializeCategoryModule =
     initializeCategoryModule;
+
 
 window.initializeReceivingOrdersModule =
     initializeReceivingOrdersModule;
 
+
 window.initializeInventoryModule =
     initializeInventoryModule;
+
 
 window.initializeRawMaterialsModule =
     initializeRawMaterialsModule;
 
+
 window.initializeStockInModule =
     initializeStockInModule;
+
 
 window.initializeSuppliersModule =
     initializeSuppliersModule;
 
+
 window.toggleSidebar =
     toggleSidebar;
+
 
 window.closeSidebarMobile =
     closeSidebarMobile;
 
+
 window.openDashboard =
     openDashboard;
+
 
 window.openPOS =
     openPOS;
 
+
 window.openReceivingOrders =
     openReceivingOrders;
+
 
 window.openKitchen =
     openKitchen;
 
+
 window.openTables =
     openTables;
+
 
 window.openProducts =
     openProducts;
 
+
 window.openCategory =
     openCategory;
+
 
 window.openInventory =
     openInventory;
 
+
 window.openRawMaterials =
     openRawMaterials;
+
 
 window.openStockIn =
     openStockIn;
 
+
 window.openStockOut =
     openStockOut;
+
 
 window.openPurchaseOrders =
     openPurchaseOrders;
 
+
 window.openSuppliers =
     openSuppliers;
+
 
 window.openCustomers =
     openCustomers;
 
+
 window.openSales =
     openSales;
+
 
 window.openReports =
     openReports;
 
+
 window.openEmployees =
     openEmployees;
+
 
 window.openAttendance =
     openAttendance;
 
+
 window.openPayroll =
     openPayroll;
+
 
 window.openSettings =
     openSettings;
 
+
 window.openCompanyProfile =
     openCompanyProfile;
+
+
+window.returnToERP =
+    returnToERP;
+
 
 window.logoutERP =
     logoutERP;
@@ -2517,5 +2689,9 @@ window.logoutERP =
 // ==========================================================
 
 console.log(
-    "PAPPRITO ERP app.js V11 loaded."
+    "PAPPRITO ERP app.js V12 loaded."
+);
+
+console.log(
+    "POS architecture: STANDALONE FULLSCREEN"
 );
